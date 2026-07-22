@@ -1,0 +1,6 @@
+{
+  "name": "Student Life",
+  "description": "Operative academic dashboard with gamified missions, vault tracker, agenda calendar, and hero profile.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

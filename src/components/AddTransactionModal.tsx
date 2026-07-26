@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Transaction, TransactionCategory, TransactionType } from '../types';
+import { LanguageType, Transaction, TransactionCategory, TransactionType } from '../types';
+import { getTranslation } from '../utils/i18n';
 import { ExpressiveSelect, SelectOption } from './ExpressiveSelect';
 
 interface AddTransactionModalProps {
@@ -7,14 +8,15 @@ interface AddTransactionModalProps {
   onClose: () => void;
   defaultType?: TransactionType;
   onAddTransaction: (transaction: Omit<Transaction, 'id'>) => void;
+  language?: LanguageType;
 }
 
-const CATEGORY_OPTIONS: SelectOption<TransactionCategory>[] = [
-  { value: 'FOOD', label: 'Makanan & Minuman', icon: 'local_cafe' },
-  { value: 'TRANSPORT', label: 'Transportasi & KRL', icon: 'directions_bus' },
-  { value: 'TECH', label: 'Teknologi & Gadget', icon: 'memory' },
-  { value: 'SUBSCRIPTION', label: 'Langganan & Buku', icon: 'menu_book' },
-  { value: 'OTHER', label: 'Lainnya', icon: 'category' },
+const categoryOptions = (t: ReturnType<typeof getTranslation>): SelectOption<TransactionCategory>[] => [
+  { value: 'FOOD', label: t.food, icon: 'local_cafe' },
+  { value: 'TRANSPORT', label: t.transport, icon: 'directions_bus' },
+  { value: 'TECH', label: t.tech, icon: 'memory' },
+  { value: 'SUBSCRIPTION', label: t.subscription, icon: 'menu_book' },
+  { value: 'OTHER', label: t.other, icon: 'category' },
 ];
 
 export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
@@ -22,7 +24,9 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   onClose,
   defaultType = 'expense',
   onAddTransaction,
+  language = 'id',
 }) => {
+  const t = getTranslation(language);
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState<TransactionType>(defaultType);
@@ -43,7 +47,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       amount: numAmount,
       type,
       category: type === 'income' ? 'INCOME' : category,
-      date: `Hari ini, ${timeStr}`,
+      date: `${t.today}, ${timeStr}`,
     });
 
     setTitle('');
@@ -61,7 +65,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               {type === 'income' ? 'add_circle' : 'payments'}
             </span>
             <h3 className="font-jakarta font-black text-xl text-white">
-              {type === 'income' ? 'Tambah Pemasukan Saldo' : 'Catat Pengeluaran'}
+              {type === 'income' ? t.addDepositCredit : t.logExpense}
             </h3>
           </div>
           <button
@@ -87,7 +91,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                   : 'text-gray-300 hover:text-white'
               }`}
             >
-              + Pemasukan
+              {t.depositTab}
             </button>
             <button
               type="button"
@@ -101,13 +105,13 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                   : 'text-gray-300 hover:text-white'
               }`}
             >
-              - Pengeluaran
+              {t.expenseTab}
             </button>
           </div>
 
           <div>
             <label className="block text-xs font-extrabold text-gray-300 mb-1">
-              KETERANGAN TRANSAKSI
+              {t.description}
             </label>
             <input
               type="text"
@@ -121,7 +125,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
           <div>
             <label className="block text-xs font-extrabold text-gray-300 mb-1">
-              NOMINAL (RP)
+              {t.amountRp}
             </label>
             <input
               type="number"
@@ -137,11 +141,11 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           {type === 'expense' && (
             <div>
               <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                KATEGORI
+                {t.categoryLabel}
               </label>
               <ExpressiveSelect
                 value={category}
-                options={CATEGORY_OPTIONS}
+                options={categoryOptions(t)}
                 onChange={(val) => setCategory(val as TransactionCategory)}
               />
             </div>
@@ -153,13 +157,13 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               onClick={onClose}
               className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-full py-3.5 font-bold transition-colors cursor-pointer"
             >
-              Batal
+              {t.cancel}
             </button>
             <button
               type="submit"
               className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
             >
-              Simpan Transaksi
+              {t.recordTx}
             </button>
           </div>
         </form>

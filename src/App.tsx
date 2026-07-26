@@ -64,7 +64,6 @@ function fallbackProfile(session: Session): UserProfile {
     university: meta.university || '',
     classOf: '',
     currentXP: 0,
-    nextLevelXP: 1000,
     gpa: 0,
     rank: '-',
     walks: 0,
@@ -113,6 +112,16 @@ export default function App() {
   const showToast = (message: string, icon = '✅') => {
     setToast({ visible: true, message, icon });
     setTimeout(() => setToast((t) => ({ ...t, visible: false })), 3500);
+  };
+
+  // Shared handler for background Supabase syncs (optimistic UI already applied
+  // locally) so a failed write is surfaced to the user instead of only logged.
+  const onSyncError = (err: unknown) => {
+    console.error('[sync] failed:', err);
+    showToast(
+      profile?.language === 'en' ? 'Sync failed — change may not be saved' : 'Gagal sinkron — perubahan mungkin tidak tersimpan',
+      '⚠️'
+    );
   };
 
   // Track auth session
@@ -195,7 +204,7 @@ export default function App() {
   // Persist a partial profile patch: update local state immediately, sync to Supabase in background
   const persistProfile = (patch: Partial<UserProfile>) => {
     setProfile((p) => (p ? { ...p, ...patch } : p));
-    if (userId) updateProfile(userId, patch).catch((err) => console.error('[profile] update failed:', err));
+    if (userId) updateProfile(userId, patch).catch(onSyncError);
   };
 
   const handleAddXP = (amount: number) => {
@@ -211,7 +220,7 @@ export default function App() {
     const newCompleted = !mission.completed;
 
     setMissions((prev) => prev.map((m) => (m.id === id ? { ...m, completed: newCompleted } : m)));
-    setMissionCompleted(id, newCompleted).catch((err) => console.error('[mission] update failed:', err));
+    setMissionCompleted(id, newCompleted).catch(onSyncError);
 
     if (newCompleted) {
       handleAddXP(mission.xpReward);
@@ -250,7 +259,7 @@ export default function App() {
   const handleUpdateSavings = (newSaved: number, newGoal?: Partial<SavingsGoal>) => {
     setSavingsGoal((prev) => {
       const updated = { ...prev, savedAmount: newSaved, ...(newGoal || {}) };
-      if (userId) upsertSavingsGoal(userId, updated).catch((err) => console.error('[savings] update failed:', err));
+      if (userId) upsertSavingsGoal(userId, updated).catch(onSyncError);
       return updated;
     });
   };
@@ -266,7 +275,7 @@ export default function App() {
 
   const handleMarkAllNotificationsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    if (userId) markAllNotificationsRead(userId).catch((err) => console.error('[notifications] update failed:', err));
+    if (userId) markAllNotificationsRead(userId).catch(onSyncError);
   };
 
   const handleToggleDarkMode = () => {
@@ -281,7 +290,7 @@ export default function App() {
     setProfile((p) => {
       if (!p) return p;
       const nextLang = p.language === 'id' ? 'en' : 'id';
-      if (userId) updateProfile(userId, { language: nextLang }).catch((err) => console.error('[profile] update failed:', err));
+      if (userId) updateProfile(userId, { language: nextLang }).catch(onSyncError);
       return { ...p, language: nextLang };
     });
   };
@@ -474,6 +483,7 @@ export default function App() {
         isOpen={isAddMissionOpen}
         onClose={() => setIsAddMissionOpen(false)}
         onAddMission={handleAddMission}
+        language={profile.language}
       />
 
       {/* Add Transaction Modal */}
@@ -482,6 +492,7 @@ export default function App() {
         onClose={() => setIsAddTxOpen(false)}
         defaultType={txModalType}
         onAddTransaction={handleAddTransaction}
+        language={profile.language}
       />
 
       {/* Edit Profile Modal */}
@@ -509,6 +520,7 @@ export default function App() {
         onClose={() => setIsSavingsModalOpen(false)}
         savingsGoal={savingsGoal}
         onUpdateSavings={handleUpdateSavings}
+        language={profile.language}
       />
 
       {/* Notifications Modal */}
@@ -517,6 +529,7 @@ export default function App() {
         onClose={() => setIsNotificationsOpen(false)}
         notifications={notifications}
         onMarkAllAsRead={handleMarkAllNotificationsRead}
+        language={profile.language}
       />
       {/* Heroic Badges Showcase Modal */}
       <BadgesModal

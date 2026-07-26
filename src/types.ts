@@ -42,7 +42,6 @@ export interface UserProfile {
   university: string;
   classOf: string;
   currentXP: number;
-  nextLevelXP: number;
   gpa: number;
   rank: string;
   walks: number;

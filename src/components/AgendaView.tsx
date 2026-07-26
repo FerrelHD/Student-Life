@@ -34,9 +34,11 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
   };
 
   // Filter missions based on selected day (or fallback if all pending shown)
+  // dateStr is "YYYY-MM-DD" — compare the day number directly, not a substring
+  // match (which wrongly matched e.g. day "2" against "...-12", "...-26", etc.)
   const dayMissions = missions.filter((m) => {
     if (!m.dateStr) return true;
-    return m.dateStr.includes(`07-${selectedDay}`) || m.dateStr.includes(`${selectedDay}`);
+    return Number(m.dateStr.split('-')[2]) === selectedDay;
   });
 
   const displayedMissions = dayMissions.length > 0 ? dayMissions : missions.slice(0, 3);

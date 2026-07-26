@@ -81,6 +81,8 @@ alter table public.missions enable row level security;
 create policy "missions: crud own" on public.missions
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+create index if not exists missions_user_id_idx on public.missions (user_id);
+
 -- ─────────────────────────────────────────────────────────────
 -- transactions
 -- ─────────────────────────────────────────────────────────────
@@ -99,6 +101,8 @@ alter table public.transactions enable row level security;
 
 create policy "transactions: crud own" on public.transactions
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create index if not exists transactions_user_id_idx on public.transactions (user_id);
 
 -- ─────────────────────────────────────────────────────────────
 -- savings_goals (one active goal per user)
@@ -133,6 +137,8 @@ alter table public.notifications enable row level security;
 
 create policy "notifications: crud own" on public.notifications
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create index if not exists notifications_user_id_idx on public.notifications (user_id);
 
 -- ─────────────────────────────────────────────────────────────
 -- user_badges — unlock state only; the badge catalog (title/icon/tier)

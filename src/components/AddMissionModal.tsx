@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Mission, PriorityType, MissionTag } from '../types';
+import { LanguageType, Mission, PriorityType, MissionTag } from '../types';
+import { getTranslation } from '../utils/i18n';
 import { ExpressiveSelect, SelectOption } from './ExpressiveSelect';
 
 interface AddMissionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddMission: (mission: Omit<Mission, 'id' | 'completed'>) => void;
+  language?: LanguageType;
 }
 
-const PRIORITY_OPTIONS: SelectOption<PriorityType>[] = [
-  { value: 'high', label: 'High Priority', icon: 'priority_high' },
-  { value: 'medium', label: 'Medium Priority', icon: 'remove' },
-  { value: 'low', label: 'Low Priority', icon: 'arrow_downward' },
+const priorityOptions = (t: ReturnType<typeof getTranslation>): SelectOption<PriorityType>[] => [
+  { value: 'high', label: t.highPriority, icon: 'priority_high' },
+  { value: 'medium', label: t.mediumPriority, icon: 'remove' },
+  { value: 'low', label: t.lowPriority, icon: 'arrow_downward' },
 ];
 
 const TAG_OPTIONS: SelectOption<MissionTag>[] = [
@@ -27,12 +29,15 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   isOpen,
   onClose,
   onAddMission,
+  language = 'id',
 }) => {
+  const t = getTranslation(language);
   const [title, setTitle] = useState('');
   const [course, setCourse] = useState('');
   const [priority, setPriority] = useState<PriorityType>('medium');
   const [tag, setTag] = useState<MissionTag>('EXAM');
   const [dueDate, setDueDate] = useState('Due tomorrow');
+  const [dateStr, setDateStr] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
   const [xpReward, setXpReward] = useState(150);
@@ -51,14 +56,15 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       dueDate: dueDate.trim() || 'Due soon',
       time: time.trim() || undefined,
       location: location.trim() || undefined,
-      xpReward: Number(xpReward) || 150,
+      xpReward: Math.max(0, xpReward),
       focusPriority: priority === 'high' ? 'CRITICAL' : priority === 'medium' ? 'URGENT' : 'ROUTINE',
-      dateStr: new Date().toISOString().split('T')[0],
+      dateStr,
     });
 
     setTitle('');
     setCourse('');
     setDueDate('Due tomorrow');
+    setDateStr(new Date().toISOString().split('T')[0]);
     setTime('');
     setLocation('');
     onClose();
@@ -71,7 +77,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
         <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[#d1c4e9] text-2xl">add_task</span>
-            <h3 className="font-jakarta font-black text-xl text-white">Create New Mission</h3>
+            <h3 className="font-jakarta font-black text-xl text-white">{t.createNewMission}</h3>
           </div>
           <button
             onClick={onClose}
@@ -84,7 +90,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4 font-jakarta text-sm">
           <div>
             <label className="block text-xs font-extrabold text-gray-300 mb-1">
-              MISSION TITLE
+              {t.missionTitle}
             </label>
             <input
               type="text"
@@ -98,7 +104,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
 
           <div>
             <label className="block text-xs font-extrabold text-gray-300 mb-1">
-              COURSE / MODULE
+              {t.courseModule}
             </label>
             <input
               type="text"
@@ -113,18 +119,18 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                PRIORITY
+                {t.priority}
               </label>
               <ExpressiveSelect
                 value={priority}
-                options={PRIORITY_OPTIONS}
+                options={priorityOptions(t)}
                 onChange={(val) => setPriority(val as PriorityType)}
               />
             </div>
 
             <div>
               <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                TAG
+                {t.tag}
               </label>
               <ExpressiveSelect
                 value={tag}
@@ -137,7 +143,20 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                DUE TIMEFRAME
+                {t.missionDate}
+              </label>
+              <input
+                type="date"
+                required
+                value={dateStr}
+                onChange={(e) => setDateStr(e.target.value)}
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-extrabold text-gray-300 mb-1">
+                {t.dueTimeframe}
               </label>
               <input
                 type="text"
@@ -147,18 +166,19 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
                 className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                XP REWARD
-              </label>
-              <input
-                type="number"
-                value={xpReward}
-                onChange={(e) => setXpReward(Number(e.target.value))}
-                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-extrabold text-gray-300 mb-1">
+              {t.xpReward}
+            </label>
+            <input
+              type="number"
+              min={0}
+              value={xpReward}
+              onChange={(e) => setXpReward(Math.max(0, Number(e.target.value)))}
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+            />
           </div>
 
           <div className="pt-3 flex gap-3">
@@ -167,13 +187,13 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               onClick={onClose}
               className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-full py-3.5 font-bold transition-colors cursor-pointer"
             >
-              Cancel
+              {t.cancel}
             </button>
             <button
               type="submit"
               className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
             >
-              Add Mission
+              {t.addMissionBtn}
             </button>
           </div>
         </form>

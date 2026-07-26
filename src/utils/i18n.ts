@@ -44,6 +44,7 @@ export const i18n = {
     searchMissions: 'Cari misi...',
 
     // Vault
+    today: 'Hari ini',
     totalBalance: 'Total Saldo Keuangan',
     addMoney: 'Tambah Saldo',
     weeklyBurn: 'Pengeluaran Mingguan',
@@ -85,6 +86,7 @@ export const i18n = {
     mediumPriority: 'Prioritas Sedang',
     lowPriority: 'Prioritas Rendah',
     tag: 'TAG / KATEGORI',
+    missionDate: 'TANGGAL MISI',
     dueTimeframe: 'TENGGAT WAKTU',
     xpReward: 'HADIAH XP',
     cancel: 'Batal',
@@ -173,6 +175,7 @@ export const i18n = {
     searchMissions: 'Search missions...',
 
     // Vault
+    today: 'Today',
     totalBalance: 'Total Financial Balance',
     addMoney: 'Add Money',
     weeklyBurn: 'Weekly Burn',
@@ -214,6 +217,7 @@ export const i18n = {
     mediumPriority: 'Medium Priority',
     lowPriority: 'Low Priority',
     tag: 'TAG / CATEGORY',
+    missionDate: 'MISSION DATE',
     dueTimeframe: 'DUE TIMEFRAME',
     xpReward: 'XP REWARD',
     cancel: 'Cancel',

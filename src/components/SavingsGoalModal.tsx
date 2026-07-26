@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { SavingsGoal } from '../types';
+import { LanguageType, SavingsGoal } from '../types';
+import { getTranslation } from '../utils/i18n';
 
 interface SavingsGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
   savingsGoal: SavingsGoal;
   onUpdateSavings: (newSaved: number, newGoal?: Partial<SavingsGoal>) => void;
+  language?: LanguageType;
 }
 
 export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
@@ -13,7 +15,9 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
   onClose,
   savingsGoal,
   onUpdateSavings,
+  language = 'id',
 }) => {
+  const t = getTranslation(language);
   const [depositAmount, setDepositAmount] = useState('');
   const [title, setTitle] = useState(savingsGoal.title);
   const [targetAmount, setTargetAmount] = useState(savingsGoal.targetAmount.toString());
@@ -59,7 +63,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
               <span className="material-symbols-outlined text-xl">savings</span>
             </div>
             <div>
-              <h3 className="font-jakarta font-black text-lg text-white">Pengelola Target Tabungan</h3>
+              <h3 className="font-jakarta font-black text-lg text-white">{t.savingsManager}</h3>
               <p className="font-jakarta text-xs text-[#ece28c] font-bold">{savingsGoal.title}</p>
             </div>
           </div>
@@ -80,7 +84,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
               !isEditingGoal ? 'bg-[#d1c4e9] text-[#1f1732] shadow-sm' : 'text-gray-300 hover:text-white'
             }`}
           >
-            + Setor Tabungan
+            {t.depositMoneyTab}
           </button>
           <button
             type="button"
@@ -89,7 +93,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
               isEditingGoal ? 'bg-[#d1c4e9] text-[#1f1732] shadow-sm' : 'text-gray-300 hover:text-white'
             }`}
           >
-            ⚙️ Edit Detail Target
+            {t.editGoalDetailsTab}
           </button>
         </div>
 
@@ -97,18 +101,18 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
           <form onSubmit={handleDeposit} className="space-y-4 font-jakarta text-sm">
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex justify-between items-center">
               <div>
-                <p className="text-xs font-bold text-gray-400">TERKUMPUL</p>
+                <p className="text-xs font-bold text-gray-400">{t.currentSavings}</p>
                 <p className="text-lg font-black text-white">Rp {savingsGoal.savedAmount.toLocaleString('id-ID')}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs font-bold text-gray-400">TARGET IMPAIAN</p>
+                <p className="text-xs font-bold text-gray-400">{t.targetAmountLabel}</p>
                 <p className="text-base font-extrabold text-[#ece28c]">Rp {savingsGoal.targetAmount.toLocaleString('id-ID')}</p>
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-gray-300 mb-1">
-                NOMINAL SETORAN (RP)
+                {t.depositAmountLabel}
               </label>
               <input
                 type="number"
@@ -126,7 +130,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
                 type="submit"
                 className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               >
-                Setor ke Target Tabungan
+                {t.depositBtn}
               </button>
             </div>
           </form>
@@ -134,7 +138,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
           <form onSubmit={handleSaveGoal} className="space-y-4 font-jakarta text-sm">
             <div>
               <label className="block text-xs font-bold text-gray-300 mb-1">
-                NAMA BARANG IMPISAN
+                {t.goalNameLabel}
               </label>
               <input
                 type="text"
@@ -148,7 +152,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-gray-300 mb-1">
-                TARGET NOMINAL (RP)
+                {t.targetAmountLabel}
               </label>
               <input
                 type="number"
@@ -166,7 +170,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
                 type="submit"
                 className="w-full bg-[#ece28c] text-[#1f1c00] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               >
-                Simpan Detail Target
+                {t.saveGoalBtn}
               </button>
             </div>
           </form>

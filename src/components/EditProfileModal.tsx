@@ -72,11 +72,13 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     e.preventDefault();
     if (!name.trim()) return;
 
+    const parsedGpa = parseFloat(gpa);
+
     onSaveProfile({
       name: name.trim(),
       role: role.trim() || 'Smart Learner',
       university: university.trim() || (isIndonesian ? 'Universitas Indonesia' : 'Stanford University'),
-      gpa: parseFloat(gpa) || profile.gpa,
+      gpa: Number.isNaN(parsedGpa) ? profile.gpa : parsedGpa,
       avatarUrl: customAvatar.trim() || avatarUrl,
     });
 

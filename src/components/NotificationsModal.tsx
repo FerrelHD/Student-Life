@@ -1,11 +1,13 @@
 import React from 'react';
-import { NotificationItem } from '../types';
+import { LanguageType, NotificationItem } from '../types';
+import { getTranslation } from '../utils/i18n';
 
 interface NotificationsModalProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: NotificationItem[];
   onMarkAllAsRead: () => void;
+  language?: LanguageType;
 }
 
 export const NotificationsModal: React.FC<NotificationsModalProps> = ({
@@ -13,7 +15,9 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
   onClose,
   notifications,
   onMarkAllAsRead,
+  language = 'id',
 }) => {
+  const t = getTranslation(language);
   if (!isOpen) return null;
 
   return (
@@ -26,9 +30,9 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
               <span className="material-symbols-outlined text-xl">notifications</span>
             </div>
             <div>
-              <h3 className="font-jakarta font-black text-lg text-white">Notifications</h3>
+              <h3 className="font-jakarta font-black text-lg text-white">{t.notificationsTitle}</h3>
               <p className="font-jakarta text-xs text-[#d1c4e9] font-bold">
-                {notifications.filter((n) => !n.read).length} unread updates
+                {t.unreadUpdates.replace('{count}', String(notifications.filter((n) => !n.read).length))}
               </p>
             </div>
           </div>
@@ -42,12 +46,12 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
 
         {/* Action: Mark all read */}
         <div className="flex justify-between items-center mb-3 text-xs font-jakarta font-bold">
-          <span className="text-gray-400">Academic Alerts</span>
+          <span className="text-gray-400">{t.academicAlerts}</span>
           <button
             onClick={onMarkAllAsRead}
             className="text-[#d1c4e9] hover:underline cursor-pointer"
           >
-            Mark all as read
+            {t.markAllRead}
           </button>
         </div>
 
@@ -86,7 +90,7 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
             onClick={onClose}
             className="w-full bg-white/10 hover:bg-white/20 text-white font-black py-3 rounded-full text-sm transition-all cursor-pointer"
           >
-            Close Panel
+            {t.closePanel}
           </button>
         </div>
       </div>

@@ -36,6 +36,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
@@ -47,18 +48,24 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [forgotEmail, setForgotEmail] = useState('');
   const [otpToken, setOtpToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [sendState, setSendState] = useState<SendState>('idle');
   const [sendError, setSendError] = useState('');
 
   // ── Recovery-link state (arrived via emailed link, no OTP needed) ──
   const [recoveryPassword, setRecoveryPassword] = useState('');
+  const [recoveryPasswordConfirm, setRecoveryPasswordConfirm] = useState('');
   const [recoverySaving, setRecoverySaving] = useState(false);
   const [recoveryError, setRecoveryError] = useState('');
 
   // ── Handlers ──
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
+    if (authLoading || !email.trim() || !password.trim()) return;
+    if (mode === 'register' && password !== passwordConfirm) {
+      setAuthError(isIndonesian ? 'Konfirmasi password tidak cocok' : 'Password confirmation does not match');
+      return;
+    }
     setAuthError('');
     setRegisterNotice('');
     setAuthLoading(true);
@@ -105,6 +112,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
   };
 
   const handleDemoLogin = async () => {
+    if (authLoading) return;
     setAuthError('');
     setAuthLoading(true);
     try {
@@ -123,7 +131,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
   const handleSendReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!forgotEmail.trim()) return;
+    if (sendState === 'sending' || !forgotEmail.trim()) return;
 
     setSendState('sending');
     setSendError('');
@@ -140,7 +148,12 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otpToken.trim() || !newPassword.trim()) return;
+    if (sendState === 'sending' || !otpToken.trim() || !newPassword.trim()) return;
+    if (newPassword !== newPasswordConfirm) {
+      setSendError(isIndonesian ? 'Konfirmasi password tidak cocok' : 'Password confirmation does not match');
+      setSendState('error');
+      return;
+    }
 
     setSendState('sending');
     setSendError('');
@@ -172,7 +185,11 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
   const handleSetRecoveryPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!recoveryPassword.trim()) return;
+    if (recoverySaving || !recoveryPassword.trim()) return;
+    if (recoveryPassword !== recoveryPasswordConfirm) {
+      setRecoveryError(isIndonesian ? 'Konfirmasi password tidak cocok' : 'Password confirmation does not match');
+      return;
+    }
 
     setRecoverySaving(true);
     setRecoveryError('');
@@ -189,12 +206,14 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const switchMode = (next: AuthMode) => {
     setMode(next);
     setAuthError('');
+    setPasswordConfirm('');
     setSendState('idle');
     setSendError('');
     setForgotStep('request');
     setForgotEmail('');
     setOtpToken('');
     setNewPassword('');
+    setNewPasswordConfirm('');
   };
 
   // ─── Render ─────────────────────────────────────────────────
@@ -261,6 +280,21 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   placeholder="••••••••"
                   className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                   autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-300 mb-1">
+                  {isIndonesian ? 'KONFIRMASI PASSWORD' : 'CONFIRM PASSWORD'}
+                </label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={recoveryPasswordConfirm}
+                  onChange={(e) => setRecoveryPasswordConfirm(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                 />
               </div>
 
@@ -410,6 +444,21 @@ export const AuthView: React.FC<AuthViewProps> = ({
                       minLength={6}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-300 mb-1">
+                      {isIndonesian ? 'KONFIRMASI PASSWORD' : 'CONFIRM PASSWORD'}
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={newPasswordConfirm}
+                      onChange={(e) => setNewPasswordConfirm(e.target.value)}
                       placeholder="••••••••"
                       className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                     />
@@ -569,6 +618,24 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   </button>
                 </div>
               </div>
+
+              {/* Confirm password (register only) */}
+              {mode === 'register' && (
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-300 mb-1">
+                    {isIndonesian ? 'KONFIRMASI PASSWORD' : 'CONFIRM PASSWORD'}
+                  </label>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={6}
+                    value={passwordConfirm}
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                  />
+                </div>
+              )}
 
               {/* Forgot */}
               {mode === 'login' && (

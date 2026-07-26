@@ -24,7 +24,6 @@ export async function fetchProfile(userId: string): Promise<UserProfile> {
     university: data.university,
     classOf: data.class_of,
     currentXP: data.current_xp,
-    nextLevelXP: data.next_level_xp,
     gpa: data.gpa,
     rank: data.rank,
     walks: data.walks,
@@ -46,7 +45,6 @@ export async function updateProfile(userId: string, profile: Partial<UserProfile
   if (profile.university !== undefined) patch.university = profile.university;
   if (profile.classOf !== undefined) patch.class_of = profile.classOf;
   if (profile.currentXP !== undefined) patch.current_xp = profile.currentXP;
-  if (profile.nextLevelXP !== undefined) patch.next_level_xp = profile.nextLevelXP;
   if (profile.gpa !== undefined) patch.gpa = profile.gpa;
   if (profile.rank !== undefined) patch.rank = profile.rank;
   if (profile.walks !== undefined) patch.walks = profile.walks;
@@ -137,7 +135,8 @@ export async function fetchTransactions(userId: string): Promise<Transaction[]> 
     .from('transactions')
     .select('*')
     .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(200);
   if (error) throw error;
   return data.map((row) => ({
     id: row.id,
@@ -208,7 +207,8 @@ export async function fetchNotifications(userId: string): Promise<NotificationIt
     .from('notifications')
     .select('*')
     .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
   if (error) throw error;
   return data.map((row) => ({
     id: row.id,

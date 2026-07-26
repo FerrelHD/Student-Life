@@ -1,11 +1,27 @@
 import React, { useState } from 'react';
 import { Mission, PriorityType, MissionTag } from '../types';
+import { ExpressiveSelect, SelectOption } from './ExpressiveSelect';
 
 interface AddMissionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddMission: (mission: Omit<Mission, 'id' | 'completed'>) => void;
 }
+
+const PRIORITY_OPTIONS: SelectOption<PriorityType>[] = [
+  { value: 'high', label: 'High Priority', icon: 'priority_high' },
+  { value: 'medium', label: 'Medium Priority', icon: 'remove' },
+  { value: 'low', label: 'Low Priority', icon: 'arrow_downward' },
+];
+
+const TAG_OPTIONS: SelectOption<MissionTag>[] = [
+  { value: 'EXAM', label: '[EXAM]', icon: 'quiz' },
+  { value: 'LAB', label: '[LAB]', icon: 'science' },
+  { value: 'PAPER', label: '[PAPER]', icon: 'description' },
+  { value: 'CODE', label: '[CODE]', icon: 'terminal' },
+  { value: 'READ', label: '[READ]', icon: 'menu_book' },
+  { value: 'PROJECT', label: '[PROJECT]', icon: 'assignment' },
+];
 
 export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   isOpen,
@@ -40,7 +56,6 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       dateStr: new Date().toISOString().split('T')[0],
     });
 
-    // Reset
     setTitle('');
     setCourse('');
     setDueDate('Due tomorrow');
@@ -50,24 +65,25 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="glass-panel w-full max-w-md rounded-2xl p-6 border border-[#ff544c]/30 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
+        {/* Header */}
         <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#ff544c]">add_task</span>
-            <h3 className="font-jakarta font-bold text-lg text-white">Create New Mission</h3>
+            <span className="material-symbols-outlined text-[#d1c4e9] text-2xl">add_task</span>
+            <h3 className="font-jakarta font-black text-xl text-white">Create New Mission</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-white/10 text-white/60 hover:text-white"
+            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-symbols-outlined text-lg">close</span>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 font-inter text-sm">
+        <form onSubmit={handleSubmit} className="space-y-4 font-jakarta text-sm">
           <div>
-            <label className="block font-mono-code text-xs text-[#e4beb9]/80 mb-1">
+            <label className="block text-xs font-extrabold text-gray-300 mb-1">
               MISSION TITLE
             </label>
             <input
@@ -75,13 +91,13 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Distributed Systems Project"
-              className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:border-[#ff544c]"
+              placeholder="e.g. Quantum Physics Lab Report"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
           <div>
-            <label className="block font-mono-code text-xs text-[#e4beb9]/80 mb-1">
+            <label className="block text-xs font-extrabold text-gray-300 mb-1">
               COURSE / MODULE
             </label>
             <input
@@ -89,114 +105,75 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               required
               value={course}
               onChange={(e) => setCourse(e.target.value)}
-              placeholder="e.g. CS 402"
-              className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:border-[#ff544c]"
+              placeholder="e.g. Physics 402"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-mono-code text-xs text-[#e4beb9]/80 mb-1">
+              <label className="block text-xs font-extrabold text-gray-300 mb-1">
                 PRIORITY
               </label>
-              <select
+              <ExpressiveSelect
                 value={priority}
-                onChange={(e) => setPriority(e.target.value as PriorityType)}
-                className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-[#ff544c]"
-              >
-                <option value="high">High Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="low">Low Priority</option>
-              </select>
+                options={PRIORITY_OPTIONS}
+                onChange={(val) => setPriority(val as PriorityType)}
+              />
             </div>
 
             <div>
-              <label className="block font-mono-code text-xs text-[#e4beb9]/80 mb-1">
+              <label className="block text-xs font-extrabold text-gray-300 mb-1">
                 TAG
               </label>
-              <select
+              <ExpressiveSelect
                 value={tag}
-                onChange={(e) => setTag(e.target.value as MissionTag)}
-                className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-[#ff544c]"
-              >
-                <option value="EXAM">[EXAM]</option>
-                <option value="LAB">[LAB]</option>
-                <option value="PAPER">[PAPER]</option>
-                <option value="CODE">[CODE]</option>
-                <option value="READ">[READ]</option>
-                <option value="PROJECT">[PROJECT]</option>
-              </select>
+                options={TAG_OPTIONS}
+                onChange={(val) => setTag(val as MissionTag)}
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-mono-code text-xs text-[#e4beb9]/80 mb-1">
+              <label className="block text-xs font-extrabold text-gray-300 mb-1">
                 DUE TIMEFRAME
               </label>
               <input
                 type="text"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                placeholder="e.g. Due in 3h, Due Friday"
-                className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl px-3 py-2.5 text-white placeholder-white/30 focus:outline-none focus:border-[#ff544c]"
+                placeholder="e.g. Due in 2h"
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
               />
             </div>
 
             <div>
-              <label className="block font-mono-code text-xs text-[#e4beb9]/80 mb-1">
+              <label className="block text-xs font-extrabold text-gray-300 mb-1">
                 XP REWARD
               </label>
               <input
                 type="number"
                 value={xpReward}
                 onChange={(e) => setXpReward(Number(e.target.value))}
-                className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-[#ff544c]"
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block font-mono-code text-xs text-[#e4beb9]/80 mb-1">
-                TIME SLOT (OPTIONAL)
-              </label>
-              <input
-                type="text"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                placeholder="e.g. 14:30 - 16:30"
-                className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl px-3 py-2.5 text-white placeholder-white/30 focus:outline-none focus:border-[#ff544c]"
-              />
-            </div>
-
-            <div>
-              <label className="block font-mono-code text-xs text-[#e4beb9]/80 mb-1">
-                LOCATION (OPTIONAL)
-              </label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Lab 4B"
-                className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl px-3 py-2.5 text-white placeholder-white/30 focus:outline-none focus:border-[#ff544c]"
-              />
-            </div>
-          </div>
-
-          <div className="pt-4 flex gap-3">
+          <div className="pt-3 flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-white/5 hover:bg-white/10 text-white rounded-xl py-3 font-semibold transition-colors"
+              className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-full py-3.5 font-bold transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 bg-[#ff544c] hover:bg-[#ff544c]/90 text-[#5c0005] font-black rounded-xl py-3 transition-colors shadow-lg shadow-[#ff544c]/20"
+              className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
             >
-              INITIALIZE MISSION
+              Add Mission
             </button>
           </div>
         </form>

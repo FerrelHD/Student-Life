@@ -1,51 +1,43 @@
 import React from 'react';
-import { TabType } from '../types';
-import { AVATARS } from '../data/initialData';
+import { TabType, UserProfile } from '../types';
+import { getTranslation } from '../utils/i18n';
 
 interface HeaderProps {
   activeTab: TabType;
-  onOpenMenu: () => void;
+  profile: UserProfile;
+  unreadCount: number;
+  onOpenNotifications: () => void;
   onOpenProfile: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeTab, onOpenMenu, onOpenProfile }) => {
+export const Header: React.FC<HeaderProps> = ({
+  activeTab,
+  profile,
+  unreadCount,
+  onOpenNotifications,
+  onOpenProfile,
+}) => {
+  const t = getTranslation(profile.language);
+
   const getTitleAndSubtitle = () => {
     switch (activeTab) {
       case 'dashboard':
         return {
-          title: 'STUDENT LIFE',
-          status: '[ MISSION STATUS: ACTIVE ]',
-          avatar: AVATARS.dashboard,
+          title: `${t.greeting}, ${profile.name.split(' ')[0]}`,
+          subtitle: profile.role,
         };
       case 'missions':
-        return {
-          title: 'MISSIONS',
-          status: null,
-          avatar: AVATARS.missions,
-        };
+        return { title: t.missions, subtitle: t.activeToday.replace('{count}', '4') };
       case 'vault':
-        return {
-          title: 'THE VAULT',
-          status: null,
-          avatar: AVATARS.vault,
-        };
+        return { title: t.vault, subtitle: t.financialTracker };
       case 'agenda':
-        return {
-          title: 'AGENDA',
-          status: null,
-          avatar: AVATARS.agenda,
-        };
+        return { title: t.agenda, subtitle: t.academicSchedule };
       case 'hero':
-        return {
-          title: 'STUDENT LIFE',
-          status: null,
-          avatar: AVATARS.heroHeader,
-        };
+        return { title: t.profile, subtitle: profile.name };
       default:
         return {
-          title: 'STUDENT LIFE',
-          status: null,
-          avatar: AVATARS.dashboard,
+          title: `${t.greeting}, ${profile.name.split(' ')[0]}`,
+          subtitle: profile.role,
         };
     }
   };
@@ -53,47 +45,45 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, onOpenMenu, onOpenPro
   const info = getTitleAndSubtitle();
 
   return (
-    <header className="fixed top-0 w-full z-40 bg-[#131313]/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-5 h-16 transition-all duration-200">
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onOpenMenu}
-          className="p-1 rounded-lg hover:bg-white/5 active:scale-95 transition-transform text-[#ff544c]"
-          title="Open Menu"
-        >
-          <span className="material-symbols-outlined text-2xl leading-none">menu</span>
-        </button>
-        <h1 className="font-jakarta font-black tracking-tighter text-2xl text-[#ff544c] uppercase">
-          {info.title}
-        </h1>
-      </div>
-
-      <div className="flex items-center gap-3">
-        {info.status && (
-          <span className="font-mono-code text-xs text-[#e4beb9] hidden md:block uppercase tracking-widest">
-            {info.status}
-          </span>
-        )}
-        
-        {activeTab === 'missions' && (
-          <button 
-            onClick={() => {}} 
-            className="p-2 rounded-full hover:bg-white/5 text-[#e4beb9] transition-colors"
-            title="Search missions"
-          >
-            <span className="material-symbols-outlined text-xl">search</span>
-          </button>
-        )}
-
+    <header className="fixed top-0 left-0 right-0 z-40 bg-white/40 dark:bg-[#0f0e13]/60 backdrop-blur-xl border-b border-black/5 dark:border-white/5 transition-colors duration-200">
+      <div className="max-w-md md:max-w-4xl mx-auto px-5 h-20 flex items-center justify-between">
+        {/* Left Profile Summary */}
         <button
           onClick={onOpenProfile}
-          className="w-10 h-10 rounded-full border-2 border-[#ff544c]/40 overflow-hidden hover:opacity-80 active:scale-95 transition-all shadow-[0_0_10px_rgba(255,84,76,0.2)]"
+          className="flex items-center gap-3 group text-left cursor-pointer"
         >
-          <img
-            src={info.avatar}
-            alt="Profile Avatar"
-            className="w-full h-full object-cover"
-          />
+          <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[#d1c4e9] shadow-sm group-hover:scale-105 transition-transform">
+            <img
+              src={profile.avatarUrl}
+              alt={profile.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div>
+            <h1 className="font-jakarta font-extrabold text-xl leading-tight text-[#1b1b1d] dark:text-[#f3f0f2]">
+              {info.title}
+            </h1>
+            <p className="font-jakarta text-xs font-semibold text-[#49454d] dark:text-[#cac4cd]">
+              {info.subtitle}
+            </p>
+          </div>
         </button>
+
+        {/* Right Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onOpenNotifications}
+            className="relative w-10 h-10 rounded-full bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
+            title="Open Notifications"
+          >
+            <span className="material-symbols-outlined text-xl">notifications</span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#ff544c] text-white font-jakarta font-black text-[9px] flex items-center justify-center border-2 border-white dark:border-[#121214]">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
     </header>
   );

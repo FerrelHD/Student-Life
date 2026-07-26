@@ -1,216 +1,198 @@
 import React, { useState } from 'react';
-import { Mission, PriorityType } from '../types';
+import { Mission, LanguageType } from '../types';
+import { getTranslation } from '../utils/i18n';
 
 interface MissionsViewProps {
   missions: Mission[];
+  language?: LanguageType;
   onToggleMission: (id: string) => void;
   onOpenAddMission: () => void;
+  onOpenDailyQuiz: () => void;
+  onClaimStreakBonus: () => void;
 }
 
 export const MissionsView: React.FC<MissionsViewProps> = ({
   missions,
+  language = 'id',
   onToggleMission,
   onOpenAddMission,
+  onOpenDailyQuiz,
+  onClaimStreakBonus,
 }) => {
+  const langKey = (language as LanguageType) || 'id';
+  const t = getTranslation(langKey);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'All' | 'Pending' | 'Priority' | 'Done'>('All');
 
-  const filteredMissions = missions.filter((mission) => {
-    // Search matching
-    const matchesSearch =
-      mission.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mission.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mission.tag.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredMissions = missions.filter((m) =>
+    m.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.course.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    if (!matchesSearch) return false;
-
-    // Filter matching
-    if (activeFilter === 'Pending') return !mission.completed;
-    if (activeFilter === 'Done') return mission.completed;
-    if (activeFilter === 'Priority') return mission.priority === 'high' && !mission.completed;
-
-    return true;
-  });
-
+  // Dynamic Weekly Goal calculation
   const completedCount = missions.filter((m) => m.completed).length;
-  const totalCount = missions.length;
-  const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 85;
+  const totalCount = Math.max(missions.length, 10);
+  const goalPct = Math.round((completedCount / totalCount) * 100);
+
+  const getMissionCardStyle = (priority: string, completed: boolean) => {
+    if (completed) return 'bg-[#f0edef] text-[#1b1b1d] dark:bg-[#1e1e22] dark:text-[#f3f0f2] opacity-60';
+    if (priority === 'high') return 'expressive-card-coral';
+    if (priority === 'medium') return 'expressive-card-butter';
+    return 'expressive-card-lavender';
+  };
+
+  const getTagIcon = (tag: string) => {
+    switch (tag) {
+      case 'LAB':
+        return 'science';
+      case 'EXAM':
+        return 'quiz';
+      case 'PAPER':
+        return 'description';
+      case 'CODE':
+        return 'terminal';
+      default:
+        return 'assignment';
+    }
+  };
 
   return (
-    <div className="pt-24 pb-32 px-5 max-w-6xl mx-auto space-y-8 min-h-screen">
-      {/* Search and Filter Section */}
-      <section className="space-y-4">
-        <div className="relative group">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#e4beb9]/60 group-focus-within:text-[#ff544c] transition-colors">
-            search
-          </span>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Scan for active missions..."
-            className="w-full bg-[#1c1b1b] border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-[#ff544c] focus:ring-1 focus:ring-[#ff544c] transition-all font-inter text-sm placeholder:text-[#e4beb9]/40 text-white"
-          />
+    <div className="pt-24 pb-32 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+      {/* Search Bar */}
+      <div className="relative">
+        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          search
+        </span>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={t.searchMissions}
+          className="w-full bg-white dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] border border-black/10 dark:border-white/10 rounded-full py-3.5 pl-12 pr-4 font-jakarta text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+        />
+      </div>
+
+      {/* Weekly Goal Banner */}
+      <section className="expressive-card expressive-card-lavender p-6 relative overflow-hidden shadow-sm">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <span className="inline-block bg-[#1b1b1d] text-white px-3 py-1 rounded-full font-jakarta font-extrabold text-[10px] tracking-wider uppercase mb-2">
+              {t.weeklyGoal}
+            </span>
+            <h2 className="font-jakarta font-black text-2xl tracking-tight">{t.finishMissions}</h2>
+            <p className="font-jakarta text-xs font-bold opacity-80 mt-1">
+              {t.completedOf.replace('{completed}', String(completedCount)).replace('{total}', String(totalCount))}
+            </p>
+          </div>
+
+          <div className="text-right flex flex-col items-end">
+            <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center mb-1">
+              <span className="material-symbols-outlined text-2xl">emoji_events</span>
+            </div>
+            <span className="font-jakarta font-black text-3xl">{goalPct}%</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
-          {(['All', 'Pending', 'Priority', 'Done'] as const).map((filter) => {
-            const isActive = activeFilter === filter;
+        {/* Progress bar */}
+        <div className="w-full bg-black/15 h-3.5 rounded-full overflow-hidden">
+          <div className="bg-[#1b1b1d] h-full rounded-full transition-all duration-700" style={{ width: `${goalPct}%` }} />
+        </div>
+      </section>
+
+      {/* Active Missions Header & List */}
+      <section className="space-y-4">
+        <div className="flex justify-between items-center px-1">
+          <h3 className="font-jakarta font-black text-xl text-[#1b1b1d] dark:text-[#f3f0f2]">
+            {t.activeMissions}
+          </h3>
+          <span className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">
+            {missions.filter((m) => !m.completed).length} {t.pending}
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {filteredMissions.map((mission) => {
+            const cardBgClass = getMissionCardStyle(mission.priority, mission.completed);
             return (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`px-5 py-2 rounded-full font-mono-code text-xs whitespace-nowrap active:scale-95 transition-all flex items-center gap-1 cursor-pointer ${
-                  isActive
-                    ? 'bg-[#ff544c] text-[#5c0005] font-bold shadow-lg shadow-[#ff544c]/20'
-                    : 'glass-panel text-[#e4beb9] hover:bg-white/5'
-                }`}
+              <div
+                key={mission.id}
+                className={`expressive-card p-4 flex items-center justify-between shadow-sm cursor-pointer ${cardBgClass}`}
+                onClick={() => onToggleMission(mission.id)}
               >
-                {filter === 'Priority' && (
-                  <span className="material-symbols-outlined text-sm material-symbols-filled">
-                    priority_high
-                  </span>
-                )}
-                {filter}
-              </button>
+                <div className="flex items-center gap-3.5 flex-1 pr-3">
+                  <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-2xl">
+                      {getTagIcon(mission.tag)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="px-2 py-0.5 rounded-full bg-black/10 font-jakarta font-black text-[10px] uppercase">
+                        {mission.priority === 'high' ? t.urgent : mission.priority === 'medium' ? t.normal : t.later}
+                      </span>
+                      <span className="font-jakarta text-xs font-bold opacity-80">{mission.dueDate}</span>
+                    </div>
+                    <h4 className={`font-jakarta font-extrabold text-base leading-snug ${mission.completed ? 'line-through opacity-70' : ''}`}>
+                      {mission.title}
+                    </h4>
+                    <p className="font-jakarta text-xs font-bold opacity-80">{mission.course}</p>
+                  </div>
+                </div>
+
+                {/* Round Checkbox */}
+                <div
+                  className={`w-8 h-8 rounded-full border-2 border-current flex items-center justify-center flex-shrink-0 transition-transform ${
+                    mission.completed ? 'bg-current' : ''
+                  }`}
+                >
+                  {mission.completed && (
+                    <span className="material-symbols-outlined text-sm font-bold text-white">check</span>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>
       </section>
 
-      {/* Mission Grid (Bento Style) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredMissions.map((mission) => {
-          const isHighPriority = mission.priority === 'high';
+      {/* Extra XP Opportunities */}
+      <section className="space-y-3 pt-2">
+        <h3 className="font-jakarta font-black text-lg text-[#1b1b1d] dark:text-[#f3f0f2]">
+          {t.extraXpOpportunities}
+        </h3>
 
-          return (
-            <div
-              key={mission.id}
-              className={`glass-card rounded-2xl p-6 relative group transition-all duration-300 ${
-                isHighPriority ? 'border-l-4 border-l-[#ff544c]' : ''
-              } ${mission.completed ? 'opacity-50 scale-[0.98]' : ''}`}
-            >
-              <div className="absolute top-4 right-4">
-                <span
-                  className={`font-mono-code text-xs ${
-                    isHighPriority
-                      ? 'text-[#ff544c]'
-                      : mission.tag === 'LAB' || mission.tag === 'CODE'
-                      ? 'text-[#a2c9ff]'
-                      : 'text-[#e4beb9]/60'
-                  }`}
-                >
-                  [{mission.tag}]
-                </span>
-              </div>
-
-              <div className="flex justify-between items-start mb-4 pr-12">
-                <div>
-                  <h3
-                    className={`font-jakarta text-lg font-bold mb-1 transition-colors ${
-                      mission.completed
-                        ? 'line-through text-white/50'
-                        : 'text-white group-hover:text-[#ff544c]'
-                    }`}
-                  >
-                    {mission.title}
-                  </h3>
-                  <p className="font-inter text-sm text-[#e4beb9]/60">{mission.course}</p>
-                </div>
-
-                <div className="relative flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <input
-                    type="checkbox"
-                    checked={mission.completed}
-                    onChange={() => onToggleMission(mission.id)}
-                    className="appearance-none w-6 h-6 border-2 border-[#ff544c]/40 rounded-md checked:bg-[#ff544c] checked:border-[#ff544c] cursor-pointer transition-all"
-                  />
-                  {mission.completed && (
-                    <span className="material-symbols-outlined absolute pointer-events-none text-[#5c0005] text-lg font-bold">
-                      check
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mt-6">
-                {mission.priority === 'high' && (
-                  <span className="px-3 py-1 rounded-full bg-[#93000a]/20 text-[#ffb4ab] font-mono-code text-xs flex items-center gap-1 border border-[#ffb4ab]/20">
-                    <span className="material-symbols-outlined text-xs material-symbols-filled">
-                      bolt
-                    </span>{' '}
-                    High Priority
-                  </span>
-                )}
-
-                {mission.priority === 'medium' && (
-                  <span className="px-3 py-1 rounded-full bg-[#3394f1]/20 text-[#a2c9ff] font-mono-code text-xs border border-[#a2c9ff]/20">
-                    Medium Priority
-                  </span>
-                )}
-
-                {mission.priority === 'low' && (
-                  <span className="px-3 py-1 rounded-full bg-white/5 text-[#e4beb9]/60 font-mono-code text-xs border border-white/5">
-                    Low Priority
-                  </span>
-                )}
-
-                <span className="px-3 py-1 rounded-full bg-white/5 text-[#e4beb9] font-mono-code text-xs border border-white/10">
-                  {mission.dueDate}
-                </span>
-
-                {mission.completed && (
-                  <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono-code text-xs border border-emerald-500/30">
-                    +{mission.xpReward} XP
-                  </span>
-                )}
-              </div>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={onOpenDailyQuiz}
+            className="expressive-card expressive-card-onyx p-5 text-center flex flex-col items-center justify-center text-white cursor-pointer hover:scale-[1.03] active:scale-95 transition-all shadow-md group"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#ece28c] text-[#1f1c00] flex items-center justify-center mb-3 group-hover:rotate-12 transition-transform">
+              <span className="material-symbols-outlined text-2xl font-bold">psychology</span>
             </div>
-          );
-        })}
+            <h4 className="font-jakarta font-extrabold text-sm text-white mb-1">{t.dailyQuiz}</h4>
+            <p className="font-jakarta text-xs font-extrabold text-[#ece28c]">{t.startQuiz}</p>
+          </button>
 
-        {/* Weekly Goal Stat Card */}
-        <div className="glass-card rounded-2xl p-6 md:col-span-2 lg:col-span-1 bg-gradient-to-br from-[#1c1b1b] to-[#ff544c]/10 border-[#ff544c]/20 overflow-hidden relative">
-          <div className="relative z-10">
-            <h2 className="font-jakarta text-2xl font-bold text-white mb-2">WEEKLY GOAL</h2>
-            <p className="font-inter text-sm text-[#e4beb9] mb-6">
-              You've completed {completionPercentage}% of your missions this week. Keep the
-              momentum!
-            </p>
-            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#ff544c] to-[#bb171c] transition-all duration-500"
-                style={{ width: `${completionPercentage}%` }}
-              />
+          <button
+            onClick={onClaimStreakBonus}
+            className="expressive-card expressive-card-onyx p-5 text-center flex flex-col items-center justify-center text-white cursor-pointer hover:scale-[1.03] active:scale-95 transition-all shadow-md group"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#ffb8b3] text-[#410004] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-2xl font-bold">local_fire_department</span>
             </div>
-            <div className="mt-4 flex justify-between font-mono-code text-xs text-[#ff544c]">
-              <span>
-                {completedCount}/{totalCount} Missions
-              </span>
-              <span>+250 XP</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Empty State / Add New Mission Card */}
-        <div
-          onClick={onOpenAddMission}
-          className="glass-card rounded-2xl p-6 border-dashed border-2 border-white/10 flex flex-col items-center justify-center min-h-[160px] opacity-70 hover:opacity-100 transition-all group cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-4xl text-[#e4beb9] mb-2 group-hover:text-[#ff544c] transition-colors">
-            add_task
-          </span>
-          <span className="font-mono-code text-sm font-semibold text-white">Add New Mission</span>
+            <h4 className="font-jakarta font-extrabold text-sm text-white mb-1">{t.streakBonus}</h4>
+            <p className="font-jakarta text-xs font-extrabold text-[#ffb8b3]">{t.claimBonus}</p>
+          </button>
         </div>
       </section>
 
-      {/* Floating Action Button */}
+      {/* Floating Add Mission Button */}
       <button
         onClick={onOpenAddMission}
-        className="fixed bottom-24 right-6 w-16 h-16 rounded-full bg-[#ff544c] text-[#5c0005] flex items-center justify-center shadow-2xl z-40 spider-red-pulse active:scale-90 transition-transform cursor-pointer"
-        title="Create New Mission"
+        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] flex items-center justify-center shadow-2xl z-40 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+        title="Add Mission"
       >
-        <span className="material-symbols-outlined text-3xl font-bold">add</span>
+        <span className="material-symbols-outlined text-3xl">add</span>
       </button>
     </div>
   );

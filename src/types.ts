@@ -1,5 +1,7 @@
 export type TabType = 'dashboard' | 'missions' | 'vault' | 'agenda' | 'hero';
 
+export type LanguageType = 'id' | 'en';
+
 export type PriorityType = 'high' | 'medium' | 'low';
 
 export type MissionTag = 'EXAM' | 'LAB' | 'PAPER' | 'CODE' | 'READ' | 'PROJECT' | 'OTHER';
@@ -16,7 +18,7 @@ export interface Mission {
   time?: string;
   location?: string;
   focusPriority?: 'CRITICAL' | 'URGENT' | 'ROUTINE';
-  dateStr?: string; // e.g. "2023-10-12" or "Oct 12"
+  dateStr?: string; // e.g. "2026-07-26"
 }
 
 export type TransactionType = 'income' | 'expense';
@@ -48,6 +50,8 @@ export interface UserProfile {
   avatarUrl: string;
   darkMode: boolean;
   notifications: boolean;
+  language: LanguageType;
+  lastQuizDate?: string | null;
 }
 
 export interface Badge {
@@ -64,4 +68,19 @@ export interface WeeklySpend {
   shortDay: string;
   amount: number;
   isToday?: boolean;
+}
+
+export interface SavingsGoal {
+  title: string;
+  savedAmount: number;
+  targetAmount: number;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  read: boolean;
+  type: 'deadline' | 'achievement' | 'streak' | 'system';
 }

@@ -4,171 +4,212 @@ import { UserProfile, Badge } from '../types';
 interface HeroViewProps {
   profile: UserProfile;
   badges: Badge[];
+  onOpenEditProfile: () => void;
+  onOpenBadges: () => void;
   onToggleDarkMode: () => void;
   onToggleNotifications: () => void;
+  onToggleLanguage: () => void;
   onLogout: () => void;
 }
 
 export const HeroView: React.FC<HeroViewProps> = ({
   profile,
   badges,
+  onOpenEditProfile,
+  onOpenBadges,
   onToggleDarkMode,
   onToggleNotifications,
+  onToggleLanguage,
   onLogout,
 }) => {
-  const [showUnivInfo, setShowUnivInfo] = useState(false);
+  const isIndonesian = profile.language === 'id';
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const displayBadges = badges.slice(0, 4);
 
   return (
-    <div className="pt-24 pb-28 px-5 max-w-6xl mx-auto space-y-6 min-h-screen">
-      {/* Profile Header Section */}
-      <section className="glass-panel p-6 rounded-2xl flex flex-col items-center text-center relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ff544c] to-transparent opacity-50" />
-
-        {/* Hero Level Indicator */}
-        <div className="absolute top-4 right-4 bg-[#ff544c] text-[#5c0005] font-mono-code text-xs px-3 py-1 rounded-full animate-pulse-red font-bold shadow-lg shadow-[#ff544c]/30">
-          LVL {profile.level}
-        </div>
-
-        <div className="relative mb-4 mt-2">
-          <div className="w-24 h-24 rounded-full border-4 border-[#ff544c] hero-glow p-1">
-            <div className="w-full h-full rounded-full overflow-hidden border border-white/20">
-              <img
-                src={profile.avatarUrl}
-                alt={profile.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-          <div className="absolute -bottom-1 -right-1 bg-[#131313] border border-white/10 rounded-full p-1 shadow">
-            <span className="material-symbols-outlined text-[#ff544c] text-lg material-symbols-filled">
-              verified
-            </span>
-          </div>
-        </div>
-
-        <h2 className="font-jakarta text-2xl font-bold text-white">{profile.name}</h2>
-        <p className="font-mono-code text-xs text-[#ff544c] mt-1 font-semibold">{profile.role}</p>
-        <p className="font-inter text-sm text-[#e4beb9] mt-2">
-          {profile.university} • {profile.classOf}
-        </p>
-
-        {/* Progress Bar */}
-        <div className="w-full mt-6 space-y-2">
-          <div className="flex justify-between items-end">
-            <span className="font-mono-code text-xs text-[#e4beb9]/70">XP TO NEXT MISSION</span>
-            <span className="font-mono-code text-xs text-[#ff544c] font-bold">
-              7,450 / 10,000
-            </span>
-          </div>
-          <div className="h-2.5 w-full bg-[#353534] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#ff544c] to-[#bb171c] rounded-full shadow-[0_0_10px_rgba(255,84,76,0.5)] transition-all duration-500"
-              style={{ width: '74.5%' }}
+    <div className="pt-24 pb-40 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+      {/* Profile Header (Always Onyx Dark Card with Bright White Text) */}
+      <section className="expressive-card expressive-card-onyx p-6 flex flex-col items-center text-center shadow-lg relative text-white">
+        <div className="relative mb-3">
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#d1c4e9] shadow-md">
+            <img
+              src={profile.avatarUrl}
+              alt={profile.name}
+              className="w-full h-full object-cover"
             />
           </div>
+          <button
+            onClick={onOpenEditProfile}
+            className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#d1c4e9] text-[#1f1732] flex items-center justify-center shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-transform"
+            title="Edit Profile Avatar"
+          >
+            <span className="material-symbols-outlined text-sm font-bold">edit</span>
+          </button>
         </div>
+
+        <h2 className="font-jakarta font-black text-2xl text-white mb-0.5">
+          {profile.name}
+        </h2>
+        <p className="font-jakarta text-xs font-extrabold text-[#d1c4e9] mb-1">
+          {profile.role} • Level {profile.level}
+        </p>
+        <p className="font-jakarta text-[11px] font-bold text-gray-400 mb-4">
+          {profile.university} • GPA {profile.gpa}
+        </p>
+
+        {/* Edit Profile Button */}
+        <button
+          onClick={onOpenEditProfile}
+          className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-full font-jakarta font-black text-xs flex items-center gap-2 border border-white/15 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+        >
+          <span className="material-symbols-outlined text-base">edit_square</span>
+          <span>{isIndonesian ? 'Edit Profil' : 'Edit Profile'}</span>
+        </button>
       </section>
 
-      {/* Heroic Badges Bento Grid */}
+      {/* Heroic Badges Grid */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h3 className="font-jakarta font-bold text-base text-white flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#ff544c]">military_tech</span>
-            Heroic Badges
+          <h3 className="font-jakarta font-black text-lg text-[#1b1b1d] dark:text-[#f3f0f2]">
+            {isIndonesian ? 'Badge Pencapaian' : 'Heroic Badges'}
           </h3>
-          <span className="font-mono-code text-xs text-[#e4beb9]/60">VIEW ALL</span>
+          <button
+            onClick={onOpenBadges}
+            className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5] hover:underline cursor-pointer"
+          >
+            {isIndonesian ? 'Lihat Semua' : 'View All'}
+          </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {badges.map((badge) => (
-            <div
-              key={badge.id}
-              className={`glass-panel p-4 rounded-xl flex flex-col items-center gap-2 hover:scale-[1.03] transition-all cursor-pointer ${
-                badge.tier ? 'border-[#ff544c]/40 shadow-[0_0_15px_rgba(255,84,76,0.1)]' : ''
-              }`}
-            >
-              <div className="w-12 h-12 flex items-center justify-center bg-[#ff544c]/15 rounded-full border border-[#ff544c]/30">
-                <span className="material-symbols-outlined text-[#ff544c] material-symbols-filled text-2xl">
-                  {badge.icon}
-                </span>
-              </div>
-              <span className="font-mono-code text-xs text-white text-center font-bold">
-                {badge.title}
-              </span>
-              <span
-                className={`font-mono-code text-[10px] ${
-                  badge.tier ? 'text-[#ff544c] font-bold' : 'text-[#e4beb9]/60'
-                }`}
+        <div className="grid grid-cols-2 gap-4">
+          {displayBadges.map((badge, idx) => {
+            const cardBg =
+              idx === 0
+                ? 'expressive-card-lavender text-[#1f1732]'
+                : idx === 1
+                ? 'expressive-card-butter text-[#1f1c00]'
+                : idx === 2
+                ? 'expressive-card-coral text-[#410004]'
+                : 'bg-[#d8e6c7] text-[#1a2d12]';
+
+            return (
+              <div
+                key={badge.id}
+                onClick={onOpenBadges}
+                className={`expressive-card p-5 flex flex-col items-center justify-center text-center shadow-sm cursor-pointer hover:scale-[1.02] active:scale-95 transition-all ${cardBg}`}
               >
-                {badge.subtitle}
-              </span>
-            </div>
-          ))}
+                <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center mb-3">
+                  <span className="material-symbols-outlined text-2xl">{badge.icon}</span>
+                </div>
+                <h4 className="font-jakarta font-black text-sm">{badge.title}</h4>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* Settings Section */}
+      {/* System Config Section (Dark Onyx Card with Pure White & Off-White Text) */}
       <section className="space-y-3">
-        <h3 className="font-jakarta font-bold text-base text-white flex items-center gap-2 px-1">
-          <span className="material-symbols-outlined text-[#ff544c]">settings</span>
-          System Config
+        <h3 className="font-jakarta font-black text-lg text-[#1b1b1d] dark:text-[#f3f0f2] px-1">
+          {isIndonesian ? 'Pengaturan Sistem' : 'System Config'}
         </h3>
 
-        <div className="glass-panel rounded-2xl divide-y divide-white/5 overflow-hidden">
-          {/* Dark Mode Toggle */}
-          <div className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+        <div className="expressive-card expressive-card-onyx divide-y divide-white/10 overflow-hidden shadow-sm text-white">
+          {/* Edit Profile Row */}
+          <button
+            onClick={onOpenEditProfile}
+            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-left cursor-pointer"
+          >
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[#e4beb9]">dark_mode</span>
+              <div className="w-10 h-10 rounded-full bg-[#d1c4e9] text-[#1f1732] flex items-center justify-center">
+                <span className="material-symbols-outlined text-xl">person_edit</span>
+              </div>
               <div>
-                <p className="font-inter font-medium text-sm text-white">Dark Mode</p>
-                <p className="font-mono-code text-[11px] text-[#e4beb9]/60">
-                  High-contrast gaming interface
+                <h4 className="font-jakarta font-black text-sm text-white">
+                  {isIndonesian ? 'Edit Detail Profil' : 'Edit Profile Details'}
+                </h4>
+                <p className="font-jakarta text-xs text-gray-300 font-bold">
+                  {isIndonesian ? 'Ubah nama, avatar & jurusan' : 'Update name, avatar & major'}
                 </p>
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
+            <span className="material-symbols-outlined text-gray-400">chevron_right</span>
+          </button>
+
+          {/* Language Switcher Row */}
+          <button
+            onClick={onToggleLanguage}
+            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-left cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#ece28c] text-[#1f1c00] flex items-center justify-center">
+                <span className="material-symbols-outlined text-xl">language</span>
+              </div>
+              <div>
+                <h4 className="font-jakarta font-black text-sm text-white">
+                  {isIndonesian ? 'Bahasa Aplikasi' : 'App Language'}
+                </h4>
+                <p className="font-jakarta text-xs text-gray-300 font-bold">
+                  {isIndonesian ? 'Bahasa Indonesia & English' : 'Switch Language'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full font-jakarta text-xs font-black border border-white/10 text-[#ece28c]">
+              <span>{isIndonesian ? '🇮🇩 Indonesia' : '🇬🇧 English'}</span>
+              <span className="material-symbols-outlined text-sm">sync_alt</span>
+            </div>
+          </button>
+
+          {/* Dark Mode Toggle */}
+          <button
+            type="button"
+            onClick={onToggleDarkMode}
+            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-left cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center">
+                <span className="material-symbols-outlined text-xl">dark_mode</span>
+              </div>
+              <div>
+                <h4 className="font-jakarta font-black text-sm text-white">
+                  {isIndonesian ? 'Mode Gelap (Dark Mode)' : 'Dark Mode'}
+                </h4>
+                <p className="font-jakarta text-xs text-gray-300 font-bold">
+                  {isIndonesian ? 'Kurangi kelelahan mata' : 'Reduce eye strain'}
+                </p>
+              </div>
+            </div>
+
+            <div className="relative inline-flex items-center">
               <input
                 type="checkbox"
                 checked={profile.darkMode}
-                onChange={onToggleDarkMode}
+                readOnly
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-[#353534] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff544c]" />
-            </label>
-          </div>
-
-          {/* University Info */}
-          <button
-            onClick={() => setShowUnivInfo(true)}
-            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors group cursor-pointer"
-          >
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[#e4beb9]">account_balance</span>
-              <div className="text-left">
-                <p className="font-inter font-medium text-sm text-white">University Info</p>
-                <p className="font-mono-code text-[11px] text-[#e4beb9]/60">
-                  Academic records and credentials
-                </p>
+              <div className={`w-11 h-6 rounded-full transition-all relative ${profile.darkMode ? 'bg-[#d1c4e9]' : 'bg-white/20'}`}>
+                <div className={`absolute top-[2px] left-[2px] bg-white border border-gray-300 rounded-full h-5 w-5 transition-transform ${profile.darkMode ? 'translate-x-5' : ''}`} />
               </div>
             </div>
-            <span className="material-symbols-outlined text-[#e4beb9] group-hover:translate-x-1 transition-transform">
-              chevron_right
-            </span>
           </button>
 
-          {/* Notifications */}
-          <div className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+          {/* Notifications Toggle */}
+          <div className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[#e4beb9]">
-                notifications_active
-              </span>
-              <div className="text-left">
-                <p className="font-inter font-medium text-sm text-white">Notifications</p>
-                <p className="font-mono-code text-[11px] text-[#e4beb9]/60">
-                  Mission alerts and updates
+              <div className="w-10 h-10 rounded-full bg-[#d1c4e9] text-[#1f1732] flex items-center justify-center">
+                <span className="material-symbols-outlined text-xl">notifications</span>
+              </div>
+              <div>
+                <h4 className="font-jakarta font-black text-sm text-white">
+                  {isIndonesian ? 'Notifikasi Akademik' : 'Notifications'}
+                </h4>
+                <p className="font-jakarta text-xs text-gray-300 font-bold">
+                  {isIndonesian ? 'Pengingat tugas & tenggat' : 'Stay updated on missions'}
                 </p>
               </div>
             </div>
+
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -176,93 +217,57 @@ export const HeroView: React.FC<HeroViewProps> = ({
                 onChange={onToggleNotifications}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-[#353534] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff544c]" />
+              <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#d1c4e9]" />
             </label>
           </div>
-
-          {/* Logout */}
-          <button
-            onClick={onLogout}
-            className="w-full flex items-center p-4 hover:bg-[#93000a]/10 transition-colors group cursor-pointer"
-          >
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[#ffb4ab]">logout</span>
-              <div className="text-left">
-                <p className="font-inter font-medium text-sm text-[#ffb4ab]">Logout</p>
-                <p className="font-mono-code text-[11px] text-[#ffdad6]/60">
-                  End current mission session
-                </p>
-              </div>
-            </div>
-          </button>
         </div>
       </section>
 
-      {/* Stats Footer Grid */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="glass-panel p-4 rounded-xl text-center">
-          <p className="font-mono-code text-xs text-[#e4beb9]">GP SCORE</p>
-          <p className="font-jakarta font-bold text-lg text-[#ff544c]">{profile.gpa}</p>
-        </div>
-        <div className="glass-panel p-4 rounded-xl text-center">
-          <p className="font-mono-code text-xs text-[#e4beb9]">WALKS</p>
-          <p className="font-jakarta font-bold text-lg text-[#ff544c]">{profile.walks}</p>
-        </div>
-        <div className="glass-panel p-4 rounded-xl text-center">
-          <p className="font-mono-code text-xs text-[#e4beb9]">RANK</p>
-          <p className="font-jakarta font-bold text-lg text-[#ff544c]">{profile.rank}</p>
-        </div>
-      </div>
+      {/* Sign Out Button */}
+      <button
+        id="sign-out-btn"
+        onClick={() => setShowLogoutConfirm(true)}
+        className="w-full bg-[#ffdad7] text-[#410004] py-4 rounded-full font-jakarta font-black text-sm flex items-center justify-center gap-2 shadow-sm hover:scale-[1.01] active:scale-95 transition-all cursor-pointer"
+      >
+        <span className="material-symbols-outlined text-xl">logout</span>
+        <span>{isIndonesian ? 'Keluar Akun' : 'Sign Out'}</span>
+      </button>
 
-      {/* University Info Modal */}
-      {showUnivInfo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="glass-panel w-full max-w-md rounded-2xl p-6 border border-[#ff544c]/30 shadow-2xl relative space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#ff544c]">account_balance</span>
-                <h3 className="font-jakarta font-bold text-lg text-white">Academic Record</h3>
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-5">
+          <div className="w-full max-w-sm expressive-card expressive-card-onyx p-6 shadow-2xl border border-white/10 text-white space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#ffdad7] flex items-center justify-center">
+                <span className="material-symbols-outlined text-2xl text-[#410004]">logout</span>
               </div>
-              <button
-                onClick={() => setShowUnivInfo(false)}
-                className="p-1 rounded-lg hover:bg-white/10 text-white/60 hover:text-white"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-
-            <div className="space-y-3 font-mono-code text-xs">
-              <div className="p-3 bg-[#1c1b1b] rounded-xl border border-white/5 space-y-1">
-                <p className="text-white/50 text-[10px]">INSTITUTION</p>
-                <p className="text-white font-bold text-sm">Stanford University</p>
-                <p className="text-[#ff544c]">Department of Computer Science</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-[#1c1b1b] rounded-xl border border-white/5">
-                  <p className="text-white/50 text-[10px]">MAJOR</p>
-                  <p className="text-white font-bold">B.S. Computer Science</p>
-                </div>
-                <div className="p-3 bg-[#1c1b1b] rounded-xl border border-white/5">
-                  <p className="text-white/50 text-[10px]">EXPECTED GRADUATION</p>
-                  <p className="text-white font-bold">Class of 2024</p>
-                </div>
-              </div>
-
-              <div className="p-3 bg-[#1c1b1b] rounded-xl border border-white/5 space-y-1">
-                <p className="text-white/50 text-[10px]">OPERATIVE VERIFICATION HASH</p>
-                <p className="text-[#a2c9ff] text-[11px] break-all">
-                  0x8F92A...4B1C90 (ENCRYPTED)
+              <div>
+                <h3 className="font-jakarta font-black text-base text-white">
+                  {isIndonesian ? 'Keluar Akun?' : 'Sign Out?'}
+                </h3>
+                <p className="font-jakarta text-xs text-gray-300 font-bold mt-0.5">
+                  {isIndonesian
+                    ? 'Semua progres & data kamu tetap aman tersimpan.'
+                    : 'Your progress & data will remain safely saved.'}
                 </p>
               </div>
             </div>
 
-            <button
-              onClick={() => setShowUnivInfo(false)}
-              className="w-full bg-[#ff544c] text-[#5c0005] font-bold py-2.5 rounded-xl transition-colors cursor-pointer"
-            >
-              Close Credentials
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 py-3 rounded-full bg-white/10 hover:bg-white/20 font-jakarta font-black text-sm text-white transition-all cursor-pointer"
+              >
+                {isIndonesian ? 'Batal' : 'Cancel'}
+              </button>
+              <button
+                id="confirm-logout-btn"
+                onClick={() => { setShowLogoutConfirm(false); onLogout(); }}
+                className="flex-1 py-3 rounded-full bg-[#ffdad7] text-[#410004] font-jakarta font-black text-sm shadow-md hover:scale-[1.01] active:scale-95 transition-all cursor-pointer"
+              >
+                {isIndonesian ? 'Ya, Keluar' : 'Yes, Sign Out'}
+              </button>
+            </div>
           </div>
         </div>
       )}

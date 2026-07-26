@@ -97,6 +97,7 @@ export default function App() {
   // ── Auth/session ──
   const [session, setSession] = useState<Session | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [passwordRecovery, setPasswordRecovery] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
   const userId = session?.user.id;
 
@@ -120,7 +121,11 @@ export default function App() {
       setSession(data.session);
       setCheckingSession(false);
     });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
+      // Clicking the emailed reset link auto-establishes a session (Supabase's
+      // detectSessionInUrl) — flag it so we force a new-password screen instead
+      // of dropping the user straight into the dashboard with the old password.
+      if (event === 'PASSWORD_RECOVERY') setPasswordRecovery(true);
       setSession(newSession);
     });
     return () => listener.subscription.unsubscribe();
@@ -296,6 +301,21 @@ export default function App() {
       <div className="min-h-screen flex items-center justify-center bg-[#f7f3f9] dark:bg-[#0f0e13]">
         <div className="w-10 h-10 border-4 border-[#d1c4e9] border-t-transparent rounded-full animate-spin" />
       </div>
+    );
+  }
+
+  if (passwordRecovery) {
+    return (
+      <AuthView
+        language={profile?.language ?? 'id'}
+        onLoginSuccess={() => {}}
+        onToggleLanguage={handleToggleLanguage}
+        recoverySession
+        onRecoveryDone={() => {
+          setPasswordRecovery(false);
+          supabase.auth.signOut();
+        }}
+      />
     );
   }
 

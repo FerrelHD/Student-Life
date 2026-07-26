@@ -16,6 +16,10 @@ interface AuthViewProps {
   language: LanguageType;
   onLoginSuccess: (user?: Partial<UserProfile>) => void;
   onToggleLanguage: () => void;
+  // True when the user arrived via the emailed reset link — Supabase already
+  // verified them, so skip straight to setting a new password (no OTP needed).
+  recoverySession?: boolean;
+  onRecoveryDone?: () => void;
 }
 
 // ─── Component ────────────────────────────────────────────────
@@ -23,6 +27,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
   language,
   onLoginSuccess,
   onToggleLanguage,
+  recoverySession,
+  onRecoveryDone,
 }) => {
   const isIndonesian = language === 'id';
 
@@ -43,6 +49,11 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [newPassword, setNewPassword] = useState('');
   const [sendState, setSendState] = useState<SendState>('idle');
   const [sendError, setSendError] = useState('');
+
+  // ── Recovery-link state (arrived via emailed link, no OTP needed) ──
+  const [recoveryPassword, setRecoveryPassword] = useState('');
+  const [recoverySaving, setRecoverySaving] = useState(false);
+  const [recoveryError, setRecoveryError] = useState('');
 
   // ── Handlers ──
   const handleSubmit = async (e: React.FormEvent) => {
@@ -159,6 +170,22 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }
   };
 
+  const handleSetRecoveryPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recoveryPassword.trim()) return;
+
+    setRecoverySaving(true);
+    setRecoveryError('');
+
+    const { error } = await supabase.auth.updateUser({ password: recoveryPassword });
+    setRecoverySaving(false);
+    if (error) {
+      setRecoveryError(error.message);
+      return;
+    }
+    onRecoveryDone?.();
+  };
+
   const switchMode = (next: AuthMode) => {
     setMode(next);
     setAuthError('');
@@ -203,8 +230,62 @@ export const AuthView: React.FC<AuthViewProps> = ({
           </button>
         </div>
 
+        {/* ─────────────────────────────── RECOVERY LINK MODE ─────────────────────────────── */}
+        {recoverySession && (
+          <>
+            <div className="mb-6">
+              <div className="w-14 h-14 rounded-2xl bg-[#d1c4e9] flex items-center justify-center mb-4">
+                <span className="material-symbols-outlined text-3xl text-[#1f1732]">lock_reset</span>
+              </div>
+              <h1 className="font-jakarta font-black text-2xl text-white tracking-tight mb-1">
+                {isIndonesian ? 'Buat Password Baru' : 'Set New Password'}
+              </h1>
+              <p className="font-jakarta text-xs text-gray-300 font-bold">
+                {isIndonesian
+                  ? 'Link verifikasi berhasil. Masukkan password baru untuk akunmu.'
+                  : 'Link verified. Enter a new password for your account.'}
+              </p>
+            </div>
+
+            <form onSubmit={handleSetRecoveryPassword} className="space-y-4">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-300 mb-1">
+                  {isIndonesian ? 'PASSWORD BARU' : 'NEW PASSWORD'}
+                </label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={recoveryPassword}
+                  onChange={(e) => setRecoveryPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                  autoFocus
+                />
+              </div>
+
+              {recoveryError && (
+                <div className="flex items-start gap-2 bg-red-900/30 border border-red-500/30 rounded-2xl px-4 py-3">
+                  <span className="material-symbols-outlined text-red-400 text-base flex-shrink-0 mt-0.5">error</span>
+                  <p className="text-xs text-red-300 font-bold">{recoveryError}</p>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={recoverySaving}
+                className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {recoverySaving
+                  ? isIndonesian ? 'Menyimpan...' : 'Saving...'
+                  : isIndonesian ? 'Set Password Baru →' : 'Set New Password →'}
+              </button>
+            </form>
+          </>
+        )}
+
         {/* ─────────────────────────────── FORGOT MODE ─────────────────────────────── */}
-        {mode === 'forgot' && (
+        {!recoverySession && mode === 'forgot' && (
           <>
             {/* Back button */}
             <button
@@ -383,7 +464,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
         )}
 
         {/* ─────────────────────────────── LOGIN / REGISTER MODE ─────────────────────────────── */}
-        {mode !== 'forgot' && (
+        {!recoverySession && mode !== 'forgot' && (
           <>
             {/* Header */}
             <div className="mb-6">

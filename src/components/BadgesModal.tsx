@@ -1,5 +1,6 @@
 import React from 'react';
 import { Badge, LanguageType } from '../types';
+import { useEscapeClose } from '../utils/useEscapeClose';
 
 interface BadgesModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export const BadgesModal: React.FC<BadgesModalProps> = ({
   badges,
   language = 'id',
 }) => {
+  useEscapeClose(isOpen, onClose);
   if (!isOpen) return null;
 
   const unlockedCount = badges.filter((b) => b.unlocked).length;
@@ -22,7 +24,7 @@ export const BadgesModal: React.FC<BadgesModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10 max-h-[85vh] flex flex-col">
+      <div role="dialog" aria-modal="true" className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10 max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4 flex-shrink-0">
           <div className="flex items-center gap-2">
@@ -42,7 +44,8 @@ export const BadgesModal: React.FC<BadgesModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
+            aria-label={isIndonesian ? 'Tutup' : 'Close'}
+            className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
           >
             <span className="material-symbols-outlined text-lg">close</span>
           </button>

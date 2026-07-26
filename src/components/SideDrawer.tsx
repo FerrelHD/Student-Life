@@ -47,7 +47,8 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-[#1b1b1d] dark:text-[#f3f0f2]"
+              aria-label={profile.language === 'id' ? 'Tutup' : 'Close'}
+              className="w-11 h-11 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-[#1b1b1d] dark:text-[#f3f0f2]"
             >
               <span className="material-symbols-outlined text-lg">close</span>
             </button>

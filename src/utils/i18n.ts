@@ -17,6 +17,8 @@ export const i18n = {
     nextReward: 'Hadiah Berikutnya: Mastery Badge Level {level}',
     xpUntilNext: '{xp} XP lagi ke level berikutnya',
     nextDeadline: 'Tenggat Berikutnya',
+    noDeadline: 'Tidak ada tenggat mendatang',
+    overdue: 'Lewat tenggat',
     studyStreak: 'Streak Belajar',
     tapToIncrement: 'Klik untuk tambah streak! 🔥',
     days: 'Hari',
@@ -25,6 +27,7 @@ export const i18n = {
     monthlyBudget: 'Anggaran Bulanan',
     budgetLeft: 'sisa',
     recentAchievements: 'Pencapaian Terbaru',
+    noAchievements: 'Selesaikan misi untuk membuka badge pertamamu',
     seeAll: 'Lihat Semua',
 
     // Missions
@@ -42,6 +45,7 @@ export const i18n = {
     streakBonus: 'Streak 5-Hari',
     claimBonus: 'Klaim Bonus +100 XP',
     searchMissions: 'Cari misi...',
+    noMissions: 'Belum ada misi. Tambah yang pertama!',
 
     // Vault
     today: 'Hari ini',
@@ -55,6 +59,7 @@ export const i18n = {
     transactionsCount: '{count} Transaksi',
     almostThere: 'Sedikit lagi tercapai! 🚀',
     tapToDeposit: 'Klik untuk Setor / Edit',
+    noTransactions: 'Belum ada transaksi. Catat yang pertama!',
 
     // Agenda
     scheduleFor: 'JADWAL UNTUK',
@@ -91,6 +96,9 @@ export const i18n = {
     xpReward: 'HADIAH XP',
     cancel: 'Batal',
     addMissionBtn: 'Tambah Misi',
+    editMissionTitle: 'Edit Misi',
+    saveMissionBtn: 'Simpan Perubahan',
+    deleteConfirm: 'Yakin mau hapus ini? Aksi ini tidak bisa dibatalkan.',
 
     // Add Transaction
     addDepositCredit: 'Tambah Pemasukan Saldo',
@@ -106,6 +114,8 @@ export const i18n = {
     subscription: 'Langganan & Buku',
     other: 'Lainnya',
     recordTx: 'Simpan Transaksi',
+    editTransactionTitle: 'Edit Transaksi',
+    saveTransactionBtn: 'Simpan Perubahan',
 
     // Daily Quiz
     dailyQuizChallenge: 'Tantangan Kuis Harian',
@@ -129,6 +139,7 @@ export const i18n = {
     notificationsTitle: 'Notifikasi Akademik',
     unreadUpdates: '{count} belum dibaca',
     academicAlerts: 'Peringatan Akademik',
+    noNotifications: 'Belum ada notifikasi',
     markAllRead: 'Tandai semua terbaca',
     closePanel: 'Tutup Panel',
   },
@@ -148,6 +159,8 @@ export const i18n = {
     nextReward: 'Next Reward: Level {level} Mastery Badge',
     xpUntilNext: '{xp} XP until next level',
     nextDeadline: 'Next Deadline',
+    noDeadline: 'No upcoming deadline',
+    overdue: 'Overdue',
     studyStreak: 'Study Streak',
     tapToIncrement: 'Tap to increment streak! 🔥',
     days: 'Days',
@@ -156,6 +169,7 @@ export const i18n = {
     monthlyBudget: 'Monthly Budget',
     budgetLeft: 'left',
     recentAchievements: 'Recent Achievements',
+    noAchievements: 'Complete a mission to unlock your first badge',
     seeAll: 'See All',
 
     // Missions
@@ -173,6 +187,7 @@ export const i18n = {
     streakBonus: '5-Day Streak',
     claimBonus: 'Claim +100 XP Bonus',
     searchMissions: 'Search missions...',
+    noMissions: 'No missions yet. Add your first one!',
 
     // Vault
     today: 'Today',
@@ -186,6 +201,7 @@ export const i18n = {
     transactionsCount: '{count} Transactions',
     almostThere: 'Almost there! Keep pushing 🚀',
     tapToDeposit: 'Tap to Deposit / Edit',
+    noTransactions: 'No transactions yet. Log your first one!',
 
     // Agenda
     scheduleFor: 'SCHEDULE FOR',
@@ -222,6 +238,9 @@ export const i18n = {
     xpReward: 'XP REWARD',
     cancel: 'Cancel',
     addMissionBtn: 'Add Mission',
+    editMissionTitle: 'Edit Mission',
+    saveMissionBtn: 'Save Changes',
+    deleteConfirm: 'Delete this? This action cannot be undone.',
 
     // Add Transaction
     addDepositCredit: 'Add Deposit Credit',
@@ -237,6 +256,8 @@ export const i18n = {
     subscription: 'Services & Books',
     other: 'General',
     recordTx: 'Record Transaction',
+    editTransactionTitle: 'Edit Transaction',
+    saveTransactionBtn: 'Save Changes',
 
     // Daily Quiz
     dailyQuizChallenge: 'Daily Quiz Challenge',
@@ -260,6 +281,7 @@ export const i18n = {
     notificationsTitle: 'Academic Notifications',
     unreadUpdates: '{count} unread updates',
     academicAlerts: 'Academic Alerts',
+    noNotifications: 'No notifications yet',
     markAllRead: 'Mark all as read',
     closePanel: 'Close Panel',
   },

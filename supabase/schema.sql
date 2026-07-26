@@ -24,8 +24,14 @@ create table if not exists public.profiles (
   notifications boolean not null default true,
   language text not null default 'id' check (language in ('id', 'en')),
   last_quiz_date date,
+  last_streak_date date,
+  last_streak_bonus_date date,
   created_at timestamptz not null default now()
 );
+
+-- Safe to re-run on an existing project that predates these columns.
+alter table public.profiles add column if not exists last_streak_date date;
+alter table public.profiles add column if not exists last_streak_bonus_date date;
 
 alter table public.profiles enable row level security;
 

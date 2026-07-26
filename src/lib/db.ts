@@ -33,6 +33,8 @@ export async function fetchProfile(userId: string): Promise<UserProfile> {
     notifications: data.notifications,
     language: data.language,
     lastQuizDate: data.last_quiz_date,
+    lastStreakDate: data.last_streak_date,
+    lastStreakBonusDate: data.last_streak_bonus_date,
   };
 }
 
@@ -54,6 +56,8 @@ export async function updateProfile(userId: string, profile: Partial<UserProfile
   if (profile.notifications !== undefined) patch.notifications = profile.notifications;
   if (profile.language !== undefined) patch.language = profile.language;
   if (profile.lastQuizDate !== undefined) patch.last_quiz_date = profile.lastQuizDate;
+  if (profile.lastStreakDate !== undefined) patch.last_streak_date = profile.lastStreakDate;
+  if (profile.lastStreakBonusDate !== undefined) patch.last_streak_bonus_date = profile.lastStreakBonusDate;
 
   const { error } = await supabase.from('profiles').update(patch).eq('id', userId);
   if (error) throw error;
@@ -129,6 +133,28 @@ export async function setMissionCompleted(missionId: string, completed: boolean)
   if (error) throw error;
 }
 
+export async function updateMission(missionId: string, mission: Partial<Omit<Mission, 'id' | 'completed'>>) {
+  const patch: Record<string, unknown> = {};
+  if (mission.title !== undefined) patch.title = mission.title;
+  if (mission.course !== undefined) patch.course = mission.course;
+  if (mission.priority !== undefined) patch.priority = mission.priority;
+  if (mission.dueDate !== undefined) patch.due_date = mission.dueDate;
+  if (mission.tag !== undefined) patch.tag = mission.tag;
+  if (mission.xpReward !== undefined) patch.xp_reward = mission.xpReward;
+  if (mission.time !== undefined) patch.time = mission.time;
+  if (mission.location !== undefined) patch.location = mission.location;
+  if (mission.focusPriority !== undefined) patch.focus_priority = mission.focusPriority;
+  if (mission.dateStr !== undefined) patch.date_str = mission.dateStr;
+
+  const { error } = await supabase.from('missions').update(patch).eq('id', missionId);
+  if (error) throw error;
+}
+
+export async function deleteMission(missionId: string) {
+  const { error } = await supabase.from('missions').delete().eq('id', missionId);
+  if (error) throw error;
+}
+
 // ─── transactions ───────────────────────────────────────────
 export async function fetchTransactions(userId: string): Promise<Transaction[]> {
   const { data, error } = await supabase
@@ -173,6 +199,23 @@ export async function insertTransaction(
     type: data.type,
     date: data.date,
   };
+}
+
+export async function updateTransaction(txId: string, tx: Partial<Omit<Transaction, 'id'>>) {
+  const patch: Record<string, unknown> = {};
+  if (tx.title !== undefined) patch.title = tx.title;
+  if (tx.category !== undefined) patch.category = tx.category;
+  if (tx.amount !== undefined) patch.amount = tx.amount;
+  if (tx.type !== undefined) patch.type = tx.type;
+  if (tx.date !== undefined) patch.date = tx.date;
+
+  const { error } = await supabase.from('transactions').update(patch).eq('id', txId);
+  if (error) throw error;
+}
+
+export async function deleteTransaction(txId: string) {
+  const { error } = await supabase.from('transactions').delete().eq('id', txId);
+  if (error) throw error;
 }
 
 // ─── savings goal ───────────────────────────────────────────
@@ -275,4 +318,11 @@ export async function fetchUnlockedBadgeIds(userId: string): Promise<Set<string>
     .eq('user_id', userId);
   if (error) throw error;
   return new Set(data.map((row) => row.badge_id));
+}
+
+export async function unlockBadge(userId: string, badgeId: string) {
+  const { error } = await supabase
+    .from('user_badges')
+    .upsert({ user_id: userId, badge_id: badgeId }, { onConflict: 'user_id,badge_id', ignoreDuplicates: true });
+  if (error) throw error;
 }

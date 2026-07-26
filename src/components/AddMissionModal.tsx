@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LanguageType, Mission, PriorityType, MissionTag } from '../types';
 import { getTranslation } from '../utils/i18n';
+import { useEscapeClose } from '../utils/useEscapeClose';
 import { ExpressiveSelect, SelectOption } from './ExpressiveSelect';
 
 interface AddMissionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddMission: (mission: Omit<Mission, 'id' | 'completed'>) => void;
+  editingMission?: Mission | null;
+  onEditMission?: (id: string, patch: Omit<Mission, 'id' | 'completed'>) => void;
   language?: LanguageType;
 }
+
+const defaultDateStr = () => new Date().toISOString().split('T')[0];
 
 const priorityOptions = (t: ReturnType<typeof getTranslation>): SelectOption<PriorityType>[] => [
   { value: 'high', label: t.highPriority, icon: 'priority_high' },
@@ -29,6 +34,8 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   isOpen,
   onClose,
   onAddMission,
+  editingMission,
+  onEditMission,
   language = 'id',
 }) => {
   const t = getTranslation(language);
@@ -37,10 +44,37 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   const [priority, setPriority] = useState<PriorityType>('medium');
   const [tag, setTag] = useState<MissionTag>('EXAM');
   const [dueDate, setDueDate] = useState('Due tomorrow');
-  const [dateStr, setDateStr] = useState(new Date().toISOString().split('T')[0]);
+  const [dateStr, setDateStr] = useState(defaultDateStr());
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
   const [xpReward, setXpReward] = useState(150);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (editingMission) {
+      setTitle(editingMission.title);
+      setCourse(editingMission.course);
+      setPriority(editingMission.priority);
+      setTag(editingMission.tag);
+      setDueDate(editingMission.dueDate);
+      setDateStr(editingMission.dateStr || defaultDateStr());
+      setTime(editingMission.time || '');
+      setLocation(editingMission.location || '');
+      setXpReward(editingMission.xpReward);
+    } else {
+      setTitle('');
+      setCourse('');
+      setPriority('medium');
+      setTag('EXAM');
+      setDueDate('Due tomorrow');
+      setDateStr(defaultDateStr());
+      setTime('');
+      setLocation('');
+      setXpReward(150);
+    }
+  }, [isOpen, editingMission]);
+
+  useEscapeClose(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -48,7 +82,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
     e.preventDefault();
     if (!title.trim() || !course.trim()) return;
 
-    onAddMission({
+    const missionData = {
       title: title.trim(),
       course: course.trim(),
       priority,
@@ -57,31 +91,34 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       time: time.trim() || undefined,
       location: location.trim() || undefined,
       xpReward: Math.max(0, xpReward),
-      focusPriority: priority === 'high' ? 'CRITICAL' : priority === 'medium' ? 'URGENT' : 'ROUTINE',
+      focusPriority: (priority === 'high' ? 'CRITICAL' : priority === 'medium' ? 'URGENT' : 'ROUTINE') as 'CRITICAL' | 'URGENT' | 'ROUTINE',
       dateStr,
-    });
+    };
 
-    setTitle('');
-    setCourse('');
-    setDueDate('Due tomorrow');
-    setDateStr(new Date().toISOString().split('T')[0]);
-    setTime('');
-    setLocation('');
+    if (editingMission) {
+      onEditMission?.(editingMission.id, missionData);
+    } else {
+      onAddMission(missionData);
+    }
+
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
+      <div role="dialog" aria-modal="true" className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
         {/* Header */}
         <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[#d1c4e9] text-2xl">add_task</span>
-            <h3 className="font-jakarta font-black text-xl text-white">{t.createNewMission}</h3>
+            <h3 className="font-jakarta font-black text-xl text-white">
+              {editingMission ? t.editMissionTitle : t.createNewMission}
+            </h3>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
+            aria-label={t.cancel}
+            className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
           >
             <span className="material-symbols-outlined text-lg">close</span>
           </button>
@@ -193,7 +230,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               type="submit"
               className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
             >
-              {t.addMissionBtn}
+              {editingMission ? t.saveMissionBtn : t.addMissionBtn}
             </button>
           </div>
         </form>

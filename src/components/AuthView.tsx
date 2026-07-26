@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabaseClient';
 
 // ─── Types ────────────────────────────────────────────────────
 type AuthMode = 'login' | 'register' | 'forgot';
-type ForgotStep = 'request' | 'verify' | 'done';
+type ForgotStep = 'request' | 'sent';
 type SendState = 'idle' | 'sending' | 'success' | 'error';
 
 // Seeded once via Supabase (see supabase/schema.sql setup notes) so the
@@ -46,9 +46,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
   // ── Forgot password state ──
   const [forgotStep, setForgotStep] = useState<ForgotStep>('request');
   const [forgotEmail, setForgotEmail] = useState('');
-  const [otpToken, setOtpToken] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [sendState, setSendState] = useState<SendState>('idle');
   const [sendError, setSendError] = useState('');
 
@@ -143,44 +140,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       return;
     }
     setSendState('idle');
-    setForgotStep('verify');
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (sendState === 'sending' || !otpToken.trim() || !newPassword.trim()) return;
-    if (newPassword !== newPasswordConfirm) {
-      setSendError(isIndonesian ? 'Konfirmasi password tidak cocok' : 'Password confirmation does not match');
-      setSendState('error');
-      return;
-    }
-
-    setSendState('sending');
-    setSendError('');
-
-    try {
-      const { error: verifyError } = await supabase.auth.verifyOtp({
-        email: forgotEmail.trim(),
-        token: otpToken.trim(),
-        type: 'recovery',
-      });
-      if (verifyError) throw verifyError;
-
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-      if (updateError) throw updateError;
-
-      // Reset flow leaves an active recovery session behind — sign it out so
-      // the user lands back on the login form and signs in with the new password.
-      await supabase.auth.signOut();
-
-      setSendState('success');
-      setForgotStep('done');
-    } catch (err) {
-      setSendError(err instanceof Error ? err.message : String(err));
-      setSendState('error');
-    }
+    setForgotStep('sent');
   };
 
   const handleSetRecoveryPassword = async (e: React.FormEvent) => {
@@ -211,9 +171,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
     setSendError('');
     setForgotStep('request');
     setForgotEmail('');
-    setOtpToken('');
-    setNewPassword('');
-    setNewPasswordConfirm('');
   };
 
   // ─── Render ─────────────────────────────────────────────────
@@ -343,8 +300,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   </h1>
                   <p className="font-jakarta text-xs text-gray-300 font-bold">
                     {isIndonesian
-                      ? 'Masukkan email mahasiswamu. Kode OTP 6-digit akan dikirimkan ke inbox.'
-                      : "Enter your student email. We'll send a 6-digit code to your inbox."}
+                      ? 'Masukkan email mahasiswamu. Kami akan mengirimkan link reset password ke inbox.'
+                      : "Enter your student email. We'll send a password reset link to your inbox."}
                   </p>
                 </div>
 
@@ -393,7 +350,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     ) : (
                       <>
                         <span className="material-symbols-outlined text-base">send</span>
-                        {isIndonesian ? 'Kirim Kode OTP →' : 'Send OTP Code →'}
+                        {isIndonesian ? 'Kirim Link Reset →' : 'Send Reset Link →'}
                       </>
                     )}
                   </button>
@@ -401,102 +358,19 @@ export const AuthView: React.FC<AuthViewProps> = ({
               </>
             )}
 
-            {forgotStep === 'verify' && (
-              <>
-                <div className="mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-[#d1c4e9] flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined text-3xl text-[#1f1732]">pin</span>
-                  </div>
-                  <h1 className="font-jakarta font-black text-2xl text-white tracking-tight mb-1">
-                    {isIndonesian ? 'Masukkan Kode OTP' : 'Enter OTP Code'}
-                  </h1>
-                  <p className="font-jakarta text-xs text-gray-300 font-bold">
-                    {isIndonesian
-                      ? `Kode 6-digit telah dikirim ke ${forgotEmail}. Masukkan kode & password baru.`
-                      : `A 6-digit code was sent to ${forgotEmail}. Enter it with your new password.`}
-                  </p>
-                </div>
-
-                <form onSubmit={handleVerifyOtp} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                      {isIndonesian ? 'KODE OTP' : 'OTP CODE'}
-                    </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      required
-                      value={otpToken}
-                      onChange={(e) => setOtpToken(e.target.value)}
-                      placeholder="123456"
-                      className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm tracking-[0.3em] text-center focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
-                      autoFocus
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                      {isIndonesian ? 'PASSWORD BARU' : 'NEW PASSWORD'}
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      minLength={6}
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                      {isIndonesian ? 'KONFIRMASI PASSWORD' : 'CONFIRM PASSWORD'}
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      minLength={6}
-                      value={newPasswordConfirm}
-                      onChange={(e) => setNewPasswordConfirm(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
-                    />
-                  </div>
-
-                  {sendState === 'error' && (
-                    <div className="flex items-start gap-2 bg-red-900/30 border border-red-500/30 rounded-2xl px-4 py-3">
-                      <span className="material-symbols-outlined text-red-400 text-base flex-shrink-0 mt-0.5">error</span>
-                      <p className="text-xs text-red-300 font-bold">{sendError}</p>
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={sendState === 'sending'}
-                    className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    {sendState === 'sending'
-                      ? isIndonesian ? 'Memverifikasi...' : 'Verifying...'
-                      : isIndonesian ? 'Set Password Baru →' : 'Set New Password →'}
-                  </button>
-                </form>
-              </>
-            )}
-
-            {forgotStep === 'done' && (
+            {forgotStep === 'sent' && (
               <div className="text-center py-6 space-y-5">
                 <div className="w-20 h-20 rounded-full bg-green-900/30 border-2 border-green-400/40 flex items-center justify-center mx-auto animate-bounce-once">
                   <span className="material-symbols-outlined text-4xl text-green-400">mark_email_read</span>
                 </div>
                 <div>
                   <h2 className="font-jakarta font-black text-xl text-white mb-2">
-                    {isIndonesian ? 'Password Berhasil Diubah! ✅' : 'Password Changed! ✅'}
+                    {isIndonesian ? 'Cek Email Kamu 📬' : 'Check Your Email 📬'}
                   </h2>
                   <p className="font-jakarta text-xs text-gray-300 font-bold leading-relaxed">
                     {isIndonesian
-                      ? 'Silakan login dengan password barumu.'
-                      : 'Please sign in with your new password.'}
+                      ? `Kami sudah mengirim link reset password ke ${forgotEmail}. Klik link itu untuk membuat password baru.`
+                      : `We've sent a password reset link to ${forgotEmail}. Click it to set a new password.`}
                   </p>
                 </div>
 

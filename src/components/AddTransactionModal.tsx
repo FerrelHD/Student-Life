@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LanguageType, Transaction, TransactionCategory, TransactionType } from '../types';
 import { getTranslation } from '../utils/i18n';
+import { useEscapeClose } from '../utils/useEscapeClose';
 import { ExpressiveSelect, SelectOption } from './ExpressiveSelect';
 
 interface AddTransactionModalProps {
@@ -8,6 +9,8 @@ interface AddTransactionModalProps {
   onClose: () => void;
   defaultType?: TransactionType;
   onAddTransaction: (transaction: Omit<Transaction, 'id'>) => void;
+  editingTransaction?: Transaction | null;
+  onEditTransaction?: (id: string, patch: Omit<Transaction, 'id'>) => void;
   language?: LanguageType;
 }
 
@@ -24,6 +27,8 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   onClose,
   defaultType = 'expense',
   onAddTransaction,
+  editingTransaction,
+  onEditTransaction,
   language = 'id',
 }) => {
   const t = getTranslation(language);
@@ -32,6 +37,23 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const [type, setType] = useState<TransactionType>(defaultType);
   const [category, setCategory] = useState<TransactionCategory>('FOOD');
 
+  useEffect(() => {
+    if (!isOpen) return;
+    if (editingTransaction) {
+      setTitle(editingTransaction.title);
+      setAmount(String(editingTransaction.amount));
+      setType(editingTransaction.type);
+      setCategory(editingTransaction.category);
+    } else {
+      setTitle('');
+      setAmount('');
+      setType(defaultType);
+      setCategory('FOOD');
+    }
+  }, [isOpen, editingTransaction, defaultType]);
+
+  useEscapeClose(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -39,25 +61,34 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     const numAmount = parseFloat(amount);
     if (!title.trim() || isNaN(numAmount) || numAmount <= 0) return;
 
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const category_ = type === 'income' ? 'INCOME' : category;
 
-    onAddTransaction({
-      title: title.trim(),
-      amount: numAmount,
-      type,
-      category: type === 'income' ? 'INCOME' : category,
-      date: `${t.today}, ${timeStr}`,
-    });
+    if (editingTransaction) {
+      onEditTransaction?.(editingTransaction.id, {
+        title: title.trim(),
+        amount: numAmount,
+        type,
+        category: category_,
+        date: editingTransaction.date,
+      });
+    } else {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      onAddTransaction({
+        title: title.trim(),
+        amount: numAmount,
+        type,
+        category: category_,
+        date: `${t.today}, ${timeStr}`,
+      });
+    }
 
-    setTitle('');
-    setAmount('');
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
+      <div role="dialog" aria-modal="true" className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
         {/* Header */}
         <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4">
           <div className="flex items-center gap-2">
@@ -65,12 +96,13 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               {type === 'income' ? 'add_circle' : 'payments'}
             </span>
             <h3 className="font-jakarta font-black text-xl text-white">
-              {type === 'income' ? t.addDepositCredit : t.logExpense}
+              {editingTransaction ? t.editTransactionTitle : type === 'income' ? t.addDepositCredit : t.logExpense}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
+            aria-label={t.cancel}
+            className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
           >
             <span className="material-symbols-outlined text-lg">close</span>
           </button>
@@ -163,7 +195,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               type="submit"
               className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
             >
-              {t.recordTx}
+              {editingTransaction ? t.saveTransactionBtn : t.recordTx}
             </button>
           </div>
         </form>

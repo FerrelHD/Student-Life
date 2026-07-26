@@ -18,14 +18,19 @@ import {
   updateProfile,
   fetchMissions,
   insertMission,
+  updateMission,
+  deleteMission,
   setMissionCompleted,
   fetchTransactions,
   insertTransaction,
+  updateTransaction,
+  deleteTransaction,
   fetchSavingsGoal,
   upsertSavingsGoal,
   fetchNotifications,
   markAllNotificationsRead,
   fetchUnlockedBadgeIds,
+  unlockBadge,
   fetchWeeklySpend,
 } from './lib/db';
 
@@ -73,6 +78,8 @@ function fallbackProfile(session: Session): UserProfile {
     notifications: true,
     language: 'id',
     lastQuizDate: null,
+    lastStreakDate: null,
+    lastStreakBonusDate: null,
   };
 }
 
@@ -108,6 +115,8 @@ export default function App() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [weeklySpend, setWeeklySpend] = useState<WeeklySpend[]>([]);
   const [badges, setBadges] = useState<Badge[]>(initialBadges);
+  const [editingMission, setEditingMission] = useState<Mission | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   const showToast = (message: string, icon = '✅') => {
     setToast({ visible: true, message, icon });
@@ -177,8 +186,10 @@ export default function App() {
         goalResult.status === 'fulfilled' && goalResult.value ? goalResult.value : FALLBACK_SAVINGS_GOAL
       );
       setNotifications(notifResult.status === 'fulfilled' ? notifResult.value : []);
+      // b1-b4 are seed badges that ship pre-unlocked in the catalog (no
+      // trackable condition in-app); b5-b8 are only unlocked via user_badges.
       const unlockedIds = badgeIdsResult.status === 'fulfilled' ? badgeIdsResult.value : new Set<string>();
-      setBadges(initialBadges.map((b) => ({ ...b, unlocked: unlockedIds.has(b.id) })));
+      setBadges(initialBadges.map((b) => ({ ...b, unlocked: b.unlocked || unlockedIds.has(b.id) })));
       setWeeklySpend(spendResult.status === 'fulfilled' ? spendResult.value : []);
 
       setDataLoading(false);
@@ -200,6 +211,24 @@ export default function App() {
       document.body.classList.remove('dark');
     }
   }, [profile?.darkMode]);
+
+  // Threshold-based badge unlocks (b5-b7): react to whatever crosses the line.
+  useEffect(() => {
+    if (!profile || !userId) return;
+    const completedCount = missions.filter((m) => m.completed).length;
+    const earned: Record<string, boolean> = {
+      b5: profile.streakDays >= 14,
+      b6: profile.currentXP >= 15000,
+      b7: completedCount >= 20,
+    };
+    const toUnlock = Object.entries(earned)
+      .filter(([id, isEarned]) => isEarned && !badges.find((b) => b.id === id)?.unlocked)
+      .map(([id]) => id);
+    if (toUnlock.length === 0) return;
+
+    setBadges((prev) => prev.map((b) => (toUnlock.includes(b.id) ? { ...b, unlocked: true } : b)));
+    toUnlock.forEach((id) => unlockBadge(userId, id).catch(onSyncError));
+  }, [profile?.streakDays, profile?.currentXP, missions, userId]);
 
   // Persist a partial profile patch: update local state immediately, sync to Supabase in background
   const persistProfile = (patch: Partial<UserProfile>) => {
@@ -225,6 +254,13 @@ export default function App() {
     if (newCompleted) {
       handleAddXP(mission.xpReward);
       triggerConfetti();
+
+      // Night Owl badge (b8): completing a mission late at night.
+      const hour = new Date().getHours();
+      if ((hour >= 22 || hour < 4) && userId && !badges.find((b) => b.id === 'b8')?.unlocked) {
+        setBadges((prev) => prev.map((b) => (b.id === 'b8' ? { ...b, unlocked: true } : b)));
+        unlockBadge(userId, 'b8').catch(onSyncError);
+      }
     } else {
       persistProfile({ currentXP: Math.max(0, profile.currentXP - mission.xpReward) });
     }
@@ -252,6 +288,26 @@ export default function App() {
     }
   };
 
+  const handleEditMission = (id: string, patch: Omit<Mission, 'id' | 'completed'>) => {
+    setMissions((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+    updateMission(id, patch).catch(onSyncError);
+  };
+
+  const handleDeleteMission = (id: string) => {
+    setMissions((prev) => prev.filter((m) => m.id !== id));
+    deleteMission(id).catch(onSyncError);
+  };
+
+  const handleEditTransaction = (id: string, patch: Omit<Transaction, 'id'>) => {
+    setTransactions((prev) => prev.map((tx) => (tx.id === id ? { ...tx, ...patch } : tx)));
+    updateTransaction(id, patch).catch(onSyncError);
+  };
+
+  const handleDeleteTransaction = (id: string) => {
+    setTransactions((prev) => prev.filter((tx) => tx.id !== id));
+    deleteTransaction(id).catch(onSyncError);
+  };
+
   const handleSaveProfile = (updated: Partial<UserProfile>) => {
     persistProfile(updated);
   };
@@ -264,8 +320,29 @@ export default function App() {
     });
   };
 
+  const handleUpdateStreak = () => {
+    if (!profile) return;
+    const today = new Date().toISOString().slice(0, 10);
+    if (profile.lastStreakDate === today) {
+      showToast(profile.language === 'id' ? 'Streak sudah diperbarui hari ini' : 'Streak already updated today', '🔥');
+      return;
+    }
+    persistProfile({ streakDays: profile.streakDays + 1, lastStreakDate: today });
+    handleAddXP(25);
+  };
+
   const handleClaimStreakBonus = () => {
     if (!profile) return;
+    const today = new Date().toISOString().slice(0, 10);
+    if (profile.streakDays < 5) {
+      showToast(profile.language === 'id' ? 'Butuh streak 5 hari untuk klaim bonus' : 'Need a 5-day streak to claim this bonus', '🔒');
+      return;
+    }
+    if (profile.lastStreakBonusDate === today) {
+      showToast(profile.language === 'id' ? 'Bonus streak sudah diklaim hari ini' : 'Streak bonus already claimed today', '🔥');
+      return;
+    }
+    persistProfile({ lastStreakBonusDate: today });
     handleAddXP(100);
     const msg = profile.language === 'id'
       ? '🔥 Bonus Streak 5-Hari Diklaim! +100 XP ditambahkan!'
@@ -404,12 +481,10 @@ export default function App() {
           <DashboardView
             profile={profile}
             missions={missions}
+            badges={badges}
             onOpenAddMission={() => setIsAddMissionOpen(true)}
             onNavigateTab={(tab) => setActiveTab(tab)}
-            onUpdateStreak={() => {
-              persistProfile({ streakDays: profile.streakDays + 1 });
-              handleAddXP(25);
-            }}
+            onUpdateStreak={handleUpdateStreak}
           />
         )}
 
@@ -421,6 +496,11 @@ export default function App() {
             onOpenAddMission={() => setIsAddMissionOpen(true)}
             onOpenDailyQuiz={() => setIsDailyQuizOpen(true)}
             onClaimStreakBonus={handleClaimStreakBonus}
+            onEditMission={(mission) => {
+              setEditingMission(mission);
+              setIsAddMissionOpen(true);
+            }}
+            onDeleteMission={handleDeleteMission}
           />
         )}
 
@@ -436,6 +516,12 @@ export default function App() {
               setIsAddTxOpen(true);
             }}
             onOpenManageSavings={() => setIsSavingsModalOpen(true)}
+            onEditTransaction={(tx) => {
+              setEditingTransaction(tx);
+              setTxModalType(tx.type);
+              setIsAddTxOpen(true);
+            }}
+            onDeleteTransaction={handleDeleteTransaction}
           />
         )}
 
@@ -481,17 +567,27 @@ export default function App() {
       {/* Add Mission Modal */}
       <AddMissionModal
         isOpen={isAddMissionOpen}
-        onClose={() => setIsAddMissionOpen(false)}
+        onClose={() => {
+          setIsAddMissionOpen(false);
+          setEditingMission(null);
+        }}
         onAddMission={handleAddMission}
+        editingMission={editingMission}
+        onEditMission={handleEditMission}
         language={profile.language}
       />
 
       {/* Add Transaction Modal */}
       <AddTransactionModal
         isOpen={isAddTxOpen}
-        onClose={() => setIsAddTxOpen(false)}
+        onClose={() => {
+          setIsAddTxOpen(false);
+          setEditingTransaction(null);
+        }}
         defaultType={txModalType}
         onAddTransaction={handleAddTransaction}
+        editingTransaction={editingTransaction}
+        onEditTransaction={handleEditTransaction}
         language={profile.language}
       />
 

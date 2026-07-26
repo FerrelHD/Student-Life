@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UserProfile } from '../types';
 import { getTranslation } from '../utils/i18n';
+import { useEscapeClose } from '../utils/useEscapeClose';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -45,6 +46,8 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     setUploadedFileName(null);
   }, [profile, isOpen]);
 
+  useEscapeClose(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +90,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
+      <div role="dialog" aria-modal="true" className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
         {/* Header */}
         <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4">
           <div className="flex items-center gap-2">
@@ -100,7 +103,8 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
+            aria-label={isIndonesian ? 'Tutup' : 'Close'}
+            className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
           >
             <span className="material-symbols-outlined text-lg">close</span>
           </button>

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { UserProfile, Mission } from '../types';
+import React, { useEffect, useState } from 'react';
+import { Badge, UserProfile, Mission } from '../types';
 import { getTranslation } from '../utils/i18n';
 
 interface DashboardViewProps {
   profile: UserProfile;
   missions: Mission[];
+  badges: Badge[];
   onOpenAddMission: () => void;
   onNavigateTab: (tab: 'missions' | 'vault' | 'agenda' | 'hero') => void;
   onUpdateStreak: () => void;
@@ -13,31 +14,35 @@ interface DashboardViewProps {
 export const DashboardView: React.FC<DashboardViewProps> = ({
   profile,
   missions,
+  badges,
   onOpenAddMission,
   onNavigateTab,
   onUpdateStreak,
 }) => {
   const t = getTranslation(profile.language);
 
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 4,
-    minutes: 52,
-    seconds: 18,
-  });
-
+  // Re-render once a minute so the countdown below stays roughly live without
+  // recomputing on every tick (it's derived straight from Date.now() each render).
+  const [, forceTick] = useState(0);
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-        if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
+    const timer = setInterval(() => forceTick((n) => n + 1), 60_000);
     return () => clearInterval(timer);
   }, []);
 
-  const urgentMission = missions.find((m) => m.priority === 'high' && !m.completed) || missions[0];
+  const urgentMission = missions.find((m) => m.priority === 'high' && !m.completed) || missions.find((m) => !m.completed);
+
+  const deadlineLabel = (() => {
+    if (!urgentMission) return t.noDeadline;
+    if (!urgentMission.dateStr) return urgentMission.dueDate;
+    const target = new Date(`${urgentMission.dateStr}T${urgentMission.time || '23:59'}`);
+    const diffMs = target.getTime() - Date.now();
+    if (diffMs <= 0) return t.overdue;
+    const hoursLeft = Math.floor(diffMs / 3_600_000);
+    const minutesLeft = Math.floor((diffMs % 3_600_000) / 60_000);
+    return `${String(hoursLeft).padStart(2, '0')}${t.hours} ${String(minutesLeft).padStart(2, '0')}${t.minutes}`;
+  })();
+
+  const recentBadges = badges.filter((b) => b.unlocked).slice(-2).reverse();
 
   // Dynamic Level & XP calculations
   const xpInLevel = profile.currentXP % 1000;
@@ -89,10 +94,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div>
             <p className="font-jakarta text-xs font-black opacity-75 mb-1">{t.nextDeadline}</p>
             <h3 className="font-jakarta font-black text-2xl tracking-tight mb-1">
-              {String(timeLeft.hours).padStart(2, '0')}{t.hours} {String(timeLeft.minutes).padStart(2, '0')}{t.minutes}
+              {deadlineLabel}
             </h3>
             <p className="font-jakarta text-xs font-bold opacity-85 truncate">
-              {urgentMission ? urgentMission.title : 'Physics Lab Report'}
+              {urgentMission?.title ?? ''}
             </p>
           </div>
         </div>
@@ -162,29 +167,29 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="expressive-card expressive-card-onyx p-4 flex items-center gap-3 text-white">
-            <div className="w-12 h-12 rounded-full bg-[#ffb8b3] flex items-center justify-center text-[#410004]">
-              <span className="material-symbols-outlined text-2xl material-symbols-filled">military_tech</span>
-            </div>
-            <div>
-              <p className="font-jakarta font-black text-sm text-white">Ace Student</p>
-              <p className="font-jakarta text-xs font-bold text-[#ffb8b3]">Top Scholar</p>
-            </div>
+        {recentBadges.length > 0 ? (
+          <div className="grid grid-cols-2 gap-4">
+            {recentBadges.map((badge, idx) => (
+              <div key={badge.id} className="expressive-card expressive-card-onyx p-4 flex items-center gap-3 text-white">
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    idx === 0 ? 'bg-[#ffb8b3] text-[#410004]' : 'bg-[#ece28c] text-[#1f1c00]'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-2xl material-symbols-filled">{badge.icon}</span>
+                </div>
+                <div>
+                  <p className="font-jakarta font-black text-sm text-white">{badge.title}</p>
+                  <p className={`font-jakarta text-xs font-bold ${idx === 0 ? 'text-[#ffb8b3]' : 'text-[#ece28c]'}`}>
+                    {badge.subtitle}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-
-          <div className="expressive-card expressive-card-onyx p-4 flex items-center gap-3 text-white">
-            <div className="w-12 h-12 rounded-full bg-[#ece28c] flex items-center justify-center text-[#1f1c00]">
-              <span className="material-symbols-outlined text-2xl material-symbols-filled">auto_stories</span>
-            </div>
-            <div>
-              <p className="font-jakarta font-black text-sm text-white">Bookworm</p>
-              <p className="font-jakarta text-xs font-bold text-[#ece28c]">
-                {profile.language === 'id' ? '50 Buku Dibaca' : '50 Books Read'}
-              </p>
-            </div>
-          </div>
-        </div>
+        ) : (
+          <p className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5] px-1">{t.noAchievements}</p>
+        )}
       </section>
 
       {/* Floating Add Mission Button */}

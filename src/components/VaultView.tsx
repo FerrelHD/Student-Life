@@ -10,6 +10,8 @@ interface VaultViewProps {
   language?: LanguageType;
   onOpenAddTransaction: (type?: 'income' | 'expense') => void;
   onOpenManageSavings: () => void;
+  onEditTransaction: (tx: Transaction) => void;
+  onDeleteTransaction: (id: string) => void;
 }
 
 export const VaultView: React.FC<VaultViewProps> = ({
@@ -20,6 +22,8 @@ export const VaultView: React.FC<VaultViewProps> = ({
   language = 'id',
   onOpenAddTransaction,
   onOpenManageSavings,
+  onEditTransaction,
+  onDeleteTransaction,
 }) => {
   const langKey = (language as LanguageType) || 'id';
   const t = getTranslation(langKey);
@@ -179,6 +183,13 @@ export const VaultView: React.FC<VaultViewProps> = ({
           </span>
         </div>
 
+        {transactions.length === 0 && (
+          <div className="text-center py-10 space-y-3">
+            <span className="material-symbols-outlined text-4xl text-[#635979] dark:text-[#cdc1e5] opacity-60">receipt_long</span>
+            <p className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">{t.noTransactions}</p>
+          </div>
+        )}
+
         <div className="space-y-3">
           {transactions.map((tx) => {
             const isIncome = tx.type === 'income';
@@ -219,13 +230,33 @@ export const VaultView: React.FC<VaultViewProps> = ({
                   </div>
                 </div>
 
-                <span
-                  className={`font-jakarta font-black text-sm ${
-                    isIncome ? 'text-emerald-400' : 'text-[#ffb8b3]'
-                  }`}
-                >
-                  {isIncome ? '+Rp ' : '-Rp '}{tx.amount.toLocaleString('id-ID')}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`font-jakarta font-black text-sm ${
+                      isIncome ? 'text-emerald-400' : 'text-[#ffb8b3]'
+                    }`}
+                  >
+                    {isIncome ? '+Rp ' : '-Rp '}{tx.amount.toLocaleString('id-ID')}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label={langKey === 'id' ? 'Edit transaksi' : 'Edit transaction'}
+                    onClick={() => onEditTransaction(tx)}
+                    className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">edit</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={langKey === 'id' ? 'Hapus transaksi' : 'Delete transaction'}
+                    onClick={() => {
+                      if (window.confirm(t.deleteConfirm)) onDeleteTransaction(tx.id);
+                    }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">delete</span>
+                  </button>
+                </div>
               </div>
             );
           })}

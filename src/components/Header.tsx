@@ -73,8 +73,8 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenNotifications}
-            className="relative w-10 h-10 rounded-full bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
-            title="Open Notifications"
+            aria-label={t.notificationsTitle}
+            className="relative w-11 h-11 rounded-full bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
           >
             <span className="material-symbols-outlined text-xl">notifications</span>
             {unreadCount > 0 && (

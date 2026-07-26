@@ -51,6 +51,8 @@ export interface UserProfile {
   notifications: boolean;
   language: LanguageType;
   lastQuizDate?: string | null;
+  lastStreakDate?: string | null;
+  lastStreakBonusDate?: string | null;
 }
 
 export interface Badge {

@@ -24,6 +24,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
 }) => {
   const isIndonesian = profile.language === 'id';
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const displayBadges = badges.slice(0, 4);
 
   return (
@@ -40,8 +41,8 @@ export const HeroView: React.FC<HeroViewProps> = ({
           </div>
           <button
             onClick={onOpenEditProfile}
+            aria-label={isIndonesian ? 'Edit Avatar Profil' : 'Edit Profile Avatar'}
             className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#d1c4e9] text-[#1f1732] flex items-center justify-center shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-transform"
-            title="Edit Profile Avatar"
           >
             <span className="material-symbols-outlined text-sm font-bold">edit</span>
           </button>
@@ -256,16 +257,18 @@ export const HeroView: React.FC<HeroViewProps> = ({
             <div className="flex gap-3">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 py-3 rounded-full bg-white/10 hover:bg-white/20 font-jakarta font-black text-sm text-white transition-all cursor-pointer"
+                disabled={loggingOut}
+                className="flex-1 py-3 rounded-full bg-white/10 hover:bg-white/20 font-jakarta font-black text-sm text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isIndonesian ? 'Batal' : 'Cancel'}
               </button>
               <button
                 id="confirm-logout-btn"
-                onClick={() => { setShowLogoutConfirm(false); onLogout(); }}
-                className="flex-1 py-3 rounded-full bg-[#ffdad7] text-[#410004] font-jakarta font-black text-sm shadow-md hover:scale-[1.01] active:scale-95 transition-all cursor-pointer"
+                onClick={() => { setLoggingOut(true); onLogout(); }}
+                disabled={loggingOut}
+                className="flex-1 py-3 rounded-full bg-[#ffdad7] text-[#410004] font-jakarta font-black text-sm shadow-md hover:scale-[1.01] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isIndonesian ? 'Ya, Keluar' : 'Yes, Sign Out'}
+                {loggingOut ? (isIndonesian ? 'Keluar...' : 'Signing out...') : isIndonesian ? 'Ya, Keluar' : 'Yes, Sign Out'}
               </button>
             </div>
           </div>

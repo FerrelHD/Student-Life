@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LanguageType } from '../types';
 import { triggerConfetti } from '../utils/confetti';
+import { useEscapeClose } from '../utils/useEscapeClose';
 import { supabase } from '../lib/supabaseClient';
 
 interface QuizQuestion {
@@ -160,6 +161,8 @@ export const DailyQuizModal: React.FC<DailyQuizModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
+  useEscapeClose(isOpen, onClose);
+
   if (!isOpen) return null;
 
   // ─── Labels ───────────────────────────────────────────────
@@ -190,7 +193,7 @@ export const DailyQuizModal: React.FC<DailyQuizModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-      <div className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
+      <div role="dialog" aria-modal="true" className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
 
         {/* Header */}
         <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4">
@@ -205,7 +208,8 @@ export const DailyQuizModal: React.FC<DailyQuizModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
+            aria-label={labels.closeBtn}
+            className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
           >
             <span className="material-symbols-outlined text-lg">close</span>
           </button>

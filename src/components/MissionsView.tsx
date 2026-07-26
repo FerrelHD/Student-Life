@@ -9,6 +9,8 @@ interface MissionsViewProps {
   onOpenAddMission: () => void;
   onOpenDailyQuiz: () => void;
   onClaimStreakBonus: () => void;
+  onEditMission: (mission: Mission) => void;
+  onDeleteMission: (id: string) => void;
 }
 
 export const MissionsView: React.FC<MissionsViewProps> = ({
@@ -18,6 +20,8 @@ export const MissionsView: React.FC<MissionsViewProps> = ({
   onOpenAddMission,
   onOpenDailyQuiz,
   onClaimStreakBonus,
+  onEditMission,
+  onDeleteMission,
 }) => {
   const langKey = (language as LanguageType) || 'id';
   const t = getTranslation(langKey);
@@ -30,7 +34,7 @@ export const MissionsView: React.FC<MissionsViewProps> = ({
 
   // Dynamic Weekly Goal calculation
   const completedCount = missions.filter((m) => m.completed).length;
-  const totalCount = Math.max(missions.length, 10);
+  const totalCount = Math.max(missions.length, 1);
   const goalPct = Math.round((completedCount / totalCount) * 100);
 
   const getMissionCardStyle = (priority: string, completed: boolean) => {
@@ -109,6 +113,19 @@ export const MissionsView: React.FC<MissionsViewProps> = ({
           </span>
         </div>
 
+        {filteredMissions.length === 0 && (
+          <div className="text-center py-10 space-y-3">
+            <span className="material-symbols-outlined text-4xl text-[#635979] dark:text-[#cdc1e5] opacity-60">assignment</span>
+            <p className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">{t.noMissions}</p>
+            <button
+              onClick={onOpenAddMission}
+              className="font-jakarta text-xs font-black text-[#1b1b1d] dark:text-[#d1c4e9] underline cursor-pointer"
+            >
+              {t.addMissionBtn}
+            </button>
+          </div>
+        )}
+
         <div className="space-y-3">
           {filteredMissions.map((mission) => {
             const cardBgClass = getMissionCardStyle(mission.priority, mission.completed);
@@ -139,15 +156,41 @@ export const MissionsView: React.FC<MissionsViewProps> = ({
                   </div>
                 </div>
 
-                {/* Round Checkbox */}
-                <div
-                  className={`w-8 h-8 rounded-full border-2 border-current flex items-center justify-center flex-shrink-0 transition-transform ${
-                    mission.completed ? 'bg-current' : ''
-                  }`}
-                >
-                  {mission.completed && (
-                    <span className="material-symbols-outlined text-sm font-bold text-white">check</span>
-                  )}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {/* Edit / Delete */}
+                  <button
+                    type="button"
+                    aria-label={language === 'id' ? 'Edit misi' : 'Edit mission'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditMission(mission);
+                    }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">edit</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={language === 'id' ? 'Hapus misi' : 'Delete mission'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (window.confirm(t.deleteConfirm)) onDeleteMission(mission.id);
+                    }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/10 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">delete</span>
+                  </button>
+
+                  {/* Round Checkbox */}
+                  <div
+                    className={`w-8 h-8 rounded-full border-2 border-current flex items-center justify-center flex-shrink-0 transition-transform ${
+                      mission.completed ? 'bg-current' : ''
+                    }`}
+                  >
+                    {mission.completed && (
+                      <span className="material-symbols-outlined text-sm font-bold text-white">check</span>
+                    )}
+                  </div>
                 </div>
               </div>
             );

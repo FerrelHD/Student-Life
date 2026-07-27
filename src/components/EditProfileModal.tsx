@@ -54,7 +54,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        alert(isIndonesian ? 'Mohon pilih file gambar (JPG, PNG, WEBP)' : 'Please select an image file');
+        alert(t.selectImageFileError);
         return;
       }
 
@@ -98,12 +98,12 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               edit_square
             </span>
             <h3 className="font-jakarta font-black text-xl text-white">
-              {isIndonesian ? 'Edit Profil' : 'Edit Profile'}
+              {t.editProfile}
             </h3>
           </div>
           <button
             onClick={onClose}
-            aria-label={isIndonesian ? 'Tutup' : 'Close'}
+            aria-label={t.close}
             className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
           >
             <span className="material-symbols-outlined text-lg">close</span>
@@ -115,7 +115,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-xs font-bold text-gray-300">
-                {isIndonesian ? 'PILIH FOTO PROFIL' : 'CHOOSE AVATAR'}
+                {t.chooseAvatarLabel}
               </label>
 
               {/* Upload File Trigger */}
@@ -125,7 +125,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 className="text-xs font-bold text-[#d1c4e9] hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-sm">upload_file</span>
-                <span>{isIndonesian ? 'Upload Foto Sendiri' : 'Upload Own Photo'}</span>
+                <span>{t.uploadOwnPhoto}</span>
               </button>
 
               {/* Hidden File Input */}
@@ -145,7 +145,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="w-12 h-12 rounded-full border-2 border-dashed border-[#d1c4e9] bg-white/5 hover:bg-white/10 flex flex-col items-center justify-center flex-shrink-0 transition-all cursor-pointer text-[#d1c4e9]"
-                title={isIndonesian ? 'Pilih file foto dari perangkat' : 'Upload photo from device'}
+                title={t.uploadPhotoTitle}
               >
                 <span className="material-symbols-outlined text-lg">add_a_photo</span>
               </button>
@@ -179,7 +179,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   <span className="truncate">{uploadedFileName}</span>
                 </div>
                 <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-black uppercase">
-                  {isIndonesian ? 'Uploaded' : 'Uploaded'}
+                  Uploaded
                 </span>
               </div>
             )}
@@ -195,7 +195,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   setUploadedFileName(null);
                 }
               }}
-              placeholder={isIndonesian ? 'Atau tempel Link Gambar (URL)...' : 'Or paste custom Image URL...'}
+              placeholder={t.pasteImageUrlPlaceholder}
               className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] mt-2"
             />
           </div>
@@ -203,7 +203,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           {/* Display Name */}
           <div>
             <label className="block text-xs font-bold text-gray-300 mb-1">
-              {isIndonesian ? 'NAMA LENGKAP' : 'FULL NAME'}
+              {t.authFullNameLabel}
             </label>
             <input
               type="text"
@@ -218,7 +218,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           {/* Academic Role / Title */}
           <div>
             <label className="block text-xs font-bold text-gray-300 mb-1">
-              {isIndonesian ? 'JURUSAN / PERAN' : 'ROLE / MAJOR'}
+              {t.roleMajorLabel}
             </label>
             <input
               type="text"
@@ -233,7 +233,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             {/* University */}
             <div>
               <label className="block text-xs font-bold text-gray-300 mb-1">
-                {isIndonesian ? 'UNIVERSITAS' : 'UNIVERSITY'}
+                {t.universityLabel}
               </label>
               <input
                 type="text"
@@ -269,13 +269,13 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               onClick={onClose}
               className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-full py-3.5 font-bold transition-colors cursor-pointer"
             >
-              {isIndonesian ? 'Batal' : 'Cancel'}
+              {t.cancel}
             </button>
             <button
               type="submit"
               className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
             >
-              {isIndonesian ? 'Simpan Profil' : 'Save Profile'}
+              {t.saveProfileBtn}
             </button>
           </div>
         </form>

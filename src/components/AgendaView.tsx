@@ -17,28 +17,46 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
 }) => {
   const langKey = (language as LanguageType) || 'id';
   const t = getTranslation(langKey);
-  const [selectedDay, setSelectedDay] = useState(26);
-  const [currentMonth, setCurrentMonth] = useState(language === 'id' ? 'Juli 2026' : 'July 2026');
+  const today = new Date();
+  const [selectedDay, setSelectedDay] = useState(today.getDate());
+  const [viewDate, setViewDate] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
 
-  // Calendar days setup matching July 2026
-  const prevDays = [28, 29, 30];
-  const monthDays = Array.from({ length: 31 }, (_, i) => i + 1);
-  const daysWithDots = [12, 16, 26, 27, 28];
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const pad2 = (n: number) => String(n).padStart(2, '0');
+  const monthKey = `${year}-${pad2(month + 1)}`;
 
-  const priorityColorMap: Record<number, string> = {
-    12: 'bg-[#ece28c]', // Lab / Medium
-    16: 'bg-[#ffb8b3]', // Exam / High
-    26: 'bg-[#ffb8b3]', // Critical Deadline / High
-    27: 'bg-[#ece28c]', // Quiz / Medium
-    28: 'bg-[#d1c4e9]', // Paper / Low
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+  const startWeekday = new Date(year, month, 1).getDay();
+  const prevDays = Array.from({ length: startWeekday }, (_, i) => daysInPrevMonth - startWeekday + i + 1);
+  const monthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+  const locale = langKey === 'id' ? 'id-ID' : 'en-US';
+  const monthLabel = viewDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+  const monthShortLabel = viewDate.toLocaleDateString(locale, { month: 'short' }).toUpperCase();
+
+  // Dot color per day of the displayed month, derived from real missions
+  // (highest priority wins if more than one mission lands on the same day).
+  const dotColorForDay: Record<number, string> = {};
+  missions.forEach((m) => {
+    if (!m.dateStr?.startsWith(monthKey)) return;
+    const day = Number(m.dateStr.split('-')[2]);
+    const color = m.priority === 'high' ? 'bg-[#ffb8b3]' : m.priority === 'medium' ? 'bg-[#ece28c]' : 'bg-[#d1c4e9]';
+    if (!dotColorForDay[day] || m.priority === 'high') dotColorForDay[day] = color;
+  });
+
+  const isRealCurrentMonth = (y: number, m: number) => y === today.getFullYear() && m === today.getMonth();
+  const goToMonth = (next: Date) => {
+    setViewDate(next);
+    setSelectedDay(isRealCurrentMonth(next.getFullYear(), next.getMonth()) ? today.getDate() : 1);
   };
 
   // Filter missions based on selected day (or fallback if all pending shown)
-  // dateStr is "YYYY-MM-DD" — compare the day number directly, not a substring
-  // match (which wrongly matched e.g. day "2" against "...-12", "...-26", etc.)
+  // dateStr is "YYYY-MM-DD" — missions without one always show (no fixed date yet).
   const dayMissions = missions.filter((m) => {
     if (!m.dateStr) return true;
-    return Number(m.dateStr.split('-')[2]) === selectedDay;
+    return m.dateStr === `${monthKey}-${pad2(selectedDay)}`;
   });
 
   const displayedMissions = dayMissions.length > 0 ? dayMissions : missions.slice(0, 3);
@@ -48,16 +66,18 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
       {/* Calendar Section */}
       <section className="expressive-card expressive-card-onyx p-6 shadow-md text-white">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-jakarta font-black text-lg text-white">{currentMonth}</h2>
+          <h2 className="font-jakarta font-black text-lg text-white">{monthLabel}</h2>
           <div className="flex gap-2">
             <button
-              onClick={() => setCurrentMonth(language === 'id' ? 'Juni 2026' : 'June 2026')}
+              onClick={() => goToMonth(new Date(year, month - 1, 1))}
+              aria-label={langKey === 'id' ? 'Bulan sebelumnya' : 'Previous month'}
               className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
             >
               <span className="material-symbols-outlined text-lg">chevron_left</span>
             </button>
             <button
-              onClick={() => setCurrentMonth(language === 'id' ? 'Agustus 2026' : 'August 2026')}
+              onClick={() => goToMonth(new Date(year, month + 1, 1))}
+              aria-label={langKey === 'id' ? 'Bulan berikutnya' : 'Next month'}
               className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
             >
               <span className="material-symbols-outlined text-lg">chevron_right</span>
@@ -87,7 +107,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
           {/* Current month days */}
           {monthDays.map((d) => {
             const isSelected = d === selectedDay;
-            const hasDot = daysWithDots.includes(d);
+            const dotColor = dotColorForDay[d];
 
             return (
               <button
@@ -107,8 +127,8 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                   {d}
                 </span>
 
-                {hasDot && !isSelected && (
-                  <div className={`w-2 h-2 rounded-full mt-0.5 shadow-sm ${priorityColorMap[d] || 'bg-[#d1c4e9]'}`} />
+                {dotColor && !isSelected && (
+                  <div className={`w-2 h-2 rounded-full mt-0.5 shadow-sm ${dotColor}`} />
                 )}
               </button>
             );
@@ -120,7 +140,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
       <section className="space-y-4">
         <div className="flex items-end justify-between px-1">
           <h2 className="font-jakarta font-black text-xl text-[#1b1b1d] dark:text-[#f3f0f2]">
-            {t.scheduleFor} JUL {selectedDay}
+            {t.scheduleFor} {monthShortLabel} {selectedDay}
           </h2>
           <span className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">
             {displayedMissions.length} {t.events}

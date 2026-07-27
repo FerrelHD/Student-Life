@@ -1,6 +1,7 @@
 import React from 'react';
 import { Badge, LanguageType } from '../types';
 import { useEscapeClose } from '../utils/useEscapeClose';
+import { getTranslation } from '../utils/i18n';
 
 interface BadgesModalProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ export const BadgesModal: React.FC<BadgesModalProps> = ({
 
   const unlockedCount = badges.filter((b) => b.unlocked).length;
   const totalCount = badges.length;
-  const isIndonesian = language === 'id';
+  const t = getTranslation(language);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
@@ -33,18 +34,16 @@ export const BadgesModal: React.FC<BadgesModalProps> = ({
             </div>
             <div>
               <h3 className="font-jakarta font-black text-lg text-white">
-                {isIndonesian ? 'Koleksi Badge Pencapaian' : 'Heroic Badges Showcase'}
+                {t.badgesShowcaseTitle}
               </h3>
               <p className="font-jakarta text-xs text-[#d1c4e9] font-bold">
-                {isIndonesian
-                  ? `${unlockedCount} dari ${totalCount} Badge Terbuka`
-                  : `${unlockedCount} of ${totalCount} Badges Unlocked`}
+                {t.badgesUnlockedCount.replace('{unlocked}', String(unlockedCount)).replace('{total}', String(totalCount))}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            aria-label={isIndonesian ? 'Tutup' : 'Close'}
+            aria-label={t.close}
             className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
           >
             <span className="material-symbols-outlined text-lg">close</span>
@@ -99,7 +98,7 @@ export const BadgesModal: React.FC<BadgesModalProps> = ({
             onClick={onClose}
             className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm transition-all cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
           >
-            {isIndonesian ? 'Tutup Koleksi' : 'Close Showcase'}
+            {t.closeShowcase}
           </button>
         </div>
       </div>

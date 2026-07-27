@@ -8,6 +8,7 @@ interface HeaderProps {
   unreadCount: number;
   onOpenNotifications: () => void;
   onOpenProfile: () => void;
+  onOpenDrawer: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,6 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   unreadCount,
   onOpenNotifications,
   onOpenProfile,
+  onOpenDrawer,
 }) => {
   const t = getTranslation(profile.language);
 
@@ -47,7 +49,15 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-white/40 dark:bg-[#0f0e13]/60 backdrop-blur-xl border-b border-black/5 dark:border-white/5 transition-colors duration-200">
       <div className="max-w-md md:max-w-4xl mx-auto px-5 h-20 flex items-center justify-between">
-        {/* Left Profile Summary */}
+        {/* Left: Drawer + Profile Summary */}
+        <div className="flex items-center gap-1">
+        <button
+          onClick={onOpenDrawer}
+          aria-label={profile.language === 'id' ? 'Buka menu' : 'Open menu'}
+          className="w-11 h-11 rounded-full flex items-center justify-center text-[#1b1b1d] dark:text-[#f3f0f2] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
+        >
+          <span className="material-symbols-outlined text-2xl">menu</span>
+        </button>
         <button
           onClick={onOpenProfile}
           className="flex items-center gap-3 group text-left cursor-pointer"
@@ -58,6 +68,9 @@ export const Header: React.FC<HeaderProps> = ({
               alt={profile.name}
               className="w-full h-full object-cover"
             />
+            <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#1b1b1d] dark:bg-[#d1c4e9] text-white dark:text-[#1b1b1d] font-jakarta font-black text-[9px] flex items-center justify-center border-2 border-white dark:border-[#121214]">
+              {profile.level}
+            </span>
           </div>
           <div>
             <h1 className="font-jakarta font-extrabold text-xl leading-tight text-[#1b1b1d] dark:text-[#f3f0f2]">
@@ -68,9 +81,16 @@ export const Header: React.FC<HeaderProps> = ({
             </p>
           </div>
         </button>
+        </div>
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
+          {profile.streakDays > 0 && (
+            <div className="flex items-center gap-1 bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] px-2.5 h-11 rounded-full font-jakarta font-black text-xs shadow-sm">
+              <span>🔥</span>
+              <span>{profile.streakDays}</span>
+            </div>
+          )}
           <button
             onClick={onOpenNotifications}
             aria-label={t.notificationsTitle}
@@ -78,8 +98,8 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <span className="material-symbols-outlined text-xl">notifications</span>
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#ff544c] text-white font-jakarta font-black text-[9px] flex items-center justify-center border-2 border-white dark:border-[#121214]">
-                {unreadCount}
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#ff544c] text-white font-jakarta font-black text-[9px] flex items-center justify-center border-2 border-white dark:border-[#121214] animate-pulse">
+                {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </button>

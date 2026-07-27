@@ -150,7 +150,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
                 <span className="material-symbols-outlined text-2xl">laptop_mac</span>
               </div>
               <div>
-                <h4 className="font-jakarta font-black text-base text-[#1f1c00]">{savingsGoal.title}</h4>
+                <h4 className="font-jakarta font-black text-base text-[#1f1c00]">{savingsGoal.title || t.noSavingsGoal}</h4>
                 <p className="font-jakarta text-xs font-bold opacity-80 text-[#1f1c00]">
                   Rp {savingsGoal.savedAmount.toLocaleString('id-ID')} / Rp {savingsGoal.targetAmount.toLocaleString('id-ID')}
                 </p>

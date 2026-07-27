@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { UserProfile, Badge } from '../types';
+import { getTranslation } from '../utils/i18n';
 
 interface HeroViewProps {
   profile: UserProfile;
@@ -23,6 +24,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
   onLogout,
 }) => {
   const isIndonesian = profile.language === 'id';
+  const t = getTranslation(profile.language);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const displayBadges = badges.slice(0, 4);
@@ -41,7 +43,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
           </div>
           <button
             onClick={onOpenEditProfile}
-            aria-label={isIndonesian ? 'Edit Avatar Profil' : 'Edit Profile Avatar'}
+            aria-label={t.heroEditAvatarLabel}
             className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#d1c4e9] text-[#1f1732] flex items-center justify-center shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-transform"
           >
             <span className="material-symbols-outlined text-sm font-bold">edit</span>
@@ -64,7 +66,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
           className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-full font-jakarta font-black text-xs flex items-center gap-2 border border-white/15 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
         >
           <span className="material-symbols-outlined text-base">edit_square</span>
-          <span>{isIndonesian ? 'Edit Profil' : 'Edit Profile'}</span>
+          <span>{t.editProfile}</span>
         </button>
       </section>
 
@@ -72,13 +74,13 @@ export const HeroView: React.FC<HeroViewProps> = ({
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
           <h3 className="font-jakarta font-black text-lg text-[#1b1b1d] dark:text-[#f3f0f2]">
-            {isIndonesian ? 'Badge Pencapaian' : 'Heroic Badges'}
+            {t.heroicBadges}
           </h3>
           <button
             onClick={onOpenBadges}
             className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5] hover:underline cursor-pointer"
           >
-            {isIndonesian ? 'Lihat Semua' : 'View All'}
+            {t.seeAll}
           </button>
         </div>
 
@@ -112,7 +114,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
       {/* System Config Section (Dark Onyx Card with Pure White & Off-White Text) */}
       <section className="space-y-3">
         <h3 className="font-jakarta font-black text-lg text-[#1b1b1d] dark:text-[#f3f0f2] px-1">
-          {isIndonesian ? 'Pengaturan Sistem' : 'System Config'}
+          {t.systemConfig}
         </h3>
 
         <div className="expressive-card expressive-card-onyx divide-y divide-white/10 overflow-hidden shadow-sm text-white">
@@ -127,10 +129,10 @@ export const HeroView: React.FC<HeroViewProps> = ({
               </div>
               <div>
                 <h4 className="font-jakarta font-black text-sm text-white">
-                  {isIndonesian ? 'Edit Detail Profil' : 'Edit Profile Details'}
+                  {t.editProfileDetails}
                 </h4>
                 <p className="font-jakarta text-xs text-gray-300 font-bold">
-                  {isIndonesian ? 'Ubah nama, avatar & jurusan' : 'Update name, avatar & major'}
+                  {t.updateProfileDesc}
                 </p>
               </div>
             </div>
@@ -148,10 +150,10 @@ export const HeroView: React.FC<HeroViewProps> = ({
               </div>
               <div>
                 <h4 className="font-jakarta font-black text-sm text-white">
-                  {isIndonesian ? 'Bahasa Aplikasi' : 'App Language'}
+                  {t.appLanguage}
                 </h4>
                 <p className="font-jakarta text-xs text-gray-300 font-bold">
-                  {isIndonesian ? 'Bahasa Indonesia & English' : 'Switch Language'}
+                  {t.switchLanguage}
                 </p>
               </div>
             </div>
@@ -174,10 +176,10 @@ export const HeroView: React.FC<HeroViewProps> = ({
               </div>
               <div>
                 <h4 className="font-jakarta font-black text-sm text-white">
-                  {isIndonesian ? 'Mode Gelap (Dark Mode)' : 'Dark Mode'}
+                  {t.darkMode}
                 </h4>
                 <p className="font-jakarta text-xs text-gray-300 font-bold">
-                  {isIndonesian ? 'Kurangi kelelahan mata' : 'Reduce eye strain'}
+                  {t.darkModeDesc}
                 </p>
               </div>
             </div>
@@ -203,10 +205,10 @@ export const HeroView: React.FC<HeroViewProps> = ({
               </div>
               <div>
                 <h4 className="font-jakarta font-black text-sm text-white">
-                  {isIndonesian ? 'Notifikasi Akademik' : 'Notifications'}
+                  {t.notificationsTitle}
                 </h4>
                 <p className="font-jakarta text-xs text-gray-300 font-bold">
-                  {isIndonesian ? 'Pengingat tugas & tenggat' : 'Stay updated on missions'}
+                  {t.heroNotificationsDesc}
                 </p>
               </div>
             </div>
@@ -231,7 +233,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
         className="w-full bg-[#ffdad7] text-[#410004] py-4 rounded-full font-jakarta font-black text-sm flex items-center justify-center gap-2 shadow-sm hover:scale-[1.01] active:scale-95 transition-all cursor-pointer"
       >
         <span className="material-symbols-outlined text-xl">logout</span>
-        <span>{isIndonesian ? 'Keluar Akun' : 'Sign Out'}</span>
+        <span>{t.signOut}</span>
       </button>
 
       {/* Logout Confirmation Modal */}
@@ -244,12 +246,10 @@ export const HeroView: React.FC<HeroViewProps> = ({
               </div>
               <div>
                 <h3 className="font-jakarta font-black text-base text-white">
-                  {isIndonesian ? 'Keluar Akun?' : 'Sign Out?'}
+                  {t.confirmSignOutTitle}
                 </h3>
                 <p className="font-jakarta text-xs text-gray-300 font-bold mt-0.5">
-                  {isIndonesian
-                    ? 'Semua progres & data kamu tetap aman tersimpan.'
-                    : 'Your progress & data will remain safely saved.'}
+                  {t.confirmSignOutDesc}
                 </p>
               </div>
             </div>
@@ -260,7 +260,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
                 disabled={loggingOut}
                 className="flex-1 py-3 rounded-full bg-white/10 hover:bg-white/20 font-jakarta font-black text-sm text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isIndonesian ? 'Batal' : 'Cancel'}
+                {t.cancel}
               </button>
               <button
                 id="confirm-logout-btn"
@@ -268,7 +268,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
                 disabled={loggingOut}
                 className="flex-1 py-3 rounded-full bg-[#ffdad7] text-[#410004] font-jakarta font-black text-sm shadow-md hover:scale-[1.01] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loggingOut ? (isIndonesian ? 'Keluar...' : 'Signing out...') : isIndonesian ? 'Ya, Keluar' : 'Yes, Sign Out'}
+                {loggingOut ? t.signingOut : t.confirmSignOutBtn}
               </button>
             </div>
           </div>

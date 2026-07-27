@@ -67,7 +67,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
             </div>
             <div>
               <h3 className="font-jakarta font-black text-lg text-white">{t.savingsManager}</h3>
-              <p className="font-jakarta text-xs text-[#ece28c] font-bold">{savingsGoal.title}</p>
+              <p className="font-jakarta text-xs text-[#ece28c] font-bold">{savingsGoal.title || t.noSavingsGoal}</p>
             </div>
           </div>
           <button
@@ -129,10 +129,17 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
               />
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-full py-3.5 font-bold transition-colors cursor-pointer"
+              >
+                {t.cancel}
+              </button>
               <button
                 type="submit"
-                className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               >
                 {t.depositBtn}
               </button>
@@ -169,10 +176,17 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
               />
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-full py-3.5 font-bold transition-colors cursor-pointer"
+              >
+                {t.cancel}
+              </button>
               <button
                 type="submit"
-                className="w-full bg-[#ece28c] text-[#1f1c00] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                className="flex-1 bg-[#ece28c] text-[#1f1c00] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               >
                 {t.saveGoalBtn}
               </button>

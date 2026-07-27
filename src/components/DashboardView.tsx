@@ -6,6 +6,7 @@ interface DashboardViewProps {
   profile: UserProfile;
   missions: Mission[];
   badges: Badge[];
+  monthlySpend: number;
   onOpenAddMission: () => void;
   onNavigateTab: (tab: 'missions' | 'vault' | 'agenda' | 'hero') => void;
   onUpdateStreak: () => void;
@@ -15,6 +16,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   profile,
   missions,
   badges,
+  monthlySpend,
   onOpenAddMission,
   onNavigateTab,
   onUpdateStreak,
@@ -130,26 +132,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </section>
 
-      {/* Monthly Budget Card (Deep Onyx - Always Rupiah) */}
+      {/* Monthly Spend Card (Deep Onyx - Always Rupiah) */}
       <section
         onClick={() => onNavigateTab('vault')}
         className="expressive-card expressive-card-onyx expressive-shimmer p-6 cursor-pointer relative overflow-hidden group shadow-lg text-white"
       >
-        <div className="flex justify-between items-start mb-6">
+        <div className="flex justify-between items-start">
           <div>
             <p className="font-jakarta text-xs font-bold text-gray-300 mb-1">{t.monthlyBudget}</p>
             <h3 className="font-jakarta font-black text-3xl tracking-tight text-white">
-              Rp 4.200.000 <span className="text-sm font-semibold text-gray-300">{t.budgetLeft}</span>
+              Rp {monthlySpend.toLocaleString('id-ID')}
             </h3>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
             <span className="material-symbols-outlined text-2xl text-[#ece28c]">account_balance_wallet</span>
           </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full bg-white/15 h-3.5 rounded-full overflow-hidden mb-2">
-          <div className="bg-[#ece28c] h-full rounded-full" style={{ width: '65%' }} />
         </div>
       </section>
 

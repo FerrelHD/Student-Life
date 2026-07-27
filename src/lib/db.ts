@@ -8,34 +8,57 @@ import {
   WeeklySpend,
 } from '../types';
 
+// ─── offline cache ──────────────────────────────────────────
+// Read-only fallback for outages: cache the last successful result of each
+// fetch* call, and serve it back if the network call fails. Not a sync
+// engine — writes don't invalidate it, next successful fetch just overwrites.
+function cacheKey(fn: string, ...args: unknown[]) {
+  return `sl_cache:${fn}:${args.join(':')}`;
+}
+
+async function withCache<T>(fn: string, args: unknown[], loader: () => Promise<T>): Promise<T> {
+  const key = cacheKey(fn, ...args);
+  try {
+    const result = await loader();
+    localStorage.setItem(key, JSON.stringify(result));
+    return result;
+  } catch (err) {
+    const cached = localStorage.getItem(key);
+    if (cached) return JSON.parse(cached) as T;
+    throw err;
+  }
+}
+
 // ─── profiles ───────────────────────────────────────────────
 export async function fetchProfile(userId: string): Promise<UserProfile> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single();
-  if (error) throw error;
-  return {
-    name: data.name,
-    handle: data.handle,
-    level: data.level,
-    role: data.role,
-    university: data.university,
-    classOf: data.class_of,
-    currentXP: data.current_xp,
-    gpa: data.gpa,
-    rank: data.rank,
-    walks: data.walks,
-    streakDays: data.streak_days,
-    avatarUrl: data.avatar_url,
-    darkMode: data.dark_mode,
-    notifications: data.notifications,
-    language: data.language,
-    lastQuizDate: data.last_quiz_date,
-    lastStreakDate: data.last_streak_date,
-    lastStreakBonusDate: data.last_streak_bonus_date,
-  };
+  return withCache('profile', [userId], async () => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    if (error) throw error;
+    return {
+      name: data.name,
+      handle: data.handle,
+      level: data.level,
+      role: data.role,
+      university: data.university,
+      classOf: data.class_of,
+      currentXP: data.current_xp,
+      gpa: data.gpa,
+      rank: data.rank,
+      walks: data.walks,
+      streakDays: data.streak_days,
+      avatarUrl: data.avatar_url,
+      darkMode: data.dark_mode,
+      notifications: data.notifications,
+      language: data.language,
+      lastQuizDate: data.last_quiz_date,
+      lastStreakDate: data.last_streak_date,
+      lastStreakBonusDate: data.last_streak_bonus_date,
+    };
+  });
 }
 
 export async function updateProfile(userId: string, profile: Partial<UserProfile>) {
@@ -65,26 +88,28 @@ export async function updateProfile(userId: string, profile: Partial<UserProfile
 
 // ─── missions ───────────────────────────────────────────────
 export async function fetchMissions(userId: string): Promise<Mission[]> {
-  const { data, error } = await supabase
-    .from('missions')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    course: row.course,
-    priority: row.priority,
-    dueDate: row.due_date,
-    tag: row.tag,
-    completed: row.completed,
-    xpReward: row.xp_reward,
-    time: row.time ?? undefined,
-    location: row.location ?? undefined,
-    focusPriority: row.focus_priority ?? undefined,
-    dateStr: row.date_str ?? undefined,
-  }));
+  return withCache('missions', [userId], async () => {
+    const { data, error } = await supabase
+      .from('missions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data.map((row) => ({
+      id: row.id,
+      title: row.title,
+      course: row.course,
+      priority: row.priority,
+      dueDate: row.due_date,
+      tag: row.tag,
+      completed: row.completed,
+      xpReward: row.xp_reward,
+      time: row.time ?? undefined,
+      location: row.location ?? undefined,
+      focusPriority: row.focus_priority ?? undefined,
+      dateStr: row.date_str ?? undefined,
+    }));
+  });
 }
 
 export async function insertMission(
@@ -157,21 +182,23 @@ export async function deleteMission(missionId: string) {
 
 // ─── transactions ───────────────────────────────────────────
 export async function fetchTransactions(userId: string): Promise<Transaction[]> {
-  const { data, error } = await supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(200);
-  if (error) throw error;
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    category: row.category,
-    amount: Number(row.amount),
-    type: row.type,
-    date: row.date,
-  }));
+  return withCache('transactions', [userId], async () => {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (error) throw error;
+    return data.map((row) => ({
+      id: row.id,
+      title: row.title,
+      category: row.category,
+      amount: Number(row.amount),
+      type: row.type,
+      date: row.date,
+    }));
+  });
 }
 
 export async function insertTransaction(
@@ -220,18 +247,20 @@ export async function deleteTransaction(txId: string) {
 
 // ─── savings goal ───────────────────────────────────────────
 export async function fetchSavingsGoal(userId: string): Promise<SavingsGoal | null> {
-  const { data, error } = await supabase
-    .from('savings_goals')
-    .select('*')
-    .eq('user_id', userId)
-    .maybeSingle();
-  if (error) throw error;
-  if (!data) return null;
-  return {
-    title: data.title,
-    savedAmount: Number(data.saved_amount),
-    targetAmount: Number(data.target_amount),
-  };
+  return withCache('savingsGoal', [userId], async () => {
+    const { data, error } = await supabase
+      .from('savings_goals')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    return {
+      title: data.title,
+      savedAmount: Number(data.saved_amount),
+      targetAmount: Number(data.target_amount),
+    };
+  });
 }
 
 export async function upsertSavingsGoal(userId: string, goal: SavingsGoal) {
@@ -246,21 +275,23 @@ export async function upsertSavingsGoal(userId: string, goal: SavingsGoal) {
 
 // ─── notifications ──────────────────────────────────────────
 export async function fetchNotifications(userId: string): Promise<NotificationItem[]> {
-  const { data, error } = await supabase
-    .from('notifications')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50);
-  if (error) throw error;
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    message: row.message,
-    time: row.time,
-    read: row.read,
-    type: row.type,
-  }));
+  return withCache('notifications', [userId], async () => {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    return data.map((row) => ({
+      id: row.id,
+      title: row.title,
+      message: row.message,
+      time: row.time,
+      read: row.read,
+      type: row.type,
+    }));
+  });
 }
 
 export async function markAllNotificationsRead(userId: string) {
@@ -284,40 +315,63 @@ const DAY_LABELS = [
 const WEEK_STARTING_MONDAY = [1, 2, 3, 4, 5, 6, 0];
 
 export async function fetchWeeklySpend(userId: string): Promise<WeeklySpend[]> {
-  const since = new Date();
-  since.setDate(since.getDate() - 6);
-  since.setHours(0, 0, 0, 0);
+  return withCache('weeklySpend', [userId], async () => {
+    const since = new Date();
+    since.setDate(since.getDate() - 6);
+    since.setHours(0, 0, 0, 0);
 
-  const { data, error } = await supabase
-    .from('transactions')
-    .select('amount, created_at')
-    .eq('user_id', userId)
-    .eq('type', 'expense')
-    .gte('created_at', since.toISOString());
-  if (error) throw error;
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('amount, created_at')
+      .eq('user_id', userId)
+      .eq('type', 'expense')
+      .gte('created_at', since.toISOString());
+    if (error) throw error;
 
-  const totals = new Array(7).fill(0);
-  data.forEach((row) => {
-    totals[new Date(row.created_at).getDay()] += Number(row.amount);
+    const totals = new Array(7).fill(0);
+    data.forEach((row) => {
+      totals[new Date(row.created_at).getDay()] += Number(row.amount);
+    });
+
+    const todayIdx = new Date().getDay();
+    return WEEK_STARTING_MONDAY.map((dow) => ({
+      day: DAY_LABELS[dow].day,
+      shortDay: DAY_LABELS[dow].shortDay,
+      amount: totals[dow],
+      isToday: dow === todayIdx,
+    }));
   });
+}
 
-  const todayIdx = new Date().getDay();
-  return WEEK_STARTING_MONDAY.map((dow) => ({
-    day: DAY_LABELS[dow].day,
-    shortDay: DAY_LABELS[dow].shortDay,
-    amount: totals[dow],
-    isToday: dow === todayIdx,
-  }));
+export async function fetchMonthlySpend(userId: string): Promise<number> {
+  return withCache('monthlySpend', [userId], async () => {
+    const firstOfMonth = new Date();
+    firstOfMonth.setDate(1);
+    firstOfMonth.setHours(0, 0, 0, 0);
+
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('amount')
+      .eq('user_id', userId)
+      .eq('type', 'expense')
+      .gte('created_at', firstOfMonth.toISOString());
+    if (error) throw error;
+
+    return data.reduce((sum, row) => sum + Number(row.amount), 0);
+  });
 }
 
 // ─── badges (unlock state only; catalog stays static on frontend) ──
 export async function fetchUnlockedBadgeIds(userId: string): Promise<Set<string>> {
-  const { data, error } = await supabase
-    .from('user_badges')
-    .select('badge_id')
-    .eq('user_id', userId);
-  if (error) throw error;
-  return new Set(data.map((row) => row.badge_id));
+  const ids = await withCache('unlockedBadgeIds', [userId], async () => {
+    const { data, error } = await supabase
+      .from('user_badges')
+      .select('badge_id')
+      .eq('user_id', userId);
+    if (error) throw error;
+    return data.map((row) => row.badge_id);
+  });
+  return new Set(ids);
 }
 
 export async function unlockBadge(userId: string, badgeId: string) {

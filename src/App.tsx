@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Session } from '@supabase/supabase-js';
+import { App as CapacitorApp } from '@capacitor/app';
 import {
   TabType,
   Mission,
@@ -32,6 +33,7 @@ import {
   fetchUnlockedBadgeIds,
   unlockBadge,
   fetchWeeklySpend,
+  fetchMonthlySpend,
 } from './lib/db';
 
 import { Header } from './components/Header';
@@ -45,6 +47,7 @@ import { SavingsGoalModal } from './components/SavingsGoalModal';
 import { NotificationsModal } from './components/NotificationsModal';
 import { BadgesModal } from './components/BadgesModal';
 import { triggerConfetti } from './utils/confetti';
+import { addXP, checkBadgeThresholds } from './utils/gamification';
 
 import { DashboardView } from './components/DashboardView';
 import { MissionsView } from './components/MissionsView';
@@ -54,10 +57,23 @@ import { HeroView } from './components/HeroView';
 import { AuthView } from './components/AuthView';
 
 const FALLBACK_SAVINGS_GOAL: SavingsGoal = {
-  title: 'New MacBook Pro M3',
+  title: '',
   savedAmount: 0,
-  targetAmount: 28000000,
+  targetAmount: 0,
 };
+
+function DashboardSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#f7f3f9] dark:bg-[#0f0e13] pt-24 pb-32 px-5 max-w-md md:max-w-4xl mx-auto space-y-6 animate-pulse">
+      <div className="h-28 rounded-3xl bg-black/5 dark:bg-white/5" />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="h-32 rounded-3xl bg-black/5 dark:bg-white/5" />
+        <div className="h-32 rounded-3xl bg-black/5 dark:bg-white/5" />
+      </div>
+      <div className="h-36 rounded-3xl bg-black/5 dark:bg-white/5" />
+    </div>
+  );
+}
 
 function fallbackProfile(session: Session): UserProfile {
   const meta = session.user.user_metadata as { name?: string; university?: string };
@@ -114,6 +130,7 @@ export default function App() {
   const [savingsGoal, setSavingsGoal] = useState<SavingsGoal>(FALLBACK_SAVINGS_GOAL);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [weeklySpend, setWeeklySpend] = useState<WeeklySpend[]>([]);
+  const [monthlySpend, setMonthlySpend] = useState(0);
   const [badges, setBadges] = useState<Badge[]>(initialBadges);
   const [editingMission, setEditingMission] = useState<Mission | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -149,6 +166,25 @@ export default function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  // Handle the emailed password-reset link reopening the app via a custom URL
+  // scheme on native mobile (see AuthView.tsx's NATIVE_RESET_REDIRECT_URL).
+  // Supabase's detectSessionInUrl only reads window.location, so a deep link
+  // has to be parsed and turned into a session manually.
+  useEffect(() => {
+    const listenerPromise = CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
+      const fragment = url.split('#')[1] ?? '';
+      const params = new URLSearchParams(fragment);
+      const access_token = params.get('access_token');
+      const refresh_token = params.get('refresh_token');
+      if (!access_token || !refresh_token) return;
+      const { error } = await supabase.auth.setSession({ access_token, refresh_token });
+      if (!error) setPasswordRecovery(true);
+    });
+    return () => {
+      listenerPromise.then((l) => l.remove());
+    };
+  }, []);
+
   // Load this user's data whenever a session appears
   useEffect(() => {
     if (!session) {
@@ -158,6 +194,7 @@ export default function App() {
       setSavingsGoal(FALLBACK_SAVINGS_GOAL);
       setNotifications([]);
       setWeeklySpend([]);
+      setMonthlySpend(0);
       setBadges(initialBadges);
       return;
     }
@@ -167,7 +204,7 @@ export default function App() {
 
     (async () => {
       const uid = session.user.id;
-      const [profileResult, missionsResult, txResult, goalResult, notifResult, badgeIdsResult, spendResult] =
+      const [profileResult, missionsResult, txResult, goalResult, notifResult, badgeIdsResult, spendResult, monthlySpendResult] =
         await Promise.allSettled([
           fetchProfile(uid),
           fetchMissions(uid),
@@ -176,6 +213,7 @@ export default function App() {
           fetchNotifications(uid),
           fetchUnlockedBadgeIds(uid),
           fetchWeeklySpend(uid),
+          fetchMonthlySpend(uid),
         ]);
       if (cancelled) return;
 
@@ -191,6 +229,7 @@ export default function App() {
       const unlockedIds = badgeIdsResult.status === 'fulfilled' ? badgeIdsResult.value : new Set<string>();
       setBadges(initialBadges.map((b) => ({ ...b, unlocked: b.unlocked || unlockedIds.has(b.id) })));
       setWeeklySpend(spendResult.status === 'fulfilled' ? spendResult.value : []);
+      setMonthlySpend(monthlySpendResult.status === 'fulfilled' ? monthlySpendResult.value : 0);
 
       setDataLoading(false);
     })();
@@ -216,11 +255,7 @@ export default function App() {
   useEffect(() => {
     if (!profile || !userId) return;
     const completedCount = missions.filter((m) => m.completed).length;
-    const earned: Record<string, boolean> = {
-      b5: profile.streakDays >= 14,
-      b6: profile.currentXP >= 15000,
-      b7: completedCount >= 20,
-    };
+    const earned = checkBadgeThresholds(profile.streakDays, profile.currentXP, completedCount);
     const toUnlock = Object.entries(earned)
       .filter(([id, isEarned]) => isEarned && !badges.find((b) => b.id === id)?.unlocked)
       .map(([id]) => id);
@@ -238,9 +273,8 @@ export default function App() {
 
   const handleAddXP = (amount: number) => {
     if (!profile) return;
-    const newXP = profile.currentXP + amount;
-    const newLevel = Math.max(profile.level, Math.floor(newXP / 1000) + 1);
-    persistProfile({ currentXP: newXP, level: newLevel });
+    const { xp, level } = addXP(profile.currentXP, profile.level, amount);
+    persistProfile({ currentXP: xp, level });
   };
 
   const handleToggleMission = (id: string) => {
@@ -383,11 +417,7 @@ export default function App() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   if (checkingSession) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f7f3f9] dark:bg-[#0f0e13]">
-        <div className="w-10 h-10 border-4 border-[#d1c4e9] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (passwordRecovery) {
@@ -416,11 +446,7 @@ export default function App() {
   }
 
   if (dataLoading || !profile) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f7f3f9] dark:bg-[#0f0e13]">
-        <div className="w-10 h-10 border-4 border-[#d1c4e9] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
@@ -473,6 +499,7 @@ export default function App() {
         unreadCount={unreadCount}
         onOpenNotifications={() => setIsNotificationsOpen(true)}
         onOpenProfile={() => setActiveTab('hero')}
+        onOpenDrawer={() => setIsDrawerOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -482,6 +509,7 @@ export default function App() {
             profile={profile}
             missions={missions}
             badges={badges}
+            monthlySpend={monthlySpend}
             onOpenAddMission={() => setIsAddMissionOpen(true)}
             onNavigateTab={(tab) => setActiveTab(tab)}
             onUpdateStreak={handleUpdateStreak}
@@ -636,9 +664,9 @@ export default function App() {
       />
       {/* Global Toast Notification */}
       <div
-        className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none"
+        className="fixed top-24 inset-x-0 z-[9999] pointer-events-none flex justify-center"
         style={{
-          transform: `translateX(-50%) translateY(${toast.visible ? '0px' : '20px'})`,
+          transform: `translateY(${toast.visible ? '0px' : '-20px'})`,
           opacity: toast.visible ? 1 : 0,
           transition: 'opacity 350ms ease, transform 400ms cubic-bezier(0.34,1.45,0.64,1)',
         }}

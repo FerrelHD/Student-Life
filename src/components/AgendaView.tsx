@@ -98,7 +98,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
           {prevDays.map((d) => (
             <div
               key={`prev-${d}`}
-              className="h-10 flex items-center justify-center font-jakarta text-sm text-gray-500 font-bold"
+              className="aspect-square flex items-center justify-center font-jakarta text-sm text-gray-500 font-bold"
             >
               {d}
             </div>
@@ -113,7 +113,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               <button
                 key={`day-${d}`}
                 onClick={() => setSelectedDay(d)}
-                className="h-10 flex flex-col items-center justify-center relative rounded-full hover:bg-white/10 transition-all cursor-pointer"
+                className="aspect-square flex flex-col items-center justify-center relative rounded-full hover:bg-white/10 transition-all cursor-pointer"
               >
                 {isSelected && (
                   <div className="absolute inset-1 rounded-full bg-[#d1c4e9]" />

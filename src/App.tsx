@@ -431,47 +431,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#f7f3f9] dark:bg-[#0f0e13] text-[#1b1b1d] dark:text-[#f3f0f2] transition-colors duration-300 relative overflow-hidden">
-      {/* Dynamic Ambient Expressive Mesh Orbs */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-60 dark:opacity-35 transition-opacity duration-700">
-        <div
-          className={`absolute -top-24 -left-24 w-96 h-96 clay-blob blur-xl animate-orb-1 transition-all duration-700 ${
-            activeTab === 'dashboard'
-              ? 'bg-[#d1c4e9] dark:bg-[#6b5096] opacity-90 scale-110'
-              : activeTab === 'missions'
-              ? 'bg-[#ffb8b3] dark:bg-[#853935] opacity-70'
-              : 'bg-[#d1c4e9] dark:bg-[#523d75] opacity-60'
-          }`}
-        />
-
-        <div
-          className={`absolute top-1/3 -right-24 w-96 h-96 clay-blob blur-xl animate-orb-2 transition-all duration-700 ${
-            activeTab === 'vault'
-              ? 'bg-[#ece28c] dark:bg-[#807727] opacity-90 scale-125'
-              : activeTab === 'dashboard'
-              ? 'bg-[#ece28c] dark:bg-[#736a1c] opacity-80'
-              : 'bg-[#f5eeab] dark:bg-[#5c5417] opacity-50'
-          }`}
-        />
-
-        <div
-          className={`absolute bottom-20 left-10 w-80 h-80 clay-blob blur-xl animate-orb-3 transition-all duration-700 ${
-            activeTab === 'missions'
-              ? 'bg-[#ffb8b3] dark:bg-[#8a3331] opacity-90 scale-110'
-              : activeTab === 'hero'
-              ? 'bg-[#d8e6c7] dark:bg-[#3d612e] opacity-80'
-              : 'bg-[#ffd5d2] dark:bg-[#5c2423] opacity-60'
-          }`}
-        />
-
-        <div
-          className={`absolute top-2/3 right-1/4 w-80 h-80 clay-blob blur-xl animate-orb-1 transition-all duration-700 ${
-            activeTab === 'agenda'
-              ? 'bg-[#cce5ff] dark:bg-[#254b73] opacity-90 scale-125'
-              : 'bg-[#e2d7f5] dark:bg-[#3a285c] opacity-40'
-          }`}
-        />
-      </div>
-
       {/* Header */}
       <Header
         activeTab={activeTab}

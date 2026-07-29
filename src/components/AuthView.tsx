@@ -171,12 +171,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
   // ─── Render ─────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#f7f3f9] dark:bg-[#0f0e13] text-[#1b1b1d] dark:text-[#f3f0f2] flex items-center justify-center p-5 relative overflow-hidden font-jakarta">
-      {/* Ambient Orbs */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-60 dark:opacity-40">
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#d1c4e9] dark:bg-[#6b5096] blur-3xl animate-orb-1 opacity-90" />
-        <div className="absolute bottom-10 -right-24 w-96 h-96 rounded-full bg-[#ece28c] dark:bg-[#7a7434] blur-3xl animate-orb-2 opacity-70" />
-      </div>
-
       {/* ── Main Card ── */}
       <div className="w-full max-w-md expressive-card expressive-card-onyx p-8 shadow-2xl relative z-10 text-white border border-white/10">
 

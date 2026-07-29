@@ -165,7 +165,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
             <div className="bg-[#1b1b1d] h-full rounded-full transition-all duration-700" style={{ width: `${savingsPct}%` }} />
           </div>
 
-          <div className="flex justify-between items-center text-xs font-black opacity-90 text-[#1f1c00]">
+          <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs font-black opacity-90 text-[#1f1c00]">
             <span className="underline">{t.tapToDeposit}</span>
             <span>{t.almostThere}</span>
           </div>

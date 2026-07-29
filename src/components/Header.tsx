@@ -62,12 +62,14 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={onOpenProfile}
           className="flex items-center gap-3 group text-left cursor-pointer"
         >
-          <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[#d1c4e9] shadow-sm group-hover:scale-105 transition-transform">
-            <img
-              src={profile.avatarUrl}
-              alt={profile.name}
-              className="w-full h-full object-cover"
-            />
+          <div className="relative w-12 h-12 group-hover:scale-105 transition-transform">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#d1c4e9] shadow-sm">
+              <img
+                src={profile.avatarUrl}
+                alt={profile.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#1b1b1d] dark:bg-[#d1c4e9] text-white dark:text-[#1b1b1d] font-jakarta font-black text-[9px] flex items-center justify-center border-2 border-white dark:border-[#121214]">
               {profile.level}
             </span>
@@ -86,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Right Actions */}
         <div className="flex items-center gap-2">
           {profile.streakDays > 0 && (
-            <div className="flex items-center gap-1 bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] px-2.5 h-11 rounded-full font-jakarta font-black text-xs shadow-sm">
+            <div className="flex items-center gap-1 bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] px-2.5 h-11 rounded-full font-jakarta font-black text-xs clay-chip">
               <span>🔥</span>
               <span>{profile.streakDays}</span>
             </div>

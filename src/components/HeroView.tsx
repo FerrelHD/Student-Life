@@ -44,7 +44,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
           <button
             onClick={onOpenEditProfile}
             aria-label={t.heroEditAvatarLabel}
-            className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#d1c4e9] text-[#1f1732] flex items-center justify-center shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-transform"
+            className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#d1c4e9] text-[#1f1732] flex items-center justify-center clay-raised cursor-pointer hover:scale-110 active:scale-95 transition-transform"
           >
             <span className="material-symbols-outlined text-sm font-bold">edit</span>
           </button>
@@ -158,7 +158,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full font-jakarta text-xs font-black border border-white/10 text-[#ece28c]">
+            <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full font-jakarta text-xs font-black border border-white/10 text-[#ece28c] clay-chip">
               <span>{isIndonesian ? '🇮🇩 Indonesia' : '🇬🇧 English'}</span>
               <span className="material-symbols-outlined text-sm">sync_alt</span>
             </div>
@@ -266,7 +266,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
                 id="confirm-logout-btn"
                 onClick={() => { setLoggingOut(true); onLogout(); }}
                 disabled={loggingOut}
-                className="flex-1 py-3 rounded-full bg-[#ffdad7] text-[#410004] font-jakarta font-black text-sm shadow-md hover:scale-[1.01] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                className="flex-1 py-3 rounded-full bg-[#ffdad7] text-[#410004] font-jakarta font-black text-sm clay-raised hover:scale-[1.01] active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loggingOut ? t.signingOut : t.confirmSignOutBtn}
               </button>

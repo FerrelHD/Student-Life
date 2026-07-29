@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Badge, UserProfile, Mission } from '../types';
 import { getTranslation } from '../utils/i18n';
+import { formatDeadlineLabel } from '../utils/deadline';
 
 interface DashboardViewProps {
   profile: UserProfile;
@@ -23,26 +24,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 }) => {
   const t = getTranslation(profile.language);
 
-  // Re-render once a minute so the countdown below stays roughly live without
-  // recomputing on every tick (it's derived straight from Date.now() each render).
+  // Deadline label is day-granularity now, so an hourly re-render is enough
+  // to catch the midnight rollover for a tab left open.
   const [, forceTick] = useState(0);
   useEffect(() => {
-    const timer = setInterval(() => forceTick((n) => n + 1), 60_000);
+    const timer = setInterval(() => forceTick((n) => n + 1), 3_600_000);
     return () => clearInterval(timer);
   }, []);
 
   const urgentMission = missions.find((m) => m.priority === 'high' && !m.completed) || missions.find((m) => !m.completed);
 
-  const deadlineLabel = (() => {
-    if (!urgentMission) return t.noDeadline;
-    if (!urgentMission.dateStr) return urgentMission.dueDate;
-    const target = new Date(`${urgentMission.dateStr}T${urgentMission.time || '23:59'}`);
-    const diffMs = target.getTime() - Date.now();
-    if (diffMs <= 0) return t.overdue;
-    const hoursLeft = Math.floor(diffMs / 3_600_000);
-    const minutesLeft = Math.floor((diffMs % 3_600_000) / 60_000);
-    return `${String(hoursLeft).padStart(2, '0')}${t.hours} ${String(minutesLeft).padStart(2, '0')}${t.minutes}`;
-  })();
+  const deadlineLabel = !urgentMission
+    ? t.noDeadline
+    : formatDeadlineLabel(urgentMission.dateStr, t, urgentMission.time) || urgentMission.dueDate;
 
   const recentBadges = badges.filter((b) => b.unlocked).slice(-2).reverse();
 
@@ -54,7 +48,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="pt-24 pb-32 md:pb-16 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
       {/* XP Mastery / Next Reward Progress Card (Pastel Lavender) */}
-      <section className="expressive-card expressive-card-lavender expressive-shimmer p-6 shadow-sm">
+      <section className="expressive-card expressive-card-lavender p-6 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 font-jakarta font-black text-sm tracking-tight">
             <span className="material-symbols-outlined text-xl">bolt</span>
@@ -135,7 +129,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Monthly Spend Card (Deep Onyx - Always Rupiah) */}
       <section
         onClick={() => onNavigateTab('vault')}
-        className="expressive-card expressive-card-onyx expressive-shimmer p-6 cursor-pointer relative overflow-hidden group shadow-lg text-white"
+        className="expressive-card expressive-card-onyx p-6 cursor-pointer relative overflow-hidden group shadow-lg text-white"
       >
         <div className="flex justify-between items-start">
           <div>
@@ -192,7 +186,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Floating Add Mission Button */}
       <button
         onClick={onOpenAddMission}
-        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] flex items-center justify-center shadow-2xl z-40 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] flex items-center justify-center clay-raised z-40 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         title="Add Mission"
       >
         <span className="material-symbols-outlined text-3xl">add</span>

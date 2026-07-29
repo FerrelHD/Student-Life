@@ -1,15 +1,16 @@
 # Student Life
 
-Operative Life & Academic Companion — a gamified dashboard for tracking missions (assignments/deadlines), finances, study streaks, and badges. Built with React + Vite, ships as a web app.
+Operative Life & Academic Companion — a gamified dashboard for tracking missions (assignments/deadlines), finances, study streaks, and badges. Built with React + Vite, ships as a web app with a claymorphism design system.
 
 ## Features
 
-- **Dashboard** — XP progress, next deadline, study streak, monthly spending at a glance
-- **Missions** — assignments/tasks with priority, due dates, tags, and XP rewards
+- **Dashboard** — XP progress, next deadline (auto-switches from days to hours as it approaches), study streak, monthly spending at a glance
+- **Missions** — assignments/tasks with priority, target date, tags, and XP rewards
 - **Vault** — income/expense tracking with categories and savings goals
 - **Agenda** — calendar view of upcoming deadlines
 - **Hero** — profile, level, badges, and daily quiz (AI-generated via Supabase Edge Function + Gemini)
-- Auth and data sync via Supabase, with local persistence fallback
+- Responsive layout — pinned sidebar navigation on desktop, bottom nav on mobile
+- Auth and data sync via Supabase (including email-link password reset), with local persistence fallback
 - English/Indonesian i18n
 
 ## Tech Stack

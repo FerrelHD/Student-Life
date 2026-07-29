@@ -96,7 +96,7 @@ export const BadgesModal: React.FC<BadgesModalProps> = ({
         <div className="pt-4 flex-shrink-0">
           <button
             onClick={onClose}
-            className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm transition-all cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
+            className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm transition-all cursor-pointer clay-raised hover:scale-[1.02] active:scale-95"
           >
             {t.closeShowcase}
           </button>

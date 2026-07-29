@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LanguageType, Mission, PriorityType, MissionTag } from '../types';
 import { getTranslation } from '../utils/i18n';
+import { formatDeadlineLabel } from '../utils/deadline';
 import { useEscapeClose } from '../utils/useEscapeClose';
 import { ExpressiveSelect, SelectOption } from './ExpressiveSelect';
 
@@ -43,7 +44,6 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   const [course, setCourse] = useState('');
   const [priority, setPriority] = useState<PriorityType>('medium');
   const [tag, setTag] = useState<MissionTag>('EXAM');
-  const [dueDate, setDueDate] = useState('Due tomorrow');
   const [dateStr, setDateStr] = useState(defaultDateStr());
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
@@ -56,7 +56,6 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       setCourse(editingMission.course);
       setPriority(editingMission.priority);
       setTag(editingMission.tag);
-      setDueDate(editingMission.dueDate);
       setDateStr(editingMission.dateStr || defaultDateStr());
       setTime(editingMission.time || '');
       setLocation(editingMission.location || '');
@@ -66,7 +65,6 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       setCourse('');
       setPriority('medium');
       setTag('EXAM');
-      setDueDate('Due tomorrow');
       setDateStr(defaultDateStr());
       setTime('');
       setLocation('');
@@ -87,7 +85,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       course: course.trim(),
       priority,
       tag,
-      dueDate: dueDate.trim() || 'Due soon',
+      dueDate: formatDeadlineLabel(dateStr, t, time.trim() || undefined),
       time: time.trim() || undefined,
       location: location.trim() || undefined,
       xpReward: Math.max(0, xpReward),
@@ -135,7 +133,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Quantum Physics Lab Report"
-              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
@@ -149,7 +147,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               value={course}
               onChange={(e) => setCourse(e.target.value)}
               placeholder="e.g. Physics 402"
-              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
@@ -177,32 +175,17 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                {t.missionDate}
-              </label>
-              <input
-                type="date"
-                required
-                value={dateStr}
-                onChange={(e) => setDateStr(e.target.value)}
-                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-extrabold text-gray-300 mb-1">
-                {t.dueTimeframe}
-              </label>
-              <input
-                type="text"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                placeholder="e.g. Due in 2h"
-                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-extrabold text-gray-300 mb-1">
+              {t.missionDate}
+            </label>
+            <input
+              type="date"
+              required
+              value={dateStr}
+              onChange={(e) => setDateStr(e.target.value)}
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
+            />
           </div>
 
           <div>
@@ -214,7 +197,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               min={0}
               value={xpReward}
               onChange={(e) => setXpReward(Math.max(0, Number(e.target.value)))}
-              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
@@ -228,7 +211,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
+              className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer clay-raised hover:scale-[1.02] active:scale-95"
             >
               {editingMission ? t.saveMissionBtn : t.addMissionBtn}
             </button>

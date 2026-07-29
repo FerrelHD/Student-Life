@@ -178,7 +178,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       </div>
 
       {/* ── Main Card ── */}
-      <div className="w-full max-w-md expressive-card expressive-card-onyx p-8 shadow-2xl relative z-10 text-white border border-white/10 expressive-shimmer">
+      <div className="w-full max-w-md expressive-card expressive-card-onyx p-8 shadow-2xl relative z-10 text-white border border-white/10">
 
         {/* ── Brand + Language ── */}
         <div className="flex justify-between items-center mb-6">
@@ -228,7 +228,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   value={recoveryPassword}
                   onChange={(e) => setRecoveryPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                  className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                   autoFocus
                 />
               </div>
@@ -244,7 +244,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   value={recoveryPasswordConfirm}
                   onChange={(e) => setRecoveryPasswordConfirm(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                  className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                 />
               </div>
 
@@ -258,7 +258,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
               <button
                 type="submit"
                 disabled={recoverySaving}
-                className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm clay-raised hover:scale-[1.02] active:scale-95 transition-all cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {recoverySaving ? t.authSaving : t.authSetNewPasswordBtn}
               </button>
@@ -308,7 +308,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                         value={forgotEmail}
                         onChange={(e) => setForgotEmail(e.target.value)}
                         placeholder="e.g. jacob.miller@ui.ac.id"
-                        className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                        className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                         autoFocus
                       />
                     </div>
@@ -326,7 +326,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   <button
                     type="submit"
                     disabled={sendState === 'sending'}
-                    className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm clay-raised hover:scale-[1.02] active:scale-95 transition-all cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {sendState === 'sending' ? (
                       <>
@@ -423,7 +423,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="e.g. Jacob Miller"
-                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                   />
                 </div>
               )}
@@ -441,7 +441,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="e.g. jacob.miller@ui.ac.id"
-                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                   />
                 </div>
               </div>
@@ -460,7 +460,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl pl-10 pr-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset pl-10 pr-11 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                   />
                   <button
                     type="button"
@@ -487,7 +487,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     value={passwordConfirm}
                     onChange={(e) => setPasswordConfirm(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                    className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
                   />
                 </div>
               )}
@@ -517,7 +517,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm clay-raised hover:scale-[1.02] active:scale-95 transition-all cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {authLoading
                   ? t.authProcessing

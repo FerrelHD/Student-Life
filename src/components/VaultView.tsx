@@ -70,7 +70,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={() => onOpenAddTransaction('income')}
-            className="flex-1 bg-[#1b1b1d] text-white py-3.5 px-5 rounded-full font-jakarta font-extrabold text-sm flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer shadow-md"
+            className="flex-1 bg-[#1b1b1d] text-white py-3.5 px-5 rounded-full font-jakarta font-extrabold text-sm flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer clay-raised"
           >
             <span className="material-symbols-outlined text-lg text-white">add</span>
             <span className="text-white">{t.addMoney}</span>
@@ -78,7 +78,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
 
           <button
             onClick={() => onOpenAddTransaction('expense')}
-            className="w-12 h-12 rounded-full bg-white text-[#1b1b1d] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-md"
+            className="w-12 h-12 rounded-full bg-white text-[#1b1b1d] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer clay-raised"
             title="Transfer / Expense"
           >
             <span className="material-symbols-outlined text-xl text-[#1b1b1d]">send</span>
@@ -224,9 +224,20 @@ export const VaultView: React.FC<VaultViewProps> = ({
                     <h4 className="font-jakarta font-black text-sm text-white">
                       {tx.title}
                     </h4>
-                    <p className="font-jakarta text-xs text-gray-300 font-bold">
-                      {tx.category} • {tx.date}
-                    </p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span
+                        className={`clay-chip px-2 py-0.5 font-jakarta text-[10px] font-extrabold ${
+                          tx.category === 'TRANSPORT'
+                            ? 'bg-[#d1c4e9] text-[#1f1732]'
+                            : tx.category === 'FOOD'
+                            ? 'bg-[#ece28c] text-[#1f1c00]'
+                            : 'bg-[#ffb8b3] text-[#410004]'
+                        }`}
+                      >
+                        {tx.category}
+                      </span>
+                      <span className="font-jakarta text-xs text-gray-300 font-bold">{tx.date}</span>
+                    </div>
                   </div>
                 </div>
 

@@ -434,7 +434,7 @@ export default function App() {
       {/* Dynamic Ambient Expressive Mesh Orbs */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-60 dark:opacity-35 transition-opacity duration-700">
         <div
-          className={`absolute -top-24 -left-24 w-96 h-96 rounded-full blur-3xl animate-orb-1 transition-all duration-700 ${
+          className={`absolute -top-24 -left-24 w-96 h-96 clay-blob blur-xl animate-orb-1 transition-all duration-700 ${
             activeTab === 'dashboard'
               ? 'bg-[#d1c4e9] dark:bg-[#6b5096] opacity-90 scale-110'
               : activeTab === 'missions'
@@ -444,7 +444,7 @@ export default function App() {
         />
 
         <div
-          className={`absolute top-1/3 -right-24 w-96 h-96 rounded-full blur-3xl animate-orb-2 transition-all duration-700 ${
+          className={`absolute top-1/3 -right-24 w-96 h-96 clay-blob blur-xl animate-orb-2 transition-all duration-700 ${
             activeTab === 'vault'
               ? 'bg-[#ece28c] dark:bg-[#807727] opacity-90 scale-125'
               : activeTab === 'dashboard'
@@ -454,7 +454,7 @@ export default function App() {
         />
 
         <div
-          className={`absolute bottom-20 left-10 w-80 h-80 rounded-full blur-3xl animate-orb-3 transition-all duration-700 ${
+          className={`absolute bottom-20 left-10 w-80 h-80 clay-blob blur-xl animate-orb-3 transition-all duration-700 ${
             activeTab === 'missions'
               ? 'bg-[#ffb8b3] dark:bg-[#8a3331] opacity-90 scale-110'
               : activeTab === 'hero'
@@ -464,7 +464,7 @@ export default function App() {
         />
 
         <div
-          className={`absolute top-2/3 right-1/4 w-80 h-80 rounded-full blur-3xl animate-orb-1 transition-all duration-700 ${
+          className={`absolute top-2/3 right-1/4 w-80 h-80 clay-blob blur-xl animate-orb-1 transition-all duration-700 ${
             activeTab === 'agenda'
               ? 'bg-[#cce5ff] dark:bg-[#254b73] opacity-90 scale-125'
               : 'bg-[#e2d7f5] dark:bg-[#3a285c] opacity-40'
@@ -652,11 +652,13 @@ export default function App() {
         }}
       >
         <div
-          className="flex items-center gap-2.5 px-5 py-3.5 rounded-full shadow-2xl font-jakarta font-extrabold text-sm text-white border border-white/20"
+          className="flex items-center gap-2.5 px-5 py-3.5 rounded-full font-jakarta font-extrabold text-sm text-white border border-white/20"
           style={{
             background: 'rgba(30,28,40,0.88)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
+            boxShadow:
+              '-5px -5px 12px rgba(255,255,255,0.05), 6px 6px 16px rgba(0,0,0,0.45), inset 1px 1px 1px rgba(255,255,255,0.08)',
           }}
         >
           <span className="text-lg">{toast.icon}</span>

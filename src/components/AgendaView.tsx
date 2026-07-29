@@ -187,7 +187,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
       {/* Floating Add Mission Button */}
       <button
         onClick={onOpenAddMission}
-        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] flex items-center justify-center shadow-2xl z-40 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] flex items-center justify-center clay-raised z-40 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
         title="Add New Event"
       >
         <span className="material-symbols-outlined text-3xl">add</span>

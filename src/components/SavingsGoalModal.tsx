@@ -125,7 +125,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(e.target.value)}
                 placeholder="e.g. 500000"
-                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
               />
             </div>
 
@@ -139,7 +139,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm clay-raised hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               >
                 {t.depositBtn}
               </button>
@@ -157,7 +157,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. New MacBook Pro M3"
-                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
               />
             </div>
 
@@ -172,7 +172,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
                 value={targetAmount}
                 onChange={(e) => setTargetAmount(e.target.value)}
                 placeholder="28000000"
-                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
               />
             </div>
 
@@ -186,7 +186,7 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-[#ece28c] text-[#1f1c00] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                className="flex-1 bg-[#ece28c] text-[#1f1c00] font-black py-3.5 rounded-full text-sm clay-raised hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               >
                 {t.saveGoalBtn}
               </button>

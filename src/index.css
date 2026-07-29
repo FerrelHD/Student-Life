@@ -66,39 +66,6 @@
   animation: floatOrb3 18s ease-in-out infinite;
 }
 
-/* Glass Shimmer Reflection & Glowing Borders */
-@keyframes shimmerReflection {
-  0% {
-    transform: translateX(-100%) rotate(25deg);
-  }
-  100% {
-    transform: translateX(200%) rotate(25deg);
-  }
-}
-
-.expressive-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.expressive-shimmer::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    60deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.25) 50%,
-    transparent 70%
-  );
-  transform: translateX(-100%) rotate(25deg);
-  animation: shimmerReflection 6s infinite;
-  pointer-events: none;
-}
-
 .expressive-glow-lavender {
   box-shadow: 0 0 25px rgba(209, 196, 233, 0.45);
 }
@@ -201,6 +168,63 @@
 
 .expressive-pill {
   border-radius: 9999px;
+}
+
+/* Clay convex — buttons, toast, anything that should look like it's popping out */
+.clay-raised {
+  box-shadow:
+    -6px -6px 14px rgba(255, 255, 255, 0.5),
+    6px 6px 16px rgba(20, 10, 30, 0.18),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.35);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.dark .clay-raised {
+  box-shadow:
+    -5px -5px 12px rgba(255, 255, 255, 0.05),
+    6px 6px 16px rgba(0, 0, 0, 0.45),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Clay concave — inputs, textareas: looks pressed in */
+.clay-inset {
+  box-shadow:
+    inset 3px 3px 8px rgba(20, 10, 30, 0.1),
+    inset -3px -3px 8px rgba(255, 255, 255, 0.6);
+}
+
+.dark .clay-inset {
+  box-shadow:
+    inset 3px 3px 8px rgba(0, 0, 0, 0.35),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.04);
+}
+
+/* Clay chip — small pill for tags/badges/status */
+.clay-chip {
+  border-radius: 9999px;
+  box-shadow:
+    -3px -3px 8px rgba(255, 255, 255, 0.5),
+    3px 3px 10px rgba(20, 10, 30, 0.12);
+}
+
+.dark .clay-chip {
+  box-shadow:
+    -2px -2px 6px rgba(255, 255, 255, 0.04),
+    3px 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Clay blob — organic solid decoration shapes (background) */
+.clay-blob {
+  border-radius: 42% 58% 65% 35% / 45% 45% 55% 55%;
+  box-shadow:
+    -14px -14px 30px rgba(255, 255, 255, 0.35),
+    18px 18px 40px rgba(20, 10, 30, 0.1);
+}
+
+.dark .clay-blob {
+  box-shadow:
+    -10px -10px 24px rgba(255, 255, 255, 0.03),
+    18px 18px 40px rgba(0, 0, 0, 0.35);
 }
 
 /* Material Icons Helper */

@@ -282,14 +282,14 @@ export const DailyQuizModal: React.FC<DailyQuizModalProps> = ({
                     setSubmitted(true);
                     if (selectedOption === quiz.correctIndex) triggerConfetti();
                   }}
-                  className="w-full bg-[#ece28c] text-[#1f1c00] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 disabled:opacity-40 transition-all cursor-pointer"
+                  className="w-full bg-[#ece28c] text-[#1f1c00] font-black py-3.5 rounded-full text-sm clay-raised hover:scale-[1.02] active:scale-95 disabled:opacity-40 transition-all cursor-pointer"
                 >
                   {labels.submitBtn}
                 </button>
               ) : (
                 <button
                   onClick={handleClaim}
-                  className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                  className="w-full bg-[#d1c4e9] text-[#1f1732] font-black py-3.5 rounded-full text-sm clay-raised hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
                 >
                   {selectedOption === quiz.correctIndex ? labels.claimBtn : labels.closeBtn}
                 </button>

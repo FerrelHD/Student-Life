@@ -40,7 +40,7 @@ export function ExpressiveSelect<T extends string = string>({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-white/10 text-white border border-white/15 rounded-2xl px-4 py-3 text-sm font-semibold flex items-center justify-between hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] transition-all cursor-pointer shadow-sm"
+        className="w-full bg-white/10 text-white border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm font-semibold flex items-center justify-between hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] transition-all cursor-pointer shadow-sm"
       >
         <span className="truncate flex items-center gap-2">
           {selectedOption.icon && (

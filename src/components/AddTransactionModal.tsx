@@ -151,7 +151,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={type === 'income' ? 'e.g. Gaji Asisten Dosen / Les' : 'e.g. Makan Siang / Kopi'}
-              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
@@ -166,7 +166,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="e.g. 50000"
-              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
@@ -193,7 +193,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer shadow-md hover:scale-[1.02] active:scale-95"
+              className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer clay-raised hover:scale-[1.02] active:scale-95"
             >
               {editingTransaction ? t.saveTransactionBtn : t.recordTx}
             </button>

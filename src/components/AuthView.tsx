@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
-import { Capacitor } from '@capacitor/core';
 import { LanguageType, UserProfile } from '../types';
 import { supabase } from '../lib/supabaseClient';
 import { getTranslation } from '../utils/i18n';
-
-// On native mobile, the emailed reset link must reopen the app via a custom
-// URL scheme (see App.tsx's appUrlOpen listener) instead of a web redirect —
-// scheme must also be registered as an allowed redirect URL in the Supabase
-// dashboard (Authentication -> URL Configuration).
-const NATIVE_RESET_REDIRECT_URL = 'studentlife://reset-callback';
 
 // ─── Types ────────────────────────────────────────────────────
 type AuthMode = 'login' | 'register' | 'forgot';
@@ -135,9 +128,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
     setSendState('sending');
     setSendError('');
 
-    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
-      redirectTo: Capacitor.isNativePlatform() ? NATIVE_RESET_REDIRECT_URL : undefined,
-    });
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim());
     if (error) {
       setSendError(error.message);
       setSendState('error');

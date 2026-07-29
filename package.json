@@ -2,40 +2,17 @@
   "name": "student-life",
   "private": true,
   "version": "1.0.0",
-  "description": "Student Life - Operative Life & Academic Companion Desktop App",
+  "description": "Student Life - Operative Life & Academic Companion Web App",
   "author": "FerrelHD",
-  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
-    "clean": "rm -rf dist dist-electron release server.js",
+    "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "test": "vitest run",
-    "cap:sync": "npm run build && npx cap sync",
-    "android:open": "npx cap open android",
-    "ios:open": "npx cap open ios",
-    "compile:electron": "tsc -p tsconfig.electron.json",
-    "electron:dev": "concurrently -k \"npm run dev\" \"wait-on http://localhost:3000 && tsc -p tsconfig.electron.json && electron .\"",
-    "electron:build": "npm run build && tsc -p tsconfig.electron.json && electron-builder"
-  },
-  "build": {
-    "appId": "com.studentlife.app",
-    "productName": "Student Life",
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "dist/**/*",
-      "dist-electron/**/*"
-    ],
-    "win": {
-      "target": "nsis"
-    }
+    "test": "vitest run"
   },
   "dependencies": {
-    "@capacitor/app": "^8.1.1",
-    "@capacitor/core": "^8.4.2",
     "@supabase/supabase-js": "^2.45.4",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
@@ -46,23 +23,16 @@
     "vite": "^6.2.3"
   },
   "devDependencies": {
-    "@capacitor/android": "^8.4.2",
-    "@capacitor/cli": "^8.4.2",
-    "@capacitor/ios": "^8.4.2",
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.21",
-    "concurrently": "^10.0.4",
     "cross-env": "^10.1.0",
-    "electron": "^43.2.0",
-    "electron-builder": "^26.15.3",
     "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.3",
-    "vitest": "^4.1.10",
-    "wait-on": "^9.1.0"
+    "vitest": "^4.1.10"
   }
 }

@@ -23,5 +23,5 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "exclude": ["node_modules", "dist", "dist-electron", "release", "supabase"]
+  "exclude": ["node_modules", "dist", "supabase"]
 }

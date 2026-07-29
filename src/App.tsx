@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { App as CapacitorApp } from '@capacitor/app';
 import {
   TabType,
   Mission,
@@ -164,25 +163,6 @@ export default function App() {
       setSession(newSession);
     });
     return () => listener.subscription.unsubscribe();
-  }, []);
-
-  // Handle the emailed password-reset link reopening the app via a custom URL
-  // scheme on native mobile (see AuthView.tsx's NATIVE_RESET_REDIRECT_URL).
-  // Supabase's detectSessionInUrl only reads window.location, so a deep link
-  // has to be parsed and turned into a session manually.
-  useEffect(() => {
-    const listenerPromise = CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
-      const fragment = url.split('#')[1] ?? '';
-      const params = new URLSearchParams(fragment);
-      const access_token = params.get('access_token');
-      const refresh_token = params.get('refresh_token');
-      if (!access_token || !refresh_token) return;
-      const { error } = await supabase.auth.setSession({ access_token, refresh_token });
-      if (!error) setPasswordRecovery(true);
-    });
-    return () => {
-      listenerPromise.then((l) => l.remove());
-    };
   }, []);
 
   // Load this user's data whenever a session appears

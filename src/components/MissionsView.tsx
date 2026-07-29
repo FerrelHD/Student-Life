@@ -60,7 +60,7 @@ export const MissionsView: React.FC<MissionsViewProps> = ({
   };
 
   return (
-    <div className="pt-24 pb-32 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+    <div className="pt-24 pb-32 md:pb-16 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
       {/* Search Bar */}
       <div className="relative">
         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">

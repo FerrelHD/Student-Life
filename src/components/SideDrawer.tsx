@@ -15,20 +15,24 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
   profile,
   onSelectTab,
 }) => {
-  if (!isOpen) return null;
-
   const t = getTranslation(profile.language);
 
   return (
-    <div className="fixed inset-0 z-50 flex">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
+    <>
+      {/* Backdrop — mobile-only, only while the drawer is toggled open */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity md:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      {/* Drawer content */}
-      <div className="relative w-80 max-w-[80vw] bg-[#fcf8fb] dark:bg-[#121214] text-[#1b1b1d] dark:text-[#f3f0f2] border-r border-black/5 dark:border-white/10 h-full p-6 flex flex-col justify-between overflow-y-auto shadow-2xl z-10 animate-in slide-in-from-left duration-300">
+      {/* Rail: slide-in overlay on mobile, permanent pinned sidebar on desktop */}
+      <div
+        className={`fixed top-0 left-0 z-50 md:z-30 w-80 max-w-[80vw] md:w-72 md:max-w-none bg-[#fcf8fb] dark:bg-[#121214] text-[#1b1b1d] dark:text-[#f3f0f2] border-r border-black/5 dark:border-white/10 h-screen p-6 flex flex-col justify-between overflow-y-auto shadow-2xl md:shadow-[8px_0_24px_rgba(20,10,30,0.06)] dark:md:shadow-[8px_0_24px_rgba(0,0,0,0.3)] transition-transform duration-300 md:translate-x-0 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
         <div>
           {/* Header */}
           <div className="flex items-center justify-between pb-5 border-b border-black/5 dark:border-white/10">
@@ -48,7 +52,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
             <button
               onClick={onClose}
               aria-label={profile.language === 'id' ? 'Tutup' : 'Close'}
-              className="w-11 h-11 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-[#1b1b1d] dark:text-[#f3f0f2]"
+              className="md:hidden w-11 h-11 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-[#1b1b1d] dark:text-[#f3f0f2]"
             >
               <span className="material-symbols-outlined text-lg">close</span>
             </button>
@@ -150,10 +154,10 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
         {/* Footer info */}
         <div className="pt-6 border-t border-black/5 dark:border-white/10 text-center font-jakarta text-xs text-gray-500 dark:text-gray-400 font-semibold space-y-1">
-          <p className="font-extrabold text-[#635979] dark:text-[#cdc1e5]">Student Life Mobile</p>
+          <p className="font-extrabold text-[#635979] dark:text-[#cdc1e5]">Student Life</p>
           <p>© 2026 Academic Companion Engine</p>
         </div>
       </div>
-    </div>
+    </>
   );
 };

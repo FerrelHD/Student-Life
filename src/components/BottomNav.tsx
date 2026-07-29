@@ -49,7 +49,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.90), transparent)';
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-40 px-5 flex justify-center pointer-events-none">
+    <div className="md:hidden fixed bottom-6 left-0 right-0 z-40 px-5 flex justify-center pointer-events-none">
       <nav
         className="pointer-events-auto relative flex items-center gap-0.5 px-2 py-2 rounded-full max-w-sm w-full justify-between overflow-hidden"
         style={{

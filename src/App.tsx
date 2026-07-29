@@ -483,7 +483,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="relative z-10">
+      <main className="relative z-10 md:pl-72">
         {activeTab === 'dashboard' && (
           <DashboardView
             profile={profile}

@@ -52,7 +52,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const xpRemaining = 1000 - xpInLevel;
 
   return (
-    <div className="pt-24 pb-32 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+    <div className="pt-24 pb-32 md:pb-16 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
       {/* XP Mastery / Next Reward Progress Card (Pastel Lavender) */}
       <section className="expressive-card expressive-card-lavender expressive-shimmer p-6 shadow-sm">
         <div className="flex items-center justify-between mb-3">

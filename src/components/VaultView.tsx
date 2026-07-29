@@ -50,7 +50,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
   };
 
   return (
-    <div className="pt-24 pb-32 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+    <div className="pt-24 pb-32 md:pb-16 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
       {/* Total Balance Hero Card (Always Rupiah) */}
       <section className="expressive-card expressive-card-lavender p-6 relative overflow-hidden shadow-sm text-[#1f1732]">
         <div className="flex justify-between items-start mb-6">

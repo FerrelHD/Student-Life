@@ -47,14 +47,14 @@ export const Header: React.FC<HeaderProps> = ({
   const info = getTitleAndSubtitle();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white/40 dark:bg-[#0f0e13]/60 backdrop-blur-xl border-b border-black/5 dark:border-white/5 transition-colors duration-200">
+    <header className="fixed top-0 left-0 right-0 md:left-72 z-40 bg-white/40 dark:bg-[#0f0e13]/60 backdrop-blur-xl border-b border-black/5 dark:border-white/5 transition-colors duration-200">
       <div className="max-w-md md:max-w-4xl mx-auto px-5 h-20 flex items-center justify-between">
-        {/* Left: Drawer + Profile Summary */}
-        <div className="flex items-center gap-1">
+        {/* Left: Drawer (mobile only, desktop uses the sidebar) + Profile Summary */}
+        <div className="flex items-center gap-3">
         <button
           onClick={onOpenDrawer}
           aria-label={profile.language === 'id' ? 'Buka menu' : 'Open menu'}
-          className="w-11 h-11 rounded-full flex items-center justify-center text-[#1b1b1d] dark:text-[#f3f0f2] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
+          className="md:hidden w-11 h-11 rounded-full flex items-center justify-center text-[#1b1b1d] dark:text-[#f3f0f2] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
         >
           <span className="material-symbols-outlined text-2xl">menu</span>
         </button>

@@ -10,3 +10,6 @@ supabase/.temp/
 
 # Local Netlify folder
 .netlify
+
+# Local-only scratch assets (AI Studio working files)
+assets/

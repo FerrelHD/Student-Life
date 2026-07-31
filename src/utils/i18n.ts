@@ -91,6 +91,9 @@ export const i18n = {
     almostThere: 'Sedikit lagi tercapai! 🚀',
     tapToDeposit: 'Klik untuk Setor / Edit',
     noTransactions: 'Belum ada transaksi. Catat yang pertama!',
+    searchTransactions: 'Cari transaksi...',
+    noTransactionsMatch: 'Gak ada transaksi yang cocok.',
+    exportCsv: 'Ekspor CSV',
 
     // Agenda
     scheduleFor: 'JADWAL UNTUK',
@@ -282,6 +285,9 @@ export const i18n = {
     almostThere: 'Almost there! Keep pushing 🚀',
     tapToDeposit: 'Tap to Deposit / Edit',
     noTransactions: 'No transactions yet. Log your first one!',
+    searchTransactions: 'Search transactions...',
+    noTransactionsMatch: 'No transactions match.',
+    exportCsv: 'Export CSV',
 
     // Agenda
     scheduleFor: 'SCHEDULE FOR',

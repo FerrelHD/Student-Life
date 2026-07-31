@@ -1,6 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Transaction, WeeklySpend, SavingsGoal, LanguageType } from '../types';
 import { getTranslation } from '../utils/i18n';
+
+function downloadTransactionsCsv(transactions: Transaction[]) {
+  const header = ['Date', 'Title', 'Category', 'Type', 'Amount'];
+  const rows = transactions.map((tx) => [tx.date, tx.title, tx.category, tx.type, String(tx.amount)]);
+  const csv = [header, ...rows]
+    .map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
 
 interface VaultViewProps {
   transactions: Transaction[];
@@ -27,6 +42,13 @@ export const VaultView: React.FC<VaultViewProps> = ({
 }) => {
   const langKey = (language as LanguageType) || 'id';
   const t = getTranslation(langKey);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredTransactions = transactions.filter(
+    (tx) =>
+      tx.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tx.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const savingsPct = Math.min(
     100,
@@ -51,6 +73,20 @@ export const VaultView: React.FC<VaultViewProps> = ({
 
   return (
     <div className="pt-24 pb-32 md:pb-16 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+      {/* Search Bar */}
+      <div className="relative">
+        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          search
+        </span>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={t.searchTransactions}
+          className="w-full bg-white dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] border border-black/10 dark:border-white/10 rounded-full py-3.5 pl-12 pr-4 font-jakarta text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+        />
+      </div>
+
       {/* Total Balance Hero Card (Always Rupiah) */}
       <section className="expressive-card expressive-card-lavender p-6 relative overflow-hidden shadow-sm text-[#1f1732]">
         <div className="flex justify-between items-start mb-6">
@@ -178,9 +214,21 @@ export const VaultView: React.FC<VaultViewProps> = ({
           <h3 className="font-jakarta font-black text-lg text-[#1b1b1d] dark:text-[#f3f0f2]">
             {t.recentTransactions}
           </h3>
-          <span className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">
-            {t.transactionsCount.replace('{count}', String(transactions.length))}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">
+              {t.transactionsCount.replace('{count}', String(filteredTransactions.length))}
+            </span>
+            {transactions.length > 0 && (
+              <button
+                type="button"
+                onClick={() => downloadTransactionsCsv(filteredTransactions)}
+                className="flex items-center gap-1 font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5] hover:underline cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-sm">download</span>
+                {t.exportCsv}
+              </button>
+            )}
+          </div>
         </div>
 
         {transactions.length === 0 && (
@@ -190,8 +238,15 @@ export const VaultView: React.FC<VaultViewProps> = ({
           </div>
         )}
 
+        {transactions.length > 0 && filteredTransactions.length === 0 && (
+          <div className="text-center py-10 space-y-3">
+            <span className="material-symbols-outlined text-4xl text-[#635979] dark:text-[#cdc1e5] opacity-60">search_off</span>
+            <p className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">{t.noTransactionsMatch}</p>
+          </div>
+        )}
+
         <div className="space-y-3">
-          {transactions.map((tx) => {
+          {filteredTransactions.map((tx) => {
             const isIncome = tx.type === 'income';
 
             return (

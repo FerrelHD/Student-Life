@@ -296,7 +296,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ml-auto">
                   <span
                     className={`font-jakarta font-black text-sm whitespace-nowrap flex-shrink-0 ${
                       isIncome ? 'text-emerald-400' : 'text-[#ffb8b3]'

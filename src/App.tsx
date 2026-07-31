@@ -47,6 +47,8 @@ import { NotificationsModal } from './components/NotificationsModal';
 import { BadgesModal } from './components/BadgesModal';
 import { triggerConfetti } from './utils/confetti';
 import { addXP, checkBadgeThresholds } from './utils/gamification';
+import { getDueRecurringTransactions } from './utils/recurringTransactions';
+import { getTranslation } from './utils/i18n';
 
 import { DashboardView } from './components/DashboardView';
 import { MissionsView } from './components/MissionsView';
@@ -197,9 +199,31 @@ export default function App() {
         ]);
       if (cancelled) return;
 
-      setProfile(profileResult.status === 'fulfilled' ? profileResult.value : fallbackProfile(session));
+      const resolvedProfile = profileResult.status === 'fulfilled' ? profileResult.value : fallbackProfile(session);
+      setProfile(resolvedProfile);
       setMissions(missionsResult.status === 'fulfilled' ? missionsResult.value : []);
-      setTransactions(txResult.status === 'fulfilled' ? txResult.value : []);
+      const resolvedTransactions = txResult.status === 'fulfilled' ? txResult.value : [];
+      setTransactions(resolvedTransactions);
+
+      // Recurring transactions (rent, monthly allowance, etc): if a series' last
+      // instance was created in a prior month, roll a fresh copy in for this month.
+      const due = getDueRecurringTransactions(resolvedTransactions, new Date());
+      if (due.length > 0) {
+        const tr = getTranslation(resolvedProfile.language);
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        due.forEach((tx) => {
+          insertTransaction(uid, {
+            title: tx.title,
+            category: tx.category,
+            amount: tx.amount,
+            type: tx.type,
+            recurrence: tx.recurrence,
+            date: `${tr.today}, ${timeStr}`,
+          })
+            .then((newTx) => setTransactions((prev) => [newTx, ...prev]))
+            .catch((err) => console.error('[recurring-transaction] rollover failed:', err));
+        });
+      }
       setSavingsGoal(
         goalResult.status === 'fulfilled' && goalResult.value ? goalResult.value : FALLBACK_SAVINGS_GOAL
       );
@@ -291,7 +315,7 @@ export default function App() {
     }
   };
 
-  const handleAddTransaction = async (newTxData: Omit<Transaction, 'id'>) => {
+  const handleAddTransaction = async (newTxData: Omit<Transaction, 'id' | 'createdAt'>) => {
     if (!userId) return;
     try {
       const newTx = await insertTransaction(userId, newTxData);
@@ -312,7 +336,7 @@ export default function App() {
     deleteMission(id).catch(onSyncError);
   };
 
-  const handleEditTransaction = (id: string, patch: Omit<Transaction, 'id'>) => {
+  const handleEditTransaction = (id: string, patch: Omit<Transaction, 'id' | 'createdAt'>) => {
     setTransactions((prev) => prev.map((tx) => (tx.id === id ? { ...tx, ...patch } : tx)));
     updateTransaction(id, patch).catch(onSyncError);
   };

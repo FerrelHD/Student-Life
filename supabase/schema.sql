@@ -100,8 +100,12 @@ create table if not exists public.transactions (
   amount numeric not null,
   type text not null check (type in ('income', 'expense')),
   date text not null default '',
+  recurrence text not null default 'none' check (recurrence in ('none', 'monthly')),
   created_at timestamptz not null default now()
 );
+
+-- Safe to re-run on an existing project that predates this column.
+alter table public.transactions add column if not exists recurrence text not null default 'none' check (recurrence in ('none', 'monthly'));
 
 alter table public.transactions enable row level security;
 

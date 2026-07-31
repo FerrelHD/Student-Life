@@ -25,6 +25,8 @@ export type TransactionType = 'income' | 'expense';
 
 export type TransactionCategory = 'INCOME' | 'FOOD' | 'TRANSPORT' | 'SUBSCRIPTION' | 'TECH' | 'OTHER';
 
+export type RecurrenceType = 'none' | 'monthly';
+
 export interface Transaction {
   id: string;
   title: string;
@@ -32,6 +34,8 @@ export interface Transaction {
   amount: number;
   type: TransactionType;
   date: string;
+  recurrence: RecurrenceType;
+  createdAt: string;
 }
 
 export interface UserProfile {

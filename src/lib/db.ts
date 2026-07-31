@@ -197,13 +197,15 @@ export async function fetchTransactions(userId: string): Promise<Transaction[]> 
       amount: Number(row.amount),
       type: row.type,
       date: row.date,
+      recurrence: row.recurrence ?? 'none',
+      createdAt: row.created_at,
     }));
   });
 }
 
 export async function insertTransaction(
   userId: string,
-  tx: Omit<Transaction, 'id'>
+  tx: Omit<Transaction, 'id' | 'createdAt'>
 ): Promise<Transaction> {
   const { data, error } = await supabase
     .from('transactions')
@@ -214,6 +216,7 @@ export async function insertTransaction(
       amount: tx.amount,
       type: tx.type,
       date: tx.date,
+      recurrence: tx.recurrence,
     })
     .select()
     .single();
@@ -225,16 +228,19 @@ export async function insertTransaction(
     amount: Number(data.amount),
     type: data.type,
     date: data.date,
+    recurrence: data.recurrence ?? 'none',
+    createdAt: data.created_at,
   };
 }
 
-export async function updateTransaction(txId: string, tx: Partial<Omit<Transaction, 'id'>>) {
+export async function updateTransaction(txId: string, tx: Partial<Omit<Transaction, 'id' | 'createdAt'>>) {
   const patch: Record<string, unknown> = {};
   if (tx.title !== undefined) patch.title = tx.title;
   if (tx.category !== undefined) patch.category = tx.category;
   if (tx.amount !== undefined) patch.amount = tx.amount;
   if (tx.type !== undefined) patch.type = tx.type;
   if (tx.date !== undefined) patch.date = tx.date;
+  if (tx.recurrence !== undefined) patch.recurrence = tx.recurrence;
 
   const { error } = await supabase.from('transactions').update(patch).eq('id', txId);
   if (error) throw error;

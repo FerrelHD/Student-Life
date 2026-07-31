@@ -8,9 +8,9 @@ interface AddTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultType?: TransactionType;
-  onAddTransaction: (transaction: Omit<Transaction, 'id'>) => void;
+  onAddTransaction: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
   editingTransaction?: Transaction | null;
-  onEditTransaction?: (id: string, patch: Omit<Transaction, 'id'>) => void;
+  onEditTransaction?: (id: string, patch: Omit<Transaction, 'id' | 'createdAt'>) => void;
   language?: LanguageType;
 }
 
@@ -36,6 +36,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const [amount, setAmount] = useState('');
   const [type, setType] = useState<TransactionType>(defaultType);
   const [category, setCategory] = useState<TransactionCategory>('FOOD');
+  const [recurring, setRecurring] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -44,11 +45,13 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       setAmount(String(editingTransaction.amount));
       setType(editingTransaction.type);
       setCategory(editingTransaction.category);
+      setRecurring(editingTransaction.recurrence === 'monthly');
     } else {
       setTitle('');
       setAmount('');
       setType(defaultType);
       setCategory('FOOD');
+      setRecurring(false);
     }
   }, [isOpen, editingTransaction, defaultType]);
 
@@ -62,6 +65,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     if (!title.trim() || isNaN(numAmount) || numAmount <= 0) return;
 
     const category_ = type === 'income' ? 'INCOME' : category;
+    const recurrence = recurring ? 'monthly' : 'none';
 
     if (editingTransaction) {
       onEditTransaction?.(editingTransaction.id, {
@@ -70,6 +74,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         type,
         category: category_,
         date: editingTransaction.date,
+        recurrence,
       });
     } else {
       const now = new Date();
@@ -80,6 +85,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         type,
         category: category_,
         date: `${t.today}, ${timeStr}`,
+        recurrence,
       });
     }
 
@@ -182,6 +188,16 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               />
             </div>
           )}
+
+          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={recurring}
+              onChange={(e) => setRecurring(e.target.checked)}
+              className="w-4 h-4 rounded accent-[#d1c4e9] cursor-pointer"
+            />
+            <span className="text-xs font-extrabold text-gray-300">{t.recurringMonthly}</span>
+          </label>
 
           <div className="pt-3 flex gap-3">
             <button

@@ -13,10 +13,15 @@ export default defineConfig(() => {
       VitePWA({
         // We already hand-maintain public/manifest.json + icons (wired for
         // iOS Add to Home Screen), so only generate the service worker here.
+        // injectManifest (not generateSW) because src/sw.ts also needs to
+        // handle 'push' / 'notificationclick' for deadline reminders.
         manifest: false,
         registerType: 'autoUpdate',
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'sw.ts',
         includeAssets: ['favicon.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png'],
-        workbox: {
+        injectManifest: {
           globPatterns: ['**/*.{js,css,html,png,svg}'],
         },
       }),

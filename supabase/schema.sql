@@ -151,6 +151,26 @@ create policy "notifications: crud own" on public.notifications
 create index if not exists notifications_user_id_idx on public.notifications (user_id);
 
 -- ─────────────────────────────────────────────────────────────
+-- push_subscriptions — Web Push endpoints, one row per subscribed
+-- browser/device. A user can have several (phone + laptop, etc).
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.push_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  endpoint text not null unique,
+  p256dh text not null,
+  auth text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.push_subscriptions enable row level security;
+
+create policy "push_subscriptions: crud own" on public.push_subscriptions
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create index if not exists push_subscriptions_user_id_idx on public.push_subscriptions (user_id);
+
+-- ─────────────────────────────────────────────────────────────
 -- user_badges — unlock state only; the badge catalog (title/icon/tier)
 -- stays static on the frontend since it never varies per user.
 -- ─────────────────────────────────────────────────────────────
@@ -165,3 +185,23 @@ alter table public.user_badges enable row level security;
 
 create policy "user_badges: crud own" on public.user_badges
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ─────────────────────────────────────────────────────────────
+-- Deadline push reminders: a daily cron job hits the send-deadline-reminders
+-- Edge Function, which emails... er, pushes every mission due tomorrow.
+--
+-- One-time setup on a fresh project:
+--   create extension if not exists pg_cron with schema extensions;
+--   create extension if not exists pg_net with schema extensions;
+--   supabase functions deploy send-deadline-reminders
+--   supabase secrets set VAPID_PUBLIC_KEY="..." VAPID_PRIVATE_KEY="..." VAPID_SUBJECT="mailto:you@example.com"
+--
+--   select cron.schedule(
+--     'daily-deadline-push',
+--     '0 1 * * *', -- 01:00 UTC = 08:00 WIB
+--     $$ select net.http_post(
+--          url:='https://<project-ref>.supabase.co/functions/v1/send-deadline-reminders',
+--          headers:=jsonb_build_object('Authorization','Bearer <anon key>','Content-Type','application/json')
+--        ) $$
+--   );
+-- ─────────────────────────────────────────────────────────────

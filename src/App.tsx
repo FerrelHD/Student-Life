@@ -49,6 +49,7 @@ import { triggerConfetti } from './utils/confetti';
 import { addXP, checkBadgeThresholds } from './utils/gamification';
 import { getDueRecurringTransactions } from './utils/recurringTransactions';
 import { getTranslation, formatTimeNow } from './utils/i18n';
+import { subscribeToPush, unsubscribeFromPush } from './utils/push';
 
 import { DashboardView } from './components/DashboardView';
 import { MissionsView } from './components/MissionsView';
@@ -397,8 +398,23 @@ export default function App() {
     if (profile) persistProfile({ darkMode: !profile.darkMode });
   };
 
-  const handleToggleNotifications = () => {
-    if (profile) persistProfile({ notifications: !profile.notifications });
+  const handleToggleNotifications = async () => {
+    if (!profile || !userId) return;
+    const turningOn = !profile.notifications;
+    try {
+      if (turningOn) {
+        await subscribeToPush(userId);
+      } else {
+        await unsubscribeFromPush();
+      }
+      persistProfile({ notifications: turningOn });
+    } catch (err) {
+      console.error('[push] subscribe toggle failed:', err);
+      showToast(
+        profile.language === 'id' ? 'Gagal mengaktifkan notifikasi push' : 'Failed to enable push notifications',
+        '⚠️'
+      );
+    }
   };
 
   const handleToggleLanguage = () => {

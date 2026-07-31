@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LanguageType, Transaction, TransactionCategory, TransactionType } from '../types';
-import { getTranslation } from '../utils/i18n';
+import { getTranslation, formatTimeNow } from '../utils/i18n';
 import { useEscapeClose } from '../utils/useEscapeClose';
 import { ExpressiveSelect, SelectOption } from './ExpressiveSelect';
 
@@ -77,8 +77,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         recurrence,
       });
     } else {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const timeStr = formatTimeNow(language);
       onAddTransaction({
         title: title.trim(),
         amount: numAmount,

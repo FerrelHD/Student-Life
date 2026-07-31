@@ -396,3 +396,13 @@ export const i18n = {
 export const getTranslation = (lang: LanguageType = 'id') => {
   return i18n[lang] || i18n.id;
 };
+
+// Explicit locale + hour12, not the runtime's ambient default -- otherwise the
+// same "now" renders as "22:23" on one device and "10:23 PM" on another,
+// depending on that device's system locale.
+export const formatTimeNow = (lang: LanguageType = 'id') => {
+  const now = new Date();
+  return lang === 'en'
+    ? now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+    : now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+};

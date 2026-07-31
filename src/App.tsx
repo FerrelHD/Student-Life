@@ -48,7 +48,7 @@ import { BadgesModal } from './components/BadgesModal';
 import { triggerConfetti } from './utils/confetti';
 import { addXP, checkBadgeThresholds } from './utils/gamification';
 import { getDueRecurringTransactions } from './utils/recurringTransactions';
-import { getTranslation } from './utils/i18n';
+import { getTranslation, formatTimeNow } from './utils/i18n';
 
 import { DashboardView } from './components/DashboardView';
 import { MissionsView } from './components/MissionsView';
@@ -210,7 +210,7 @@ export default function App() {
       const due = getDueRecurringTransactions(resolvedTransactions, new Date());
       if (due.length > 0) {
         const tr = getTranslation(resolvedProfile.language);
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timeStr = formatTimeNow(resolvedProfile.language);
         due.forEach((tx) => {
           insertTransaction(uid, {
             title: tx.title,

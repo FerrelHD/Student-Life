@@ -291,14 +291,14 @@ export const VaultView: React.FC<VaultViewProps> = ({
                       >
                         {tx.category}
                       </span>
-                      <span className="font-jakarta text-xs text-gray-300 font-bold">{tx.date}</span>
+                      <span className="font-jakarta text-xs text-gray-300 font-bold whitespace-nowrap">{tx.date}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span
-                    className={`font-jakarta font-black text-sm ${
+                    className={`font-jakarta font-black text-sm whitespace-nowrap flex-shrink-0 ${
                       isIncome ? 'text-emerald-400' : 'text-[#ffb8b3]'
                     }`}
                   >

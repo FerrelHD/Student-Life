@@ -210,11 +210,11 @@ export const VaultView: React.FC<VaultViewProps> = ({
 
       {/* Recent Transactions List (Always Rupiah) */}
       <section className="space-y-3">
-        <div className="flex justify-between items-center px-1">
+        <div className="space-y-1 px-1">
           <h3 className="font-jakarta font-black text-lg text-[#1b1b1d] dark:text-[#f3f0f2]">
             {t.recentTransactions}
           </h3>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
             <span className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">
               {t.transactionsCount.replace('{count}', String(filteredTransactions.length))}
             </span>

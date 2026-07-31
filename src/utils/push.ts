@@ -15,7 +15,8 @@ export const pushSupported =
   typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window;
 
 export async function subscribeToPush(userId: string): Promise<void> {
-  if (!pushSupported || !VAPID_PUBLIC_KEY) return;
+  if (!pushSupported) throw new Error('Push notifications are not supported in this browser');
+  if (!VAPID_PUBLIC_KEY) throw new Error('VITE_VAPID_PUBLIC_KEY is not configured');
 
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') throw new Error('Notification permission denied');

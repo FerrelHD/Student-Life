@@ -410,10 +410,15 @@ export default function App() {
       persistProfile({ notifications: turningOn });
     } catch (err) {
       console.error('[push] subscribe toggle failed:', err);
-      showToast(
-        profile.language === 'id' ? 'Gagal mengaktifkan notifikasi push' : 'Failed to enable push notifications',
-        '⚠️'
-      );
+      const notSupported = err instanceof Error && err.message.includes('not supported');
+      const msg = profile.language === 'id'
+        ? notSupported
+          ? 'Push notification butuh iOS 16.4+ dan situs dibuka dari ikon Home Screen (bukan tab Safari biasa)'
+          : 'Gagal mengaktifkan notifikasi push'
+        : notSupported
+          ? 'Push notifications need iOS 16.4+ and the site opened from its Home Screen icon (not a Safari tab)'
+          : 'Failed to enable push notifications';
+      showToast(msg, '⚠️');
     }
   };
 

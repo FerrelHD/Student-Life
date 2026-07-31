@@ -252,7 +252,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
             return (
               <div
                 key={tx.id}
-                className="expressive-card expressive-card-onyx p-4 flex items-center justify-between shadow-sm text-white"
+                className="expressive-card expressive-card-onyx p-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 shadow-sm text-white"
               >
                 <div className="flex items-center gap-3">
                   <div

@@ -88,11 +88,10 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Right Actions */}
         <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
           {profile.streakDays > 0 && (
-            <div className="flex items-center gap-1 md:gap-2 bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] px-2 md:px-3 h-9 md:h-11 rounded-full font-jakarta clay-chip">
-              <span className="text-sm md:text-lg">🔥</span>
-              {/* Mobile: compact (number only), Desktop: full label */}
-              <span className="font-extrabold text-xs md:hidden">{profile.streakDays}</span>
-              <div className="text-left leading-tight min-w-0 hidden md:block">
+            // Hidden on mobile — streak is already visible as a card in the dashboard body
+            <div className="hidden md:flex items-center gap-2 bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] px-3 h-11 rounded-full font-jakarta clay-chip">
+              <span className="text-lg">🔥</span>
+              <div className="text-left leading-tight min-w-0">
                 <span className="block text-[10px] opacity-75">{t.streakLabel}</span>
                 <span className="block font-extrabold text-sm">{profile.streakDays} {t.days}</span>
               </div>

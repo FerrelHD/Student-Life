@@ -1,7 +1,10 @@
 import {Component, StrictMode, type ReactNode} from 'react';
 import {createRoot} from 'react-dom/client';
+import { registerSW } from 'virtual:pwa-register';
 import App from './App.tsx';
 import './index.css';
+
+registerSW({ immediate: true });
 
 class ErrorBoundary extends Component<{children: ReactNode}, {crashed: boolean}> {
   state = {crashed: false};

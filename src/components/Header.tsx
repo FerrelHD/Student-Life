@@ -48,9 +48,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="fixed top-0 left-0 right-0 md:left-72 z-40 bg-white/40 dark:bg-[#0f0e13]/60 backdrop-blur-xl border-b border-black/5 dark:border-white/5 transition-colors duration-200">
-      <div className="max-w-md md:max-w-4xl mx-auto px-5 h-20 flex items-center justify-between">
+      <div className="max-w-full md:max-w-4xl mx-auto px-4 md:px-5 h-16 md:h-20 flex items-center justify-between">
         {/* Left: Drawer (mobile only, desktop uses the sidebar) + Profile Summary */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
         <button
           onClick={onOpenDrawer}
           aria-label={profile.language === 'id' ? 'Buka menu' : 'Open menu'}
@@ -60,10 +60,10 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
         <button
           onClick={onOpenProfile}
-          className="flex items-center gap-3 group text-left cursor-pointer"
+          className="flex items-center gap-3 group text-left cursor-pointer min-w-0"
         >
-          <div className="relative w-12 h-12 group-hover:scale-105 transition-transform">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#d1c4e9] shadow-sm">
+          <div className="relative w-10 h-10 md:w-12 md:h-12 group-hover:scale-105 transition-transform flex-shrink-0">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-[#d1c4e9] shadow-sm">
               <img
                 src={profile.avatarUrl}
                 alt={profile.name}
@@ -74,11 +74,11 @@ export const Header: React.FC<HeaderProps> = ({
               {profile.level}
             </span>
           </div>
-          <div>
-            <h1 className="font-jakarta font-extrabold text-xl leading-tight text-[#1b1b1d] dark:text-[#f3f0f2]">
+          <div className="min-w-0">
+            <h1 className="font-jakarta font-extrabold text-lg md:text-xl leading-tight text-[#1b1b1d] dark:text-[#f3f0f2] truncate">
               {info.title}
             </h1>
-            <p className="font-jakarta text-xs font-semibold text-[#49454d] dark:text-[#cac4cd]">
+            <p className="font-jakarta text-xs font-semibold text-[#49454d] dark:text-[#cac4cd] hidden sm:block truncate">
               {info.subtitle}
             </p>
           </div>
@@ -88,11 +88,11 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Right Actions */}
         <div className="flex items-center gap-2">
           {profile.streakDays > 0 && (
-            <div className="flex items-center gap-2 bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] px-3 h-11 rounded-full font-jakarta text-xs clay-chip">
-              <span className="text-lg">🔥</span>
-              <div className="text-left leading-tight">
-                <span className="block text-[10px] opacity-75">{t.streakLabel}</span>
-                <span className="block font-extrabold text-sm">{profile.streakDays} {t.days}</span>
+            <div className="flex items-center gap-2 bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] px-2 md:px-3 h-9 md:h-11 rounded-full font-jakarta text-xs clay-chip">
+              <span className="text-base md:text-lg">🔥</span>
+              <div className="text-left leading-tight min-w-0">
+                <span className="block text-[10px] opacity-75 truncate">{t.streakLabel}</span>
+                <span className="block font-extrabold text-sm truncate">{profile.streakDays} {t.days}</span>
               </div>
             </div>
           )}

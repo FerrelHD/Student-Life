@@ -37,6 +37,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
+  const [showLargePreview, setShowLargePreview] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,9 +97,13 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       role: role.trim() || 'Smart Learner',
       university: university.trim() || (isIndonesian ? 'Universitas Indonesia' : 'Stanford University'),
       gpa: gpaValue,
-      avatarUrl: customAvatar.trim() || avatarUrl,
+      // Option 1: if user has a pendingAvatar (picked/uploaded) but didn't click Use Photo,
+      // apply it automatically when saving.
+      avatarUrl: customAvatar.trim() || (pendingAvatar ?? avatarUrl),
     });
 
+    // clear pending avatar since it's been applied (if any)
+    setPendingAvatar(null);
     onClose();
   };
 
@@ -229,6 +234,13 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                     </button>
                     <button
                       type="button"
+                      onClick={() => setShowLargePreview(true)}
+                      className="px-3 py-2 rounded-full bg-white/10 text-white font-bold text-sm"
+                    >
+                      Preview
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => {
                         setPendingAvatar(null);
                         setCustomAvatar('');
@@ -341,6 +353,38 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             </button>
           </div>
         </form>
+        {/* Large preview modal for pending avatar (option 2) */}
+        {showLargePreview && pendingAvatar && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80">
+            <div className="bg-[#0f0e13] rounded-xl p-4 max-w-lg w-full text-white">
+              <div className="flex justify-between items-start mb-4">
+                <h4 className="font-black">{t.preview}</h4>
+                <button onClick={() => setShowLargePreview(false)} className="text-gray-300">✕</button>
+              </div>
+              <div className="w-full h-72 rounded-lg overflow-hidden mb-4 bg-black/20 flex items-center justify-center">
+                <img src={pendingAvatar} alt={t.preview} className="max-h-full object-contain" />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setAvatarUrl(pendingAvatar);
+                    setPendingAvatar(null);
+                    setShowLargePreview(false);
+                  }}
+                  className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3"
+                >
+                  {t.usePhoto}
+                </button>
+                <button
+                  onClick={() => setShowLargePreview(false)}
+                  className="flex-1 bg-white/10 text-white font-bold rounded-full py-3"
+                >
+                  {t.cancel}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

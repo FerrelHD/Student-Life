@@ -83,17 +83,17 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
                 return (
                   <>
-                    <div className="text-left">
-                      <span className="block text-[10px] opacity-75">Total XP</span>
-                      <span className="block font-extrabold text-sm mt-1">{xp}</span>
+                      <div className="text-left">
+                        <span className="block text-[10px] opacity-75">{t.totalXpLabel}</span>
+                        <span className="block font-extrabold text-sm mt-1">{xp}</span>
                     </div>
                     <div className="text-center">
-                      <span className="block text-[10px] opacity-75">Streak</span>
-                      <span className="block font-extrabold text-sm mt-1">🔥 {profile.streakDays} {t.days}</span>
+                       <span className="block text-[10px] opacity-75">{t.streakLabel}</span>
+                       <span className="block font-extrabold text-sm mt-1">🔥 {profile.streakDays} {t.days}</span>
                     </div>
                     <div className="text-right">
-                      <span className="block text-[10px] opacity-75">GPA</span>
-                      <span className="block font-extrabold text-sm mt-1">{gpa}</span>
+                       <span className="block text-[10px] opacity-75">{t.gpaLabel}</span>
+                       <span className="block font-extrabold text-sm mt-1">{gpa}</span>
                     </div>
                   </>
                 );

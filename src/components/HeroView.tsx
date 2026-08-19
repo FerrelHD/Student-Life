@@ -65,7 +65,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
           return (
             <div className="font-jakarta text-[11px] font-bold text-gray-400 mb-4">
               <div>{profile.university}</div>
-              <div className="mt-1 text-[10px] opacity-75">GPA</div>
+              <div className="mt-1 text-[10px] opacity-75">{t.gpaLabel}</div>
               <div className="font-extrabold text-sm mt-0.5">{gpa}</div>
             </div>
           );

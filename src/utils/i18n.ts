@@ -48,6 +48,9 @@ export const i18n = {
     // Dashboard
     nextReward: 'Hadiah Berikutnya: Mastery Badge Level {level}',
     xpUntilNext: '{xp} XP lagi ke level berikutnya',
+    totalXpLabel: 'Total XP',
+    streakLabel: 'Streak',
+    gpaLabel: 'IPK',
     nextDeadline: 'Tenggat Berikutnya',
     noDeadline: 'Tidak ada tenggat mendatang',
     noSavingsGoal: 'Belum ada target tabungan',
@@ -128,6 +131,7 @@ export const i18n = {
     roleMajorLabel: 'JURUSAN / PERAN',
     universityLabel: 'UNIVERSITAS',
     saveProfileBtn: 'Simpan Profil',
+    uploadedLabel: 'Diunggah',
 
     // Modals
     // Add Mission
@@ -243,6 +247,9 @@ export const i18n = {
     // Dashboard
     nextReward: 'Next Reward: Level {level} Mastery Badge',
     xpUntilNext: '{xp} XP until next level',
+    totalXpLabel: 'Total XP',
+    streakLabel: 'Streak',
+    gpaLabel: 'GPA',
     nextDeadline: 'Next Deadline',
     noDeadline: 'No upcoming deadline',
     noSavingsGoal: 'No savings goal set yet',

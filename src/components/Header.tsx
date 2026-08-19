@@ -91,7 +91,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2 bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] px-3 h-11 rounded-full font-jakarta text-xs clay-chip">
               <span className="text-lg">🔥</span>
               <div className="text-left leading-tight">
-                <span className="block text-[10px] opacity-75">Streak</span>
+                <span className="block text-[10px] opacity-75">{t.streakLabel}</span>
                 <span className="block font-extrabold text-sm">{profile.streakDays} {t.days}</span>
               </div>
             </div>

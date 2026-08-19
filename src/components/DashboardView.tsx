@@ -72,8 +72,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           return (
             <div className="flex justify-between items-center font-jakarta text-xs opacity-85">
-              <div>
-                <span className="block text-[10px] opacity-75">Total XP</span>
+                    <div>
+                <span className="block text-[10px] opacity-75">{t.totalXpLabel}</span>
                 <span className="block font-extrabold text-sm mt-1">{xp}</span>
               </div>
               <span className="text-[11px] font-bold">{t.xpUntilNext.replace('{xp}', xpRem)}</span>

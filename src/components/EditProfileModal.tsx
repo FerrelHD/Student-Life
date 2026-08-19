@@ -62,7 +62,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       }
       if (file.size > maxBytes) {
         setUploadedFileName(null);
-        alert(language === 'id' ? `File terlalu besar — maksimal ${MAX_MB}MB` : `File too large — max ${MAX_MB}MB`);
+        alert(isIndonesian ? `File terlalu besar — maksimal ${MAX_MB}MB` : `File too large — max ${MAX_MB}MB`);
         return;
       }
 
@@ -188,7 +188,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   <span className="truncate">{uploadedFileName}</span>
                 </div>
                 <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-black uppercase">
-                  Uploaded
+                  {t.uploadedLabel}
                 </span>
               </div>
             )}

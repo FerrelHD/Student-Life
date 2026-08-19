@@ -73,19 +73,31 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
               </div>
             </div>
 
-            <div className="mt-3 pt-3 border-t border-black/10 flex justify-between font-jakarta text-xs font-bold">
-              <div>
-                <span className="block text-[10px] opacity-75">TOTAL XP</span>
-                <span>{profile.currentXP.toLocaleString()}</span>
-              </div>
-              <div>
-                <span className="block text-[10px] opacity-75">STREAK</span>
-                <span>🔥 {profile.streakDays} {t.days}</span>
-              </div>
-              <div>
-                <span className="block text-[10px] opacity-75">GPA</span>
-                <span>{profile.gpa}</span>
-              </div>
+            <div className="mt-3 pt-3 border-t border-black/10 flex justify-between font-jakarta text-xs">
+              {(() => {
+                const locale = profile.language === 'id' ? 'id-ID' : 'en-US';
+                const xp = profile.currentXP?.toLocaleString(locale) ?? '0';
+                const gpa = (typeof profile.gpa === 'number')
+                  ? profile.gpa.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                  : profile.gpa;
+
+                return (
+                  <>
+                    <div className="text-left">
+                      <span className="block text-[10px] opacity-75">Total XP</span>
+                      <span className="block font-extrabold text-sm mt-1">{xp}</span>
+                    </div>
+                    <div className="text-center">
+                      <span className="block text-[10px] opacity-75">Streak</span>
+                      <span className="block font-extrabold text-sm mt-1">🔥 {profile.streakDays} {t.days}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="block text-[10px] opacity-75">GPA</span>
+                      <span className="block font-extrabold text-sm mt-1">{gpa}</span>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
 

@@ -65,10 +65,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           />
         </div>
 
-        <div className="flex justify-between items-center font-jakarta text-xs font-extrabold opacity-85">
-          <span>{profile.currentXP.toLocaleString('id-ID')} Total XP</span>
-          <span>{t.xpUntilNext.replace('{xp}', String(xpRemaining))}</span>
-        </div>
+        {(() => {
+          const locale = profile.language === 'id' ? 'id-ID' : 'en-US';
+          const xp = profile.currentXP?.toLocaleString(locale) ?? '0';
+          const xpRem = xpRemaining.toLocaleString(locale);
+
+          return (
+            <div className="flex justify-between items-center font-jakarta text-xs opacity-85">
+              <div>
+                <span className="block text-[10px] opacity-75">Total XP</span>
+                <span className="block font-extrabold text-sm mt-1">{xp}</span>
+              </div>
+              <span className="text-[11px] font-bold">{t.xpUntilNext.replace('{xp}', xpRem)}</span>
+            </div>
+          );
+        })()}
       </section>
 
       {/* Grid: Next Deadline & Study Streak */}

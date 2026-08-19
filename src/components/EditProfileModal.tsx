@@ -30,7 +30,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [name, setName] = useState(profile.name);
   const [role, setRole] = useState(profile.role);
   const [university, setUniversity] = useState(profile.university);
-  const [gpa, setGpa] = useState(profile.gpa.toString());
+  const [gpa, setGpa] = useState(profile.gpa?.toFixed ? profile.gpa.toFixed(2) : String(profile.gpa));
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl);
   const [customAvatar, setCustomAvatar] = useState('');
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     setName(profile.name);
     setRole(profile.role);
     setUniversity(profile.university);
-    setGpa(profile.gpa.toString());
+    setGpa(typeof profile.gpa === 'number' && profile.gpa.toFixed ? profile.gpa.toFixed(2) : String(profile.gpa));
     setAvatarUrl(profile.avatarUrl);
     setUploadedFileName(null);
   }, [profile, isOpen]);
@@ -75,13 +75,14 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     e.preventDefault();
     if (!name.trim()) return;
 
-    const parsedGpa = parseFloat(gpa);
+    const parsedGpa = parseFloat(gpa.replace(',', '.'));
+    const gpaValue = Number.isNaN(parsedGpa) ? profile.gpa : Math.round(parsedGpa * 100) / 100;
 
     onSaveProfile({
       name: name.trim(),
       role: role.trim() || 'Smart Learner',
       university: university.trim() || (isIndonesian ? 'Universitas Indonesia' : 'Stanford University'),
-      gpa: Number.isNaN(parsedGpa) ? profile.gpa : parsedGpa,
+      gpa: gpaValue,
       avatarUrl: customAvatar.trim() || avatarUrl,
     });
 

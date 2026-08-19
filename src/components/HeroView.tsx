@@ -56,9 +56,20 @@ export const HeroView: React.FC<HeroViewProps> = ({
         <p className="font-jakarta text-xs font-extrabold text-[#d1c4e9] mb-1">
           {profile.role} • Level {profile.level}
         </p>
-        <p className="font-jakarta text-[11px] font-bold text-gray-400 mb-4">
-          {profile.university} • GPA {profile.gpa}
-        </p>
+        {(() => {
+          const locale = profile.language === 'id' ? 'id-ID' : 'en-US';
+          const gpa = (typeof profile.gpa === 'number')
+            ? profile.gpa.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            : profile.gpa;
+
+          return (
+            <div className="font-jakarta text-[11px] font-bold text-gray-400 mb-4">
+              <div>{profile.university}</div>
+              <div className="mt-1 text-[10px] opacity-75">GPA</div>
+              <div className="font-extrabold text-sm mt-0.5">{gpa}</div>
+            </div>
+          );
+        })()}
 
         {/* Edit Profile Button */}
         <button

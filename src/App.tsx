@@ -159,15 +159,20 @@ export default function App() {
 
   // Track auth session
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash.includes('type=recovery')) {
+      setPasswordRecovery(true);
+    }
+
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setCheckingSession(false);
     });
     const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
-      // Clicking the emailed reset link auto-establishes a session (Supabase's
-      // detectSessionInUrl) — flag it so we force a new-password screen instead
-      // of dropping the user straight into the dashboard with the old password.
-      if (event === 'PASSWORD_RECOVERY') setPasswordRecovery(true);
+      // Clicking the emailed reset link auto-establishes a session — flag it so we
+      // force a new-password screen instead of dropping straight into dashboard.
+      if (event === 'PASSWORD_RECOVERY' || (typeof window !== 'undefined' && window.location.hash.includes('type=recovery'))) {
+        setPasswordRecovery(true);
+      }
       setSession(newSession);
     });
     return () => listener.subscription.unsubscribe();

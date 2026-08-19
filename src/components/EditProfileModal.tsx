@@ -3,6 +3,7 @@ import { UserProfile } from '../types';
 import { getTranslation } from '../utils/i18n';
 import { parseNumericInput } from '../utils/number';
 import { useEscapeClose } from '../utils/useEscapeClose';
+import { ImageCropModal } from './ImageCropModal';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -38,6 +39,9 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
   const [showLargePreview, setShowLargePreview] = useState(false);
+  // crop flow: raw image waiting to be cropped
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [pendingFileName, setPendingFileName] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -57,32 +61,37 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const MAX_MB = 3;
-      const maxBytes = MAX_MB * 1024 * 1024;
-      if (!file.type.startsWith('image/')) {
-        setUploadedFileName(null);
-        setUploadError(t.selectImageFileError);
-        return;
-      }
-      if (file.size > maxBytes) {
-        setUploadedFileName(null);
-        setUploadError(isIndonesian ? `File terlalu besar — maksimal ${MAX_MB}MB` : `File too large — max ${MAX_MB}MB`);
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        if (result) {
-          setPendingAvatar(result);
-          setCustomAvatar('');
-          setUploadedFileName(file.name);
-          setUploadError(null);
-        }
-      };
-      reader.readAsDataURL(file);
+    // reset input so same file can be re-selected after cancel
+    e.target.value = '';
+    if (!file) return;
+    const MAX_MB = 3;
+    if (!file.type.startsWith('image/')) {
+      setUploadError(t.selectImageFileError);
+      return;
     }
+    if (file.size > MAX_MB * 1024 * 1024) {
+      setUploadError(isIndonesian ? `File terlalu besar — maksimal ${MAX_MB}MB` : `File too large — max ${MAX_MB}MB`);
+      return;
+    }
+    setUploadError(null);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const result = ev.target?.result as string;
+      if (result) {
+        // open crop modal first
+        setCropSrc(result);
+        setPendingFileName(file.name);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropSave = (cropped: string) => {
+    setPendingAvatar(cropped);
+    setUploadedFileName(pendingFileName);
+    setCustomAvatar('');
+    setCropSrc(null);
+    setPendingFileName(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -353,9 +362,9 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             </button>
           </div>
         </form>
-        {/* Large preview modal for pending avatar (option 2) */}
+        {/* Large preview modal for pending avatar */}
         {showLargePreview && pendingAvatar && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80">
+          <div className="fixed inset-0 z-[65] flex items-center justify-center p-4 bg-black/80">
             <div className="bg-[#0f0e13] rounded-xl p-4 max-w-lg w-full text-white">
               <div className="flex justify-between items-start mb-4">
                 <h4 className="font-black">{t.preview}</h4>
@@ -386,6 +395,16 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           </div>
         )}
       </div>
+
+      {/* Crop modal — rendered outside dialog so z-index stacks correctly */}
+      {cropSrc && (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          lang={profile.language as 'id' | 'en'}
+          onSave={handleCropSave}
+          onCancel={() => { setCropSrc(null); setPendingFileName(null); }}
+        />
+      )}
     </div>
   );
 };

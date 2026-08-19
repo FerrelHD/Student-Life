@@ -36,6 +36,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [customAvatar, setCustomAvatar] = useState('');
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,6 +47,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     setGpa(typeof profile.gpa === 'number' && profile.gpa.toFixed ? profile.gpa.toFixed(2) : String(profile.gpa));
     setAvatarUrl(profile.avatarUrl);
     setUploadedFileName(null);
+    setPendingAvatar(null);
   }, [profile, isOpen]);
 
   useEscapeClose(isOpen, onClose);
@@ -72,7 +74,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       reader.onload = (event) => {
         const result = event.target?.result as string;
         if (result) {
-          setAvatarUrl(result);
+          setPendingAvatar(result);
           setCustomAvatar('');
           setUploadedFileName(file.name);
           setUploadError(null);
@@ -168,12 +170,12 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   key={idx}
                   type="button"
                   onClick={() => {
-                    setAvatarUrl(url);
+                    setPendingAvatar(url);
                     setCustomAvatar('');
                     setUploadedFileName(null);
                   }}
                   className={`relative w-12 h-12 rounded-full overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
-                    avatarUrl === url && !customAvatar && !uploadedFileName
+                    (avatarUrl === url || pendingAvatar === url) && !customAvatar && !uploadedFileName
                       ? 'border-[#d1c4e9] scale-110 shadow-lg'
                       : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
@@ -205,6 +207,43 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               </div>
             )}
 
+            {/* Pending preview actions */}
+            {pendingAvatar && (
+              <div className="mt-3 flex items-center gap-3">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                  <img src={pendingAvatar} alt={t.chooseAvatarLabel} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-gray-300 mb-1">Preview</p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAvatarUrl(pendingAvatar);
+                        setPendingAvatar(null);
+                        setUploadedFileName(null);
+                      }}
+                      className="px-3 py-2 rounded-full bg-[#d1c4e9] text-[#1f1732] font-black text-sm"
+                    >
+                      Use Photo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPendingAvatar(null);
+                        setCustomAvatar('');
+                        setUploadedFileName(null);
+                        setUploadError(null);
+                      }}
+                      className="px-3 py-2 rounded-full bg-white/10 text-white font-bold text-sm"
+                    >
+                      Discard
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Custom Avatar URL Input */}
             <input
               type="text"
@@ -212,8 +251,10 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               onChange={(e) => {
                 setCustomAvatar(e.target.value);
                 if (e.target.value) {
-                  setAvatarUrl(e.target.value);
+                  setPendingAvatar(e.target.value);
                   setUploadedFileName(null);
+                } else {
+                  setPendingAvatar(null);
                 }
               }}
               placeholder={t.pasteImageUrlPlaceholder}

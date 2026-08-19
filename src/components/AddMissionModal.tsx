@@ -139,7 +139,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 font-jakarta text-sm">
+        <form onSubmit={handleSubmit} className="space-y-3.5 font-jakarta text-sm">
           <div>
             <label className="block text-xs font-extrabold text-gray-300 mb-1">
               {t.missionTitle}
@@ -173,15 +173,15 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               {language === 'id' ? 'Sub-tugas / Checklist (1 per baris, Opsional)' : 'Sub-tasks / Checklist (1 per line, Optional)'}
             </label>
             <textarea
-              rows={3}
+              rows={2}
               value={subtasksText}
               onChange={(e) => setSubtasksText(e.target.value)}
-              placeholder={language === 'id' ? 'misal:\n- Bab 1 Pendahuluan\n- Bab 2 Pembahasan\n- Print & Jilid' : 'e.g.:\n- Chapter 1\n- Chapter 2\n- Review'}
+              placeholder={language === 'id' ? 'misal:\n- Bab 1 Pendahuluan\n- Bab 2 Pembahasan' : 'e.g.:\n- Chapter 1\n- Chapter 2'}
               className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <label className="block text-xs font-extrabold text-gray-300 mb-1">
                 {t.priority}
@@ -205,7 +205,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <label className="block text-xs font-extrabold text-gray-300 mb-1">
                 {t.missionDate}
@@ -215,7 +215,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
                 required
                 value={dateStr}
                 onChange={(e) => setDateStr(e.target.value)}
-                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
               />
             </div>
 
@@ -227,7 +227,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
               />
             </div>
           </div>
@@ -254,11 +254,11 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               min={0}
               value={xpReward}
               onChange={(e) => setXpReward(Math.max(0, Number(e.target.value)))}
-              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 
-          <div className="pt-3 flex gap-3">
+          <div className="pt-4 flex gap-3">
             <button
               type="button"
               onClick={onClose}

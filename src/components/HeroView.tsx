@@ -30,7 +30,7 @@ export const HeroView: React.FC<HeroViewProps> = ({
   const displayBadges = badges.slice(0, 4);
 
   return (
-    <div className="pt-24 pb-40 md:pb-16 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+    <div className="pt-24 pb-32 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
       {/* Profile Header (Always Onyx Dark Card with Bright White Text) */}
       <section className="expressive-card expressive-card-onyx p-6 flex flex-col items-center text-center shadow-lg relative text-white">
         <div className="relative mb-3">

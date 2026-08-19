@@ -62,7 +62,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
   const displayedMissions = dayMissions.length > 0 ? dayMissions : missions.slice(0, 3);
 
   return (
-    <div className="pt-24 pb-32 md:pb-16 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+    <div className="pt-24 pb-32 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
       {/* Calendar Section */}
       <section className="expressive-card expressive-card-onyx p-6 shadow-md text-white">
         <div className="flex items-center justify-between mb-4">

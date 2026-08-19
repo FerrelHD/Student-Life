@@ -52,7 +52,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const xpRemaining = 1000 - xpInLevel;
 
   return (
-    <div className="pt-24 pb-32 md:pb-16 px-5 max-w-md md:max-w-4xl mx-auto space-y-6">
+    <div className="pt-24 pb-32 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
       {/* XP Mastery / Next Reward Progress Card (Pastel Lavender) */}
       <section className="expressive-card expressive-card-lavender p-6 shadow-sm">
         <div className="flex items-center justify-between mb-3">
@@ -88,28 +88,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         })()}
       </section>
 
-      {/* Grid: Next Deadline & Study Streak */}
-      <section className="grid grid-cols-2 gap-4">
+      {/* Unified Quick Actions & Stat Cards Grid: 2 cols on mobile, 4 cols on desktop */}
+      <section className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Next Deadline Card (Butter Yellow) */}
         <div
           onClick={() => onNavigateTab('missions')}
-          className="expressive-card expressive-card-butter p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all"
+          className="expressive-card expressive-card-butter p-4 sm:p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all min-h-[140px]"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-xl">schedule</span>
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-lg sm:text-xl">schedule</span>
             </div>
-            <span className="material-symbols-outlined text-lg opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+            <span className="material-symbols-outlined text-base sm:text-lg opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
               north_east
             </span>
           </div>
 
           <div>
-            <p className="font-jakarta text-xs font-black opacity-75 mb-1">{t.nextDeadline}</p>
-            <h3 className="font-jakarta font-black text-2xl tracking-tight mb-1">
+            <p className="font-jakarta text-[11px] sm:text-xs font-black opacity-75 mb-0.5 sm:mb-1">{t.nextDeadline}</p>
+            <h3 className="font-jakarta font-black text-xl sm:text-2xl tracking-tight mb-0.5">
               {deadlineLabel}
             </h3>
-            <p className="font-jakarta text-xs font-bold opacity-85 truncate">
+            <p className="font-jakarta text-[11px] sm:text-xs font-bold opacity-85 truncate">
               {urgentMission?.title ?? ''}
             </p>
           </div>
@@ -118,51 +118,48 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Study Streak Card (Lavender/Purple) */}
         <div
           onClick={onUpdateStreak}
-          className="expressive-card expressive-card-lavender p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all"
+          className="expressive-card expressive-card-lavender p-4 sm:p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all min-h-[140px]"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-xl text-[#b81d27] material-symbols-filled">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-lg sm:text-xl text-[#b81d27] material-symbols-filled">
                 local_fire_department
               </span>
             </div>
-            <span className="material-symbols-outlined text-lg opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+            <span className="material-symbols-outlined text-base sm:text-lg opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
               north_east
             </span>
           </div>
 
           <div>
-            <p className="font-jakarta text-xs font-black opacity-75 mb-1">{t.studyStreak}</p>
-            <h3 className="font-jakarta font-black text-2xl tracking-tight mb-1">
+            <p className="font-jakarta text-[11px] sm:text-xs font-black opacity-75 mb-0.5 sm:mb-1">{t.studyStreak}</p>
+            <h3 className="font-jakarta font-black text-xl sm:text-2xl tracking-tight mb-0.5">
               {profile.streakDays} {t.days}
             </h3>
-            <p className="font-jakarta text-xs font-bold opacity-85">
+            <p className="font-jakarta text-[11px] sm:text-xs font-bold opacity-85">
               {t.tapToIncrement}
             </p>
           </div>
         </div>
-      </section>
 
-      {/* Utility Suite Launcher Cards: Focus Timer & GPA Calculator */}
-      <section className="grid grid-cols-2 gap-4">
         {/* Focus Timer Card */}
         <div
           onClick={onOpenFocusTimer}
-          className="expressive-card expressive-card-onyx p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all text-white border border-white/10"
+          className="expressive-card expressive-card-onyx p-4 sm:p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all text-white border border-white/10 min-h-[140px]"
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-[#d1c4e9]">
-              <span className="material-symbols-outlined text-xl">timer</span>
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/10 flex items-center justify-center text-[#d1c4e9]">
+              <span className="material-symbols-outlined text-lg sm:text-xl">timer</span>
             </div>
-            <span className="material-symbols-outlined text-lg text-gray-400 group-hover:text-white transition-colors">
+            <span className="material-symbols-outlined text-base sm:text-lg text-gray-400 group-hover:text-white transition-colors">
               play_circle
             </span>
           </div>
           <div>
-            <p className="font-jakarta text-xs font-black text-[#d1c4e9] mb-0.5">Focus Mode</p>
-            <h4 className="font-jakarta font-black text-lg text-white">Pomodoro ⏱️</h4>
-            <p className="font-jakarta text-[10px] text-gray-400 font-bold mt-0.5">
-              {profile.language === 'id' ? '25 Min + Sound (+25 XP)' : '25 Min + Sound (+25 XP)'}
+            <p className="font-jakarta text-[11px] sm:text-xs font-black text-[#d1c4e9] mb-0.5">Focus Mode</p>
+            <h4 className="font-jakarta font-black text-base sm:text-lg text-white">Pomodoro ⏱️</h4>
+            <p className="font-jakarta text-[10px] sm:text-[11px] text-gray-400 font-bold mt-0.5">
+              {profile.language === 'id' ? '25 Min (+25 XP)' : '25 Min (+25 XP)'}
             </p>
           </div>
         </div>
@@ -170,21 +167,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* GPA Calculator Card */}
         <div
           onClick={onOpenGpaCalculator}
-          className="expressive-card expressive-card-onyx p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all text-white border border-white/10"
+          className="expressive-card expressive-card-onyx p-4 sm:p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all text-white border border-white/10 min-h-[140px]"
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-emerald-300">
-              <span className="material-symbols-outlined text-xl">calculate</span>
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/10 flex items-center justify-center text-emerald-300">
+              <span className="material-symbols-outlined text-lg sm:text-xl">calculate</span>
             </div>
-            <span className="material-symbols-outlined text-lg text-gray-400 group-hover:text-white transition-colors">
+            <span className="material-symbols-outlined text-base sm:text-lg text-gray-400 group-hover:text-white transition-colors">
               equalizer
             </span>
           </div>
           <div>
-            <p className="font-jakarta text-xs font-black text-emerald-300 mb-0.5">Academic</p>
-            <h4 className="font-jakarta font-black text-lg text-white">Target IPK 📊</h4>
-            <p className="font-jakarta text-[10px] text-gray-400 font-bold mt-0.5">
-              {profile.language === 'id' ? 'Simulasi Nilai & SKS' : 'Simulate Grades & SKS'}
+            <p className="font-jakarta text-[11px] sm:text-xs font-black text-emerald-300 mb-0.5">Academic</p>
+            <h4 className="font-jakarta font-black text-base sm:text-lg text-white">Target IPK 📊</h4>
+            <p className="font-jakarta text-[10px] sm:text-[11px] text-gray-400 font-bold mt-0.5">
+              {profile.language === 'id' ? 'Simulasi Nilai & SKS' : 'Simulate Grades'}
             </p>
           </div>
         </div>

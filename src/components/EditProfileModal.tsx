@@ -34,6 +34,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl);
   const [customAvatar, setCustomAvatar] = useState('');
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -57,12 +58,12 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       const maxBytes = MAX_MB * 1024 * 1024;
       if (!file.type.startsWith('image/')) {
         setUploadedFileName(null);
-        alert(t.selectImageFileError);
+        setUploadError(t.selectImageFileError);
         return;
       }
       if (file.size > maxBytes) {
         setUploadedFileName(null);
-        alert(isIndonesian ? `File terlalu besar — maksimal ${MAX_MB}MB` : `File too large — max ${MAX_MB}MB`);
+        setUploadError(isIndonesian ? `File terlalu besar — maksimal ${MAX_MB}MB` : `File too large — max ${MAX_MB}MB`);
         return;
       }
 
@@ -73,6 +74,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           setAvatarUrl(result);
           setCustomAvatar('');
           setUploadedFileName(file.name);
+          setUploadError(null);
         }
       };
       reader.readAsDataURL(file);
@@ -190,6 +192,15 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-black uppercase">
                   {t.uploadedLabel}
                 </span>
+              </div>
+            )}
+
+            {uploadError && (
+              <div className="mt-2 p-2 rounded-2xl bg-rose-500/10 border border-rose-400/30 text-rose-400 text-xs font-bold">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined">error</span>
+                  <span className="truncate">{uploadError}</span>
+                </div>
               </div>
             )}
 

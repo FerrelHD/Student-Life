@@ -23,12 +23,15 @@ const priorityOptions = (t: ReturnType<typeof getTranslation>): SelectOption<Pri
 ];
 
 const TAG_OPTIONS: SelectOption<MissionTag>[] = [
+  { value: 'CLASS', label: '[KULIAH]', icon: 'school' },
+  { value: 'ORGANIZATION', label: '[ORGANISASI]', icon: 'groups' },
   { value: 'EXAM', label: '[EXAM]', icon: 'quiz' },
   { value: 'LAB', label: '[LAB]', icon: 'science' },
   { value: 'PAPER', label: '[PAPER]', icon: 'description' },
   { value: 'CODE', label: '[CODE]', icon: 'terminal' },
   { value: 'READ', label: '[READ]', icon: 'menu_book' },
   { value: 'PROJECT', label: '[PROJECT]', icon: 'assignment' },
+  { value: 'PERSONAL', label: '[PERSONAL]', icon: 'event' },
 ];
 
 export const AddMissionModal: React.FC<AddMissionModalProps> = ({
@@ -175,16 +178,43 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-extrabold text-gray-300 mb-1">
+                {t.missionDate}
+              </label>
+              <input
+                type="date"
+                required
+                value={dateStr}
+                onChange={(e) => setDateStr(e.target.value)}
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-extrabold text-gray-300 mb-1">
+                Jam / Time (optional)
+              </label>
+              <input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-extrabold text-gray-300 mb-1">
-              {t.missionDate}
+              Ruang / Lokasi (optional)
             </label>
             <input
-              type="date"
-              required
-              value={dateStr}
-              onChange={(e) => setDateStr(e.target.value)}
-              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g. Ruang 402 / Zoom"
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 

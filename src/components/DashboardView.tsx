@@ -3,6 +3,8 @@ import { Badge, UserProfile, Mission } from '../types';
 import { getTranslation } from '../utils/i18n';
 import { formatDeadlineLabel } from '../utils/deadline';
 
+import { QuickNotesWidget } from './QuickNotesWidget';
+
 interface DashboardViewProps {
   profile: UserProfile;
   missions: Mission[];
@@ -11,6 +13,8 @@ interface DashboardViewProps {
   onOpenAddMission: () => void;
   onNavigateTab: (tab: 'missions' | 'vault' | 'agenda' | 'hero') => void;
   onUpdateStreak: () => void;
+  onOpenFocusTimer: () => void;
+  onOpenGpaCalculator: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -21,6 +25,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenAddMission,
   onNavigateTab,
   onUpdateStreak,
+  onOpenFocusTimer,
+  onOpenGpaCalculator,
 }) => {
   const t = getTranslation(profile.language);
 
@@ -137,23 +143,55 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </section>
 
-      {/* Monthly Spend Card (Deep Onyx - Always Rupiah) */}
-      <section
-        onClick={() => onNavigateTab('vault')}
-        className="expressive-card expressive-card-onyx p-6 cursor-pointer relative overflow-hidden group shadow-lg text-white"
-      >
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="font-jakarta text-xs font-bold text-gray-300 mb-1">{t.monthlyBudget}</p>
-            <h3 className="font-jakarta font-black text-3xl tracking-tight text-white">
-              Rp {monthlySpend.toLocaleString('id-ID')}
-            </h3>
+      {/* Utility Suite Launcher Cards: Focus Timer & GPA Calculator */}
+      <section className="grid grid-cols-2 gap-4">
+        {/* Focus Timer Card */}
+        <div
+          onClick={onOpenFocusTimer}
+          className="expressive-card expressive-card-onyx p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all text-white border border-white/10"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-[#d1c4e9]">
+              <span className="material-symbols-outlined text-xl">timer</span>
+            </div>
+            <span className="material-symbols-outlined text-lg text-gray-400 group-hover:text-white transition-colors">
+              play_circle
+            </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
-            <span className="material-symbols-outlined text-2xl text-[#ece28c]">account_balance_wallet</span>
+          <div>
+            <p className="font-jakarta text-xs font-black text-[#d1c4e9] mb-0.5">Focus Mode</p>
+            <h4 className="font-jakarta font-black text-lg text-white">Pomodoro ⏱️</h4>
+            <p className="font-jakarta text-[10px] text-gray-400 font-bold mt-0.5">
+              {profile.language === 'id' ? '25 Min + Sound (+25 XP)' : '25 Min + Sound (+25 XP)'}
+            </p>
+          </div>
+        </div>
+
+        {/* GPA Calculator Card */}
+        <div
+          onClick={onOpenGpaCalculator}
+          className="expressive-card expressive-card-onyx p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all text-white border border-white/10"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-emerald-300">
+              <span className="material-symbols-outlined text-xl">calculate</span>
+            </div>
+            <span className="material-symbols-outlined text-lg text-gray-400 group-hover:text-white transition-colors">
+              equalizer
+            </span>
+          </div>
+          <div>
+            <p className="font-jakarta text-xs font-black text-emerald-300 mb-0.5">Academic</p>
+            <h4 className="font-jakarta font-black text-lg text-white">Target IPK 📊</h4>
+            <p className="font-jakarta text-[10px] text-gray-400 font-bold mt-0.5">
+              {profile.language === 'id' ? 'Simulasi Nilai & SKS' : 'Simulate Grades & SKS'}
+            </p>
           </div>
         </div>
       </section>
+
+      {/* Quick Notes & Academic Link Vault */}
+      <QuickNotesWidget lang={profile.language} />
 
       {/* Recent Achievements */}
       <section className="space-y-3">

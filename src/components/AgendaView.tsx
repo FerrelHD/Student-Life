@@ -138,21 +138,38 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
 
       {/* Today's Schedule Filtered Section */}
       <section className="space-y-4">
-        <div className="flex items-end justify-between px-1">
-          <h2 className="font-jakarta font-black text-xl text-[#1b1b1d] dark:text-[#f3f0f2]">
-            {t.scheduleFor} {monthShortLabel} {selectedDay}
-          </h2>
-          <span className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">
-            {displayedMissions.length} {t.events}
-          </span>
+        <div className="flex items-center justify-between px-1">
+          <div>
+            <h2 className="font-jakarta font-black text-xl text-[#1b1b1d] dark:text-[#f3f0f2]">
+              {t.scheduleFor} {monthShortLabel} {selectedDay}
+            </h2>
+            <span className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">
+              {displayedMissions.length} {t.events}
+            </span>
+          </div>
+
+          {/* Alarm Permission Trigger */}
+          <button
+            onClick={async () => {
+              const { requestNotificationPermission } = await import('../utils/notificationEngine');
+              const granted = await requestNotificationPermission();
+              alert(granted
+                ? (langKey === 'id' ? '✅ Reminder Notifikasi Aktif! Kamu akan dapat alarm 15-30 menit sebelum event.' : '✅ Notification Reminder Active!')
+                : (langKey === 'id' ? '⚠️ Izin notifikasi ditolak/tidak didukung.' : '⚠️ Notification permission denied.')
+              );
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 text-xs font-extrabold text-[#1b1b1d] dark:text-[#f3f0f2] hover:scale-105 transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm text-amber-500">notifications_active</span>
+            <span>{langKey === 'id' ? 'Aktifkan Reminder Alarm' : 'Enable Reminder Alarm'}</span>
+          </button>
         </div>
 
         <div className="space-y-3">
           {displayedMissions.map((mission) => (
             <div
               key={mission.id}
-              onClick={() => onToggleMission(mission.id)}
-              className={`expressive-card p-5 cursor-pointer shadow-sm ${
+              className={`expressive-card p-5 shadow-sm relative group ${
                 mission.priority === 'high'
                   ? 'expressive-card-coral'
                   : mission.priority === 'medium'
@@ -161,24 +178,65 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               }`}
             >
               <div className="flex justify-between items-start mb-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-black/10 font-jakarta font-black text-[10px] uppercase">
-                  {mission.priority === 'high' ? t.urgent : mission.priority === 'medium' ? t.normal : t.later}
-                </span>
-                <span className="font-jakarta text-xs font-bold opacity-80">{mission.dueDate}</span>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-black/10 font-jakarta font-black text-[10px] uppercase">
+                    {mission.tag || (mission.priority === 'high' ? t.urgent : mission.priority === 'medium' ? t.normal : t.later)}
+                  </span>
+                  {mission.completed && (
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-jakarta font-black text-[9px]">
+                      COMPLETED
+                    </span>
+                  )}
+                </div>
+
+                {/* Export Calendar Dropdown / Actions */}
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    title={langKey === 'id' ? 'Export ke iCal (.ics)' : 'Export to iCal (.ics)'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      import('../utils/calendarExport').then((m) => m.downloadIcsFile(mission));
+                    }}
+                    className="p-1.5 rounded-full bg-black/5 hover:bg-black/15 transition-colors cursor-pointer text-xs font-bold flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-sm">calendar_add_on</span>
+                    <span className="hidden sm:inline text-[10px]">.ICS</span>
+                  </button>
+
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      import('../utils/calendarExport').then((m) => {
+                        window.open(m.getGoogleCalendarUrl(mission), '_blank');
+                      });
+                    }}
+                    title={langKey === 'id' ? 'Tambah ke Google Calendar' : 'Add to Google Calendar'}
+                    className="p-1.5 rounded-full bg-black/5 hover:bg-black/15 transition-colors cursor-pointer text-xs font-bold flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-sm">edit_calendar</span>
+                    <span className="hidden sm:inline text-[10px]">Google</span>
+                  </a>
+                </div>
               </div>
 
-              <h3 className={`font-jakarta font-black text-lg ${mission.completed ? 'line-through opacity-70' : ''}`}>
-                {mission.title}
-              </h3>
-              <p className="font-jakarta text-xs font-bold opacity-80 mt-0.5">{mission.course}</p>
+              <div onClick={() => onToggleMission(mission.id)} className="cursor-pointer">
+                <h3 className={`font-jakarta font-black text-lg ${mission.completed ? 'line-through opacity-70' : ''}`}>
+                  {mission.title}
+                </h3>
+                <p className="font-jakarta text-xs font-bold opacity-80 mt-0.5">{mission.course}</p>
 
-              {mission.time && (
-                <div className="flex items-center gap-1.5 mt-3 text-xs font-bold opacity-90">
-                  <span className="material-symbols-outlined text-sm">schedule</span>
-                  <span>{mission.time}</span>
-                  {mission.location && <span>• {mission.location}</span>}
+                <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2 border-t border-black/5 dark:border-white/10 text-xs font-bold opacity-90">
+                  <div className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-sm">schedule</span>
+                    <span>{mission.time || 'All Day'}</span>
+                    {mission.location && <span>• 📍 {mission.location}</span>}
+                  </div>
+                  <span className="text-[11px] opacity-75">{mission.dueDate}</span>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>

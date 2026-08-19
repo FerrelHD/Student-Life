@@ -45,11 +45,14 @@ import { DailyQuizModal } from './components/DailyQuizModal';
 import { SavingsGoalModal } from './components/SavingsGoalModal';
 import { NotificationsModal } from './components/NotificationsModal';
 import { BadgesModal } from './components/BadgesModal';
+import { FocusTimerModal } from './components/FocusTimerModal';
+import { GpaCalculatorModal } from './components/GpaCalculatorModal';
 import { triggerConfetti } from './utils/confetti';
 import { addXP, checkBadgeThresholds } from './utils/gamification';
 import { getDueRecurringTransactions } from './utils/recurringTransactions';
 import { getTranslation, formatTimeNow } from './utils/i18n';
 import { subscribeToPush, unsubscribeFromPush } from './utils/push';
+import { checkUpcomingAgendaReminders } from './utils/notificationEngine';
 
 import { DashboardView } from './components/DashboardView';
 import { MissionsView } from './components/MissionsView';
@@ -111,6 +114,8 @@ export default function App() {
   const [isSavingsModalOpen, setIsSavingsModalOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isBadgesModalOpen, setIsBadgesModalOpen] = useState(false);
+  const [isFocusTimerOpen, setIsFocusTimerOpen] = useState(false);
+  const [isGpaCalculatorOpen, setIsGpaCalculatorOpen] = useState(false);
   const [txModalType, setTxModalType] = useState<TransactionType>('expense');
   const [toast, setToast] = useState<{ visible: boolean; message: string; icon: string }>({
     visible: false,
@@ -255,6 +260,16 @@ export default function App() {
       document.body.classList.remove('dark');
     }
   }, [profile?.darkMode]);
+
+  // Periodic background check for 15-30 min upcoming agenda alarms
+  useEffect(() => {
+    if (!missions.length) return;
+    checkUpcomingAgendaReminders(missions, profile?.language);
+    const alarmInterval = setInterval(() => {
+      checkUpcomingAgendaReminders(missions, profile?.language);
+    }, 60_000);
+    return () => clearInterval(alarmInterval);
+  }, [missions, profile?.language]);
 
   // Threshold-based badge unlocks (b5-b7): react to whatever crosses the line.
   useEffect(() => {
@@ -497,6 +512,8 @@ export default function App() {
             onOpenAddMission={() => setIsAddMissionOpen(true)}
             onNavigateTab={(tab) => setActiveTab(tab)}
             onUpdateStreak={handleUpdateStreak}
+            onOpenFocusTimer={() => setIsFocusTimerOpen(true)}
+            onOpenGpaCalculator={() => setIsGpaCalculatorOpen(true)}
           />
         )}
 
@@ -645,6 +662,21 @@ export default function App() {
         onClose={() => setIsBadgesModalOpen(false)}
         badges={badges}
         language={profile.language}
+      />
+      {/* Focus Timer Modal (Pomodoro + Ambient Sound + XP) */}
+      <FocusTimerModal
+        isOpen={isFocusTimerOpen}
+        onClose={() => setIsFocusTimerOpen(false)}
+        onRewardXP={handleAddXP}
+        lang={profile.language}
+      />
+      {/* GPA Calculator & Target Simulator Modal */}
+      <GpaCalculatorModal
+        isOpen={isGpaCalculatorOpen}
+        onClose={() => setIsGpaCalculatorOpen(false)}
+        currentGpa={profile.gpa || 0}
+        onUpdateGpa={(newGpa) => persistProfile({ gpa: newGpa })}
+        lang={profile.language}
       />
       {/* Global Toast Notification */}
       <div

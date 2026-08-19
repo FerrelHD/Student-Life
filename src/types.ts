@@ -6,7 +6,7 @@ export type Translations = { [key: string]: string };
 
 export type PriorityType = 'high' | 'medium' | 'low';
 
-export type MissionTag = 'EXAM' | 'LAB' | 'PAPER' | 'CODE' | 'READ' | 'PROJECT' | 'OTHER';
+export type MissionTag = 'EXAM' | 'LAB' | 'PAPER' | 'CODE' | 'READ' | 'PROJECT' | 'CLASS' | 'ORGANIZATION' | 'PERSONAL' | 'OTHER';
 
 export interface Mission {
   id: string;

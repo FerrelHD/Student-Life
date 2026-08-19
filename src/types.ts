@@ -8,6 +8,12 @@ export type PriorityType = 'high' | 'medium' | 'low';
 
 export type MissionTag = 'EXAM' | 'LAB' | 'PAPER' | 'CODE' | 'READ' | 'PROJECT' | 'CLASS' | 'ORGANIZATION' | 'PERSONAL' | 'OTHER';
 
+export interface SubTask {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
 export interface Mission {
   id: string;
   title: string;
@@ -21,6 +27,9 @@ export interface Mission {
   location?: string;
   focusPriority?: 'CRITICAL' | 'URGENT' | 'ROUTINE';
   dateStr?: string; // e.g. "2026-07-26"
+  subtasks?: SubTask[];
+  dayOfWeek?: number; // 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun
+  isExam?: boolean;
 }
 
 export type TransactionType = 'income' | 'expense';

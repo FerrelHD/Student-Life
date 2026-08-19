@@ -11,6 +11,8 @@ interface HeroViewProps {
   onToggleNotifications: () => void;
   onToggleLanguage: () => void;
   onLogout: () => void;
+  onExportData?: () => void;
+  onImportData?: (file: File) => void;
 }
 
 export const HeroView: React.FC<HeroViewProps> = ({
@@ -22,6 +24,8 @@ export const HeroView: React.FC<HeroViewProps> = ({
   onToggleNotifications,
   onToggleLanguage,
   onLogout,
+  onExportData,
+  onImportData,
 }) => {
   const isIndonesian = profile.language === 'id';
   const t = getTranslation(profile.language);
@@ -233,6 +237,37 @@ export const HeroView: React.FC<HeroViewProps> = ({
               />
               <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#d1c4e9]" />
             </label>
+          </div>
+
+          {/* Backup & Restore JSON Data */}
+          <div className="p-4 border-t border-white/10 space-y-2">
+            <h4 className="font-jakarta font-black text-xs text-[#d1c4e9] uppercase tracking-wider">
+              {isIndonesian ? 'Backup & Restore Data' : 'Backup & Restore'}
+            </h4>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={onExportData}
+                className="flex-1 py-2.5 px-3 rounded-full bg-white/10 text-white font-jakarta text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-white/20 transition-all cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-base">download</span>
+                <span>{isIndonesian ? 'Export JSON' : 'Export Data'}</span>
+              </button>
+
+              <label className="flex-1 py-2.5 px-3 rounded-full bg-white/10 text-white font-jakarta text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-white/20 transition-all cursor-pointer">
+                <span className="material-symbols-outlined text-base">upload</span>
+                <span>{isIndonesian ? 'Import JSON' : 'Import Data'}</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && onImportData) onImportData(file);
+                  }}
+                />
+              </label>
+            </div>
           </div>
         </div>
       </section>

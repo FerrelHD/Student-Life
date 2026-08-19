@@ -61,10 +61,97 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
 
   const displayedMissions = dayMissions.length > 0 ? dayMissions : missions.slice(0, 3);
 
+  const [viewMode, setViewMode] = useState<'calendar' | 'timetable'>('calendar');
+
+  const daysOfWeekNames = langKey === 'id' 
+    ? ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
+    : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
   return (
     <div className="pt-24 pb-32 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
-      {/* Calendar Section */}
-      <section className="expressive-card expressive-card-onyx p-6 shadow-md text-white">
+      {/* View Switcher: Kalender Bulanan vs Jadwal Matkul Mingguan */}
+      <div className="flex bg-white dark:bg-[#1e1e22] p-1.5 rounded-full border border-black/10 dark:border-white/10 font-jakarta text-xs font-bold shadow-sm">
+        <button
+          type="button"
+          onClick={() => setViewMode('calendar')}
+          className={`flex-1 py-2 rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            viewMode === 'calendar'
+              ? 'bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] shadow-sm'
+              : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+          }`}
+        >
+          <span className="material-symbols-outlined text-base">calendar_month</span>
+          <span>{langKey === 'id' ? 'Kalender Agenda' : 'Calendar View'}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode('timetable')}
+          className={`flex-1 py-2 rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            viewMode === 'timetable'
+              ? 'bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] shadow-sm'
+              : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+          }`}
+        >
+          <span className="material-symbols-outlined text-base">view_week</span>
+          <span>{langKey === 'id' ? 'Jadwal Matkul Mingguan' : 'Weekly Timetable'}</span>
+        </button>
+      </div>
+
+      {viewMode === 'timetable' ? (
+        /* Weekly Timetable View */
+        <section className="space-y-4">
+          <div className="flex justify-between items-center px-1">
+            <h2 className="font-jakarta font-black text-xl text-[#1b1b1d] dark:text-[#f3f0f2]">
+              {langKey === 'id' ? 'Jadwal Kuliah Mingguan' : 'Weekly Schedule'}
+            </h2>
+            <span className="font-jakarta text-xs font-bold text-[#635979] dark:text-[#cdc1e5]">
+              {langKey === 'id' ? 'Senin - Minggu' : 'Mon - Sun'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {daysOfWeekNames.map((dayName, index) => {
+              const dayNum = index + 1;
+              const dayClasses = missions.filter(
+                (m) => m.dayOfWeek === dayNum || (m.tag === 'CLASS' && (m.dateStr ? new Date(m.dateStr).getDay() === (dayNum % 7) : false))
+              );
+
+              return (
+                <div key={dayName} className="expressive-card expressive-card-onyx p-4 text-white border border-white/10">
+                  <div className="flex items-center justify-between pb-2 mb-3 border-b border-white/10">
+                    <h3 className="font-jakarta font-black text-base text-[#d1c4e9]">{dayName}</h3>
+                    <span className="font-jakarta text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-white/10">
+                      {dayClasses.length} {langKey === 'id' ? 'Kelas' : 'Classes'}
+                    </span>
+                  </div>
+
+                  {dayClasses.length > 0 ? (
+                    <div className="space-y-2">
+                      {dayClasses.map((c) => (
+                        <div key={c.id} className="p-2.5 rounded-xl bg-white/10 text-xs font-jakarta space-y-0.5 border border-white/5">
+                          <p className="font-black text-white text-sm">{c.title}</p>
+                          <p className="font-bold text-gray-300">{c.course}</p>
+                          <div className="flex justify-between text-[11px] text-[#d1c4e9] font-bold pt-1">
+                            <span>🕒 {c.time || '08:00 WIB'}</span>
+                            <span>📍 {c.location || 'R. Lecture'}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="font-jakarta text-xs text-gray-400 italic py-2">
+                      {langKey === 'id' ? 'Tidak ada jadwal kelas' : 'No classes scheduled'}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : (
+        <>
+          {/* Calendar Section */}
+          <section className="expressive-card expressive-card-onyx p-6 shadow-md text-white">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-jakarta font-black text-lg text-white">{monthLabel}</h2>
           <div className="flex gap-2">
@@ -241,6 +328,8 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
           ))}
         </div>
       </section>
+        </>
+      )}
 
       {/* Floating Add Mission Button */}
       <button

@@ -11,6 +11,7 @@ interface MissionsViewProps {
   onClaimStreakBonus: () => void;
   onEditMission: (mission: Mission) => void;
   onDeleteMission: (id: string) => void;
+  onToggleSubtask?: (missionId: string, subtaskId: string) => void;
 }
 
 export const MissionsView: React.FC<MissionsViewProps> = ({
@@ -22,6 +23,7 @@ export const MissionsView: React.FC<MissionsViewProps> = ({
   onClaimStreakBonus,
   onEditMission,
   onDeleteMission,
+  onToggleSubtask,
 }) => {
   const langKey = (language as LanguageType) || 'id';
   const t = getTranslation(langKey);
@@ -153,6 +155,35 @@ export const MissionsView: React.FC<MissionsViewProps> = ({
                       {mission.title}
                     </h4>
                     <p className="font-jakarta text-xs font-bold opacity-80">{mission.course}</p>
+
+                    {/* Sub-tasks checklist */}
+                    {mission.subtasks && mission.subtasks.length > 0 && (
+                      <div className="mt-2.5 pt-2 border-t border-black/10 dark:border-white/10 space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px] font-extrabold opacity-75">
+                          <span>Checklist Sub-tugas:</span>
+                          <span>
+                            {mission.subtasks.filter((s) => s.completed).length}/{mission.subtasks.length}
+                          </span>
+                        </div>
+                        <div className="space-y-1">
+                          {mission.subtasks.map((st) => (
+                            <div
+                              key={st.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onToggleSubtask?.(mission.id, st.id);
+                              }}
+                              className="flex items-center gap-2 text-xs font-bold cursor-pointer hover:opacity-80"
+                            >
+                              <span className="material-symbols-outlined text-base">
+                                {st.completed ? 'check_box' : 'check_box_outline_blank'}
+                              </span>
+                              <span className={st.completed ? 'line-through opacity-60' : ''}>{st.title}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

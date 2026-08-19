@@ -51,8 +51,53 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const xpPct = Math.min(100, Math.round((xpInLevel / 1000) * 100));
   const xpRemaining = 1000 - xpInLevel;
 
+  const examMission = missions.find(
+    (m) => !m.completed && (m.tag === 'EXAM' || m.isExam || m.priority === 'high')
+  );
+
+  let examCountdownText = '';
+  if (examMission?.dateStr) {
+    const targetDate = new Date(`${examMission.dateStr}T${examMission.time || '08:00'}:00`);
+    const now = new Date();
+    const diffMs = targetDate.getTime() - now.getTime();
+    if (diffMs > 0) {
+      const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      examCountdownText = `${days} ${profile.language === 'id' ? 'Hari' : 'Days'} ${hours} ${profile.language === 'id' ? 'Jam' : 'Hours'}`;
+    }
+  }
+
   return (
     <div className="pt-24 pb-32 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
+      {/* Big Exam / Major Deadline Countdown Banner */}
+      {examMission && (
+        <section className="expressive-card expressive-card-coral p-5 flex items-center justify-between shadow-sm border border-red-500/20">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-2xl text-[#b81d27] material-symbols-filled">
+                timer
+              </span>
+            </div>
+            <div>
+              <span className="inline-block bg-[#1b1b1d] text-white px-2.5 py-0.5 rounded-full font-jakarta font-black text-[10px] tracking-wider uppercase mb-1">
+                ⏳ Countdown {examMission.tag === 'EXAM' ? 'Ujian / EXAM' : 'High Priority'}
+              </span>
+              <h3 className="font-jakarta font-black text-lg leading-tight">{examMission.title}</h3>
+              <p className="font-jakarta text-xs font-bold opacity-80">{examMission.course}</p>
+            </div>
+          </div>
+
+          <div className="text-right shrink-0">
+            <span className="block font-jakarta font-black text-xl text-[#b81d27]">
+              {examCountdownText || examMission.dueDate}
+            </span>
+            <span className="font-jakarta text-[10px] font-extrabold opacity-75 uppercase">
+              {profile.language === 'id' ? 'Tinggal' : 'Remaining'}
+            </span>
+          </div>
+        </section>
+      )}
+
       {/* XP Mastery / Next Reward Progress Card (Pastel Lavender) */}
       <section className="expressive-card expressive-card-lavender p-6 shadow-sm">
         <div className="flex items-center justify-between mb-3">

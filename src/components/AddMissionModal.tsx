@@ -51,6 +51,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
   const [xpReward, setXpReward] = useState(150);
+  const [subtasksText, setSubtasksText] = useState('');
 
   useEffect(() => {
     if (!isOpen) return;
@@ -63,6 +64,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       setTime(editingMission.time || '');
       setLocation(editingMission.location || '');
       setXpReward(editingMission.xpReward);
+      setSubtasksText(editingMission.subtasks?.map((st) => st.title).join('\n') || '');
     } else {
       setTitle('');
       setCourse('');
@@ -72,6 +74,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       setTime('');
       setLocation('');
       setXpReward(150);
+      setSubtasksText('');
     }
   }, [isOpen, editingMission]);
 
@@ -82,6 +85,16 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !course.trim()) return;
+
+    const parsedSubtasks = subtasksText
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((stTitle, i) => ({
+        id: editingMission?.subtasks?.[i]?.id || `st-${Date.now()}-${i}`,
+        title: stTitle,
+        completed: editingMission?.subtasks?.[i]?.completed || false,
+      }));
 
     const missionData = {
       title: title.trim(),
@@ -94,6 +107,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       xpReward: Math.max(0, xpReward),
       focusPriority: (priority === 'high' ? 'CRITICAL' : priority === 'medium' ? 'URGENT' : 'ROUTINE') as 'CRITICAL' | 'URGENT' | 'ROUTINE',
       dateStr,
+      subtasks: parsedSubtasks.length > 0 ? parsedSubtasks : undefined,
     };
 
     if (editingMission) {
@@ -151,6 +165,19 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
               onChange={(e) => setCourse(e.target.value)}
               placeholder="e.g. Physics 402"
               className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-extrabold text-gray-300 mb-1">
+              {language === 'id' ? 'Sub-tugas / Checklist (1 per baris, Opsional)' : 'Sub-tasks / Checklist (1 per line, Optional)'}
+            </label>
+            <textarea
+              rows={3}
+              value={subtasksText}
+              onChange={(e) => setSubtasksText(e.target.value)}
+              placeholder={language === 'id' ? 'misal:\n- Bab 1 Pendahuluan\n- Bab 2 Pembahasan\n- Print & Jilid' : 'e.g.:\n- Chapter 1\n- Chapter 2\n- Review'}
+              className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
           </div>
 

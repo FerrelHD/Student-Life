@@ -450,6 +450,54 @@ export default function App() {
     await supabase.auth.signOut();
   };
 
+  const handleToggleSubtask = (missionId: string, subtaskId: string) => {
+    setMissions((prev) =>
+      prev.map((m) => {
+        if (m.id !== missionId || !m.subtasks) return m;
+        const updatedSubtasks = m.subtasks.map((st) =>
+          st.id === subtaskId ? { ...st, completed: !st.completed } : st
+        );
+        const allDone = updatedSubtasks.length > 0 && updatedSubtasks.every((st) => st.completed);
+        return { ...m, subtasks: updatedSubtasks, completed: allDone };
+      })
+    );
+  };
+
+  const handleExportData = () => {
+    const exportPayload = {
+      version: '1.0.0',
+      exportDate: new Date().toISOString(),
+      profile,
+      missions,
+      transactions,
+      savingsGoal,
+    };
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `student-life-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportData = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (data.profile) setProfile(data.profile);
+        if (Array.isArray(data.missions)) setMissions(data.missions);
+        if (Array.isArray(data.transactions)) setTransactions(data.transactions);
+        if (data.savingsGoal) setSavingsGoal(data.savingsGoal);
+        alert(profile?.language === 'id' ? '✅ Data berhasil di-restore!' : '✅ Data restored!');
+      } catch {
+        alert(profile?.language === 'id' ? '⚠️ Format JSON tidak valid.' : '⚠️ Invalid JSON format.');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const totalCredits = transactions.reduce((acc, curr) => {
     return curr.type === 'income' ? acc + curr.amount : acc - curr.amount;
   }, 0);
@@ -530,6 +578,7 @@ export default function App() {
               setIsAddMissionOpen(true);
             }}
             onDeleteMission={handleDeleteMission}
+            onToggleSubtask={handleToggleSubtask}
           />
         )}
 
@@ -573,6 +622,8 @@ export default function App() {
             onToggleNotifications={handleToggleNotifications}
             onToggleLanguage={handleToggleLanguage}
             onLogout={handleLogout}
+            onExportData={handleExportData}
+            onImportData={handleImportData}
           />
         )}
       </main>

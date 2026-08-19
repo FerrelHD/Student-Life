@@ -1,4 +1,4 @@
-import { LanguageType } from '../types';
+import { LanguageType, Translations } from '../types';
 
 export const i18n = {
   id: {
@@ -400,8 +400,8 @@ export const i18n = {
   },
 };
 
-export const getTranslation = (lang: LanguageType = 'id') => {
-  return i18n[lang] || i18n.id;
+export const getTranslation = (lang: LanguageType = 'id'): Translations => {
+  return (i18n[lang] as unknown as Translations) || (i18n.id as unknown as Translations);
 };
 
 // Explicit locale + hour12, not the runtime's ambient default -- otherwise the

@@ -2,6 +2,8 @@ export type TabType = 'dashboard' | 'missions' | 'vault' | 'agenda' | 'hero';
 
 export type LanguageType = 'id' | 'en';
 
+export type Translations = { [key: string]: string };
+
 export type PriorityType = 'high' | 'medium' | 'low';
 
 export type MissionTag = 'EXAM' | 'LAB' | 'PAPER' | 'CODE' | 'READ' | 'PROJECT' | 'OTHER';

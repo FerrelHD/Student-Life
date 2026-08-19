@@ -128,7 +128,10 @@ export const AuthView: React.FC<AuthViewProps> = ({
     setSendState('sending');
     setSendError('');
 
-    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim());
+    const redirectUrl = window.location.origin + window.location.pathname;
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
+      redirectTo: redirectUrl,
+    });
     if (error) {
       setSendError(error.message);
       setSendState('error');

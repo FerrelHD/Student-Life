@@ -68,7 +68,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
     : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   return (
-    <div className="pt-24 pb-32 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
+    <div className="pt-24 pb-44 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
       {/* View Switcher: Kalender Bulanan vs Jadwal Matkul Mingguan */}
       <div className="flex bg-white dark:bg-[#1e1e22] p-1.5 rounded-full border border-black/10 dark:border-white/10 font-jakarta text-xs font-bold shadow-sm">
         <button

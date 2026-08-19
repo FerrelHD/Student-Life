@@ -68,30 +68,32 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   }
 
   return (
-    <div className="pt-24 pb-32 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
+    <div className="pt-24 pb-44 md:pb-16 px-4 sm:px-6 max-w-md md:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
       {/* Big Exam / Major Deadline Countdown Banner */}
       {examMission && (
-        <section className="expressive-card expressive-card-coral p-5 flex items-center justify-between shadow-sm border border-red-500/20">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-2xl text-[#b81d27] material-symbols-filled">
+        <section className="expressive-card expressive-card-coral p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-sm border border-red-500/20">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/10 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+              <span className="material-symbols-outlined text-xl sm:text-2xl text-[#b81d27] material-symbols-filled">
                 timer
               </span>
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <span className="inline-block bg-[#1b1b1d] text-white px-2.5 py-0.5 rounded-full font-jakarta font-black text-[10px] tracking-wider uppercase mb-1">
                 ⏳ Countdown {examMission.tag === 'EXAM' ? 'Ujian / EXAM' : 'High Priority'}
               </span>
-              <h3 className="font-jakarta font-black text-lg leading-tight">{examMission.title}</h3>
+              <h3 className="font-jakarta font-black text-base sm:text-lg leading-snug text-[#1b1b1d] dark:text-[#f3f0f2] break-words">
+                {examMission.title}
+              </h3>
               <p className="font-jakarta text-xs font-bold opacity-80">{examMission.course}</p>
             </div>
           </div>
 
-          <div className="text-right shrink-0">
-            <span className="block font-jakarta font-black text-xl text-[#b81d27]">
+          <div className="text-left sm:text-right shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-black/10 dark:border-white/10 flex sm:block items-baseline justify-between gap-2">
+            <span className="font-jakarta font-black text-lg sm:text-xl text-[#b81d27] block">
               {examCountdownText || examMission.dueDate}
             </span>
-            <span className="font-jakarta text-[10px] font-extrabold opacity-75 uppercase">
+            <span className="font-jakarta text-[10px] font-extrabold opacity-75 uppercase block">
               {profile.language === 'id' ? 'Tinggal' : 'Remaining'}
             </span>
           </div>

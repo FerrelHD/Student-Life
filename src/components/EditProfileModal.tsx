@@ -190,7 +190,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   <span className="truncate">{uploadedFileName}</span>
                 </div>
                 <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-black uppercase">
-                  {t.uploadedLabel}
+                  {(t as any).uploadedLabel}
                 </span>
               </div>
             )}

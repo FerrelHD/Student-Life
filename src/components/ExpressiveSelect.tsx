@@ -44,7 +44,7 @@ export function ExpressiveSelect<T extends string = string>({
       >
         <span className="truncate flex items-center gap-2">
           {selectedOption.icon && (
-            <span className="material-symbols-outlined text-base text-[#d1c4e9]">
+            <span className="material-symbols-outlined text-base text-[#d1c4e9]" aria-hidden="true">
               {selectedOption.icon}
             </span>
           )}
@@ -54,6 +54,7 @@ export function ExpressiveSelect<T extends string = string>({
           className={`material-symbols-outlined text-gray-300 text-lg transition-transform duration-200 ${
             isOpen ? 'rotate-180 text-[#d1c4e9]' : ''
           }`}
+          aria-hidden="true"
         >
           expand_more
         </span>
@@ -80,14 +81,14 @@ export function ExpressiveSelect<T extends string = string>({
               >
                 <span className="flex items-center gap-2 truncate">
                   {opt.icon && (
-                    <span className="material-symbols-outlined text-sm">
+                    <span className="material-symbols-outlined text-sm" aria-hidden="true">
                       {opt.icon}
                     </span>
                   )}
                   <span>{opt.label}</span>
                 </span>
                 {isSelected && (
-                  <span className="material-symbols-outlined text-sm font-black">
+                  <span className="material-symbols-outlined text-sm font-black" aria-hidden="true">
                     check
                   </span>
                 )}

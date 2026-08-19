@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
           aria-label={profile.language === 'id' ? 'Buka menu' : 'Open menu'}
           className="md:hidden w-11 h-11 rounded-full flex items-center justify-center text-[#1b1b1d] dark:text-[#f3f0f2] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
         >
-          <span className="material-symbols-outlined text-2xl">menu</span>
+          <span className="material-symbols-outlined text-2xl" aria-hidden="true">menu</span>
         </button>
         <button
           onClick={onOpenProfile}
@@ -101,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label={t.notificationsTitle}
             className="relative w-11 h-11 rounded-full bg-[#f0edef] dark:bg-[#1e1e22] text-[#1b1b1d] dark:text-[#f3f0f2] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
           >
-            <span className="material-symbols-outlined text-xl">notifications</span>
+            <span className="material-symbols-outlined text-xl" aria-hidden="true">notifications</span>
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#ff544c] text-white font-jakarta font-black text-[9px] flex items-center justify-center border-2 border-white dark:border-[#121214] animate-pulse">
                 {unreadCount > 9 ? '9+' : unreadCount}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LanguageType, SavingsGoal } from '../types';
 import { getTranslation } from '../utils/i18n';
+import { parseNumericInput, isPositiveNumber } from '../utils/number';
 import { useEscapeClose } from '../utils/useEscapeClose';
 
 interface SavingsGoalModalProps {

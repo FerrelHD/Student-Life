@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UserProfile } from '../types';
 import { getTranslation } from '../utils/i18n';
+import { parseNumericInput } from '../utils/number';
 import { useEscapeClose } from '../utils/useEscapeClose';
 
 interface EditProfileModalProps {

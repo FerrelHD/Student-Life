@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LanguageType, Transaction, TransactionCategory, TransactionType } from '../types';
 import { getTranslation, formatTimeNow } from '../utils/i18n';
+import { parseNumericInput, isPositiveNumber } from '../utils/number';
 import { useEscapeClose } from '../utils/useEscapeClose';
 import { ExpressiveSelect, SelectOption } from './ExpressiveSelect';
 
@@ -63,12 +64,12 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const numAmount = parseFloat(amount.replace(',', '.'));
+    const numAmount = parseNumericInput(amount);
     if (!title.trim()) {
       setError(t.description + ' ' + (language === 'id' ? 'harus diisi' : 'is required'));
       return;
     }
-    if (isNaN(numAmount) || numAmount <= 0) {
+    if (!isPositiveNumber(numAmount)) {
       setError(language === 'id' ? 'Masukkan jumlah yang valid lebih besar dari 0' : 'Enter a valid amount greater than 0');
       return;
     }

@@ -85,7 +85,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     e.preventDefault();
     if (!name.trim()) return;
 
-    const parsedGpa = parseFloat(gpa.replace(',', '.'));
+    const parsedGpa = parseNumericInput(gpa);
     const gpaValue = Number.isNaN(parsedGpa) ? profile.gpa : Math.round(parsedGpa * 100) / 100;
 
     onSaveProfile({

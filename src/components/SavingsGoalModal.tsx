@@ -38,8 +38,8 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
   const handleDeposit = (e: React.FormEvent) => {
     e.preventDefault();
     setDepositError(null);
-    const val = parseFloat(depositAmount.replace(',', '.'));
-    if (isNaN(val) || val <= 0) {
+    const val = parseNumericInput(depositAmount);
+    if (!isPositiveNumber(val)) {
       setDepositError(language === 'id' ? 'Masukkan jumlah setoran yang valid' : 'Enter a valid deposit amount');
       return;
     }
@@ -52,12 +52,12 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
   const handleSaveGoal = (e: React.FormEvent) => {
     e.preventDefault();
     setTargetError(null);
-    const newTarget = parseFloat(targetAmount.replace(',', '.'));
+    const newTarget = parseNumericInput(targetAmount);
     if (!title.trim()) {
       setTargetError(language === 'id' ? 'Nama tujuan harus diisi' : 'Goal name is required');
       return;
     }
-    if (isNaN(newTarget) || newTarget <= 0) {
+    if (!isPositiveNumber(newTarget)) {
       setTargetError(language === 'id' ? 'Masukkan jumlah target yang valid' : 'Enter a valid target amount');
       return;
     }

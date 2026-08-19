@@ -23,6 +23,8 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
   const [title, setTitle] = useState(savingsGoal.title);
   const [targetAmount, setTargetAmount] = useState(savingsGoal.targetAmount.toString());
   const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [depositError, setDepositError] = useState<string | null>(null);
+  const [targetError, setTargetError] = useState<string | null>(null);
 
   useEffect(() => {
     setTitle(savingsGoal.title);
@@ -35,25 +37,37 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
 
   const handleDeposit = (e: React.FormEvent) => {
     e.preventDefault();
-    const val = parseFloat(depositAmount);
-    if (!isNaN(val) && val > 0) {
-      onUpdateSavings(savingsGoal.savedAmount + val);
-      setDepositAmount('');
-      onClose();
+    setDepositError(null);
+    const val = parseFloat(depositAmount.replace(',', '.'));
+    if (isNaN(val) || val <= 0) {
+      setDepositError(language === 'id' ? 'Masukkan jumlah setoran yang valid' : 'Enter a valid deposit amount');
+      return;
     }
+
+    onUpdateSavings(savingsGoal.savedAmount + val);
+    setDepositAmount('');
+    onClose();
   };
 
   const handleSaveGoal = (e: React.FormEvent) => {
     e.preventDefault();
-    const newTarget = parseFloat(targetAmount);
-    if (title.trim() && !isNaN(newTarget) && newTarget > 0) {
-      onUpdateSavings(savingsGoal.savedAmount, {
-        title: title.trim(),
-        targetAmount: newTarget,
-      });
-      setIsEditingGoal(false);
-      onClose();
+    setTargetError(null);
+    const newTarget = parseFloat(targetAmount.replace(',', '.'));
+    if (!title.trim()) {
+      setTargetError(language === 'id' ? 'Nama tujuan harus diisi' : 'Goal name is required');
+      return;
     }
+    if (isNaN(newTarget) || newTarget <= 0) {
+      setTargetError(language === 'id' ? 'Masukkan jumlah target yang valid' : 'Enter a valid target amount');
+      return;
+    }
+
+    onUpdateSavings(savingsGoal.savedAmount, {
+      title: title.trim(),
+      targetAmount: newTarget,
+    });
+    setIsEditingGoal(false);
+    onClose();
   };
 
   return (
@@ -123,10 +137,11 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
                 step="1000"
                 required
                 value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
+                onChange={(e) => { setDepositAmount(e.target.value); setDepositError(null); }}
                 placeholder="e.g. 500000"
                 className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
               />
+              {depositError && <p className="mt-2 text-[12px] text-rose-400 font-bold">{depositError}</p>}
             </div>
 
             <div className="pt-2 flex gap-3">
@@ -170,10 +185,11 @@ export const SavingsGoalModal: React.FC<SavingsGoalModalProps> = ({
                 step="100000"
                 required
                 value={targetAmount}
-                onChange={(e) => setTargetAmount(e.target.value)}
+                onChange={(e) => { setTargetAmount(e.target.value); setTargetError(null); }}
                 placeholder="28000000"
                 className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
               />
+              {targetError && <p className="mt-2 text-[12px] text-rose-400 font-bold">{targetError}</p>}
             </div>
 
             <div className="pt-2 flex gap-3">

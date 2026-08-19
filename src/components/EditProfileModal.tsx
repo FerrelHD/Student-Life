@@ -53,8 +53,16 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const MAX_MB = 3;
+      const maxBytes = MAX_MB * 1024 * 1024;
       if (!file.type.startsWith('image/')) {
+        setUploadedFileName(null);
         alert(t.selectImageFileError);
+        return;
+      }
+      if (file.size > maxBytes) {
+        setUploadedFileName(null);
+        alert(language === 'id' ? `File terlalu besar — maksimal ${MAX_MB}MB` : `File too large — max ${MAX_MB}MB`);
         return;
       }
 

@@ -37,6 +37,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const [type, setType] = useState<TransactionType>(defaultType);
   const [category, setCategory] = useState<TransactionCategory>('FOOD');
   const [recurring, setRecurring] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -61,8 +62,16 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const numAmount = parseFloat(amount);
-    if (!title.trim() || isNaN(numAmount) || numAmount <= 0) return;
+    setError(null);
+    const numAmount = parseFloat(amount.replace(',', '.'));
+    if (!title.trim()) {
+      setError(t.description + ' ' + (language === 'id' ? 'harus diisi' : 'is required'));
+      return;
+    }
+    if (isNaN(numAmount) || numAmount <= 0) {
+      setError(language === 'id' ? 'Masukkan jumlah yang valid lebih besar dari 0' : 'Enter a valid amount greater than 0');
+      return;
+    }
 
     const category_ = type === 'income' ? 'INCOME' : category;
     const recurrence = recurring ? 'monthly' : 'none';
@@ -169,10 +178,11 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               step="1000"
               required
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => { setAmount(e.target.value); setError(null); }}
               placeholder="e.g. 50000"
               className="w-full bg-white/10 text-white placeholder-gray-400 border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9]"
             />
+            {error && <p className="mt-2 text-[12px] text-rose-400 font-bold">{error}</p>}
           </div>
 
           {type === 'expense' && (
@@ -208,7 +218,8 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 bg-[#d1c4e9] text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer clay-raised hover:scale-[1.02] active:scale-95"
+              disabled={!!error}
+              className={`flex-1 ${error ? 'opacity-60 cursor-not-allowed' : 'bg-[#d1c4e9]'} text-[#1f1732] font-black rounded-full py-3.5 transition-colors cursor-pointer clay-raised hover:scale-[1.02] active:scale-95`}
             >
               {editingTransaction ? t.saveTransactionBtn : t.recordTx}
             </button>

@@ -209,15 +209,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             {recentBadges.map((badge, idx) => (
               <div key={badge.id} className="expressive-card expressive-card-onyx p-4 flex items-center gap-3 text-white">
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
                     idx === 0 ? 'bg-[#ffb8b3] text-[#410004]' : 'bg-[#ece28c] text-[#1f1c00]'
                   }`}
                 >
                   <span className="material-symbols-outlined text-2xl material-symbols-filled">{badge.icon}</span>
                 </div>
-                <div>
-                  <p className="font-jakarta font-black text-sm text-white">{badge.title}</p>
-                  <p className={`font-jakarta text-xs font-bold ${idx === 0 ? 'text-[#ffb8b3]' : 'text-[#ece28c]'}`}>
+                <div className="min-w-0">
+                  <p className="font-jakarta font-black text-sm text-white truncate">{badge.title}</p>
+                  <p className={`font-jakarta text-xs font-bold truncate ${idx === 0 ? 'text-[#ffb8b3]' : 'text-[#ece28c]'}`}>
                     {badge.subtitle}
                   </p>
                 </div>

@@ -15,7 +15,7 @@ export function parseImportJSON(jsonStr: string): Record<string, unknown> {
 }
 
 // Self-check
-if (import.meta.vitest) {
+if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') {
   const sample = formatExportJSON({ profile: { name: 'Test' } });
   const restored = parseImportJSON(sample);
   if ((restored.profile as { name: string }).name !== 'Test') {

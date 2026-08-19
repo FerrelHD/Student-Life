@@ -164,10 +164,28 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
           </div>
         </div>
 
-        {/* Footer info */}
-        <div className="pt-6 border-t border-black/5 dark:border-white/10 text-center font-jakarta text-xs text-gray-500 dark:text-gray-400 font-semibold space-y-1">
-          <p className="font-extrabold text-[#635979] dark:text-[#cdc1e5]">Student Life</p>
-          <p>© 2026 Academic Companion Engine</p>
+        {/* Footer info & Manual Refresh button */}
+        <div className="pt-6 border-t border-black/5 dark:border-white/10 text-center font-jakarta text-xs text-gray-500 dark:text-gray-400 font-semibold space-y-2">
+          <button
+            type="button"
+            onClick={() => {
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then((registrations) => {
+                  registrations.forEach((r) => r.update());
+                });
+              }
+              window.location.reload();
+            }}
+            className="w-full py-2 px-3 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 text-[11px] font-extrabold text-[#635979] dark:text-[#cdc1e5] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm">refresh</span>
+            <span>{profile.language === 'id' ? 'Cek Update / Refresh App' : 'Check Updates / Refresh App'}</span>
+          </button>
+
+          <div>
+            <p className="font-extrabold text-[#635979] dark:text-[#cdc1e5]">Student Life</p>
+            <p>© 2026 Academic Companion Engine</p>
+          </div>
         </div>
       </div>
     </>

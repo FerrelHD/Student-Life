@@ -4,7 +4,30 @@ import { registerSW } from 'virtual:pwa-register';
 import App from './App.tsx';
 import './index.css';
 
-registerSW({ immediate: true });
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    updateSW(true);
+  },
+  onRegisteredSW(_swUrl, r) {
+    if (r) {
+      // Periodically check for updates
+      setInterval(() => {
+        r.update();
+      }, 5 * 60 * 1000);
+    }
+  },
+});
+
+let refreshing = false;
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+}
 
 class ErrorBoundary extends Component<{children: ReactNode}, {crashed: boolean}> {
   state = {crashed: false};

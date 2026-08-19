@@ -168,18 +168,30 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
         <div className="pt-6 border-t border-black/5 dark:border-white/10 text-center font-jakarta text-xs text-gray-500 dark:text-gray-400 font-semibold space-y-2">
           <button
             type="button"
-            onClick={() => {
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then((registrations) => {
-                  registrations.forEach((r) => r.update());
-                });
+            onClick={async () => {
+              try {
+                if ('serviceWorker' in navigator) {
+                  const registrations = await navigator.serviceWorker.getRegistrations();
+                  for (const r of registrations) {
+                    await r.unregister();
+                  }
+                }
+                if ('caches' in window) {
+                  const keys = await caches.keys();
+                  for (const key of keys) {
+                    await caches.delete(key);
+                  }
+                }
+              } catch (e) {
+                console.error('[PWA-Purge]', e);
               }
-              window.location.reload();
+              const cleanUrl = window.location.origin + window.location.pathname;
+              window.location.href = `${cleanUrl}?v=${Date.now()}`;
             }}
-            className="w-full py-2 px-3 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 text-[11px] font-extrabold text-[#635979] dark:text-[#cdc1e5] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="w-full py-2.5 px-3 rounded-full bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] hover:opacity-90 text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
           >
-            <span className="material-symbols-outlined text-sm">refresh</span>
-            <span>{profile.language === 'id' ? 'Cek Update / Refresh App' : 'Check Updates / Refresh App'}</span>
+            <span className="material-symbols-outlined text-base">refresh</span>
+            <span>{profile.language === 'id' ? '🔄 Paksa Load Versi Terbaru' : '🔄 Force Load Latest Version'}</span>
           </button>
 
           <div>

@@ -6,7 +6,13 @@ declare let self: ServiceWorkerGlobalScope;
 precacheAndRoute(self.__WB_MANIFEST);
 
 self.skipWaiting();
-self.addEventListener('activate', () => self.clients.claim());
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((key) => key !== 'workbox-precache-v2').map((key) => caches.delete(key)))
+    ).then(() => self.clients.claim())
+  );
+});
 
 // Mission-deadline reminders, sent via the send-deadline-reminders Edge
 // Function. Payload shape: { title, body, url }.

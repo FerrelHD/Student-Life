@@ -52,6 +52,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
   const [location, setLocation] = useState('');
   const [xpReward, setXpReward] = useState(150);
   const [subtasksText, setSubtasksText] = useState('');
+  const [dayOfWeek, setDayOfWeek] = useState<number>(0);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -65,6 +66,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       setLocation(editingMission.location || '');
       setXpReward(editingMission.xpReward);
       setSubtasksText(editingMission.subtasks?.map((st) => st.title).join('\n') || '');
+      setDayOfWeek(editingMission.dayOfWeek || 0);
     } else {
       setTitle('');
       setCourse('');
@@ -75,6 +77,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       setLocation('');
       setXpReward(150);
       setSubtasksText('');
+      setDayOfWeek(0);
     }
   }, [isOpen, editingMission]);
 
@@ -96,6 +99,8 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
         completed: editingMission?.subtasks?.[i]?.completed || false,
       }));
 
+    const calculatedDay = dayOfWeek || (dateStr ? (new Date(dateStr).getDay() || 7) : 1);
+
     const missionData = {
       title: title.trim(),
       course: course.trim(),
@@ -108,6 +113,7 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
       focusPriority: (priority === 'high' ? 'CRITICAL' : priority === 'medium' ? 'URGENT' : 'ROUTINE') as 'CRITICAL' | 'URGENT' | 'ROUTINE',
       dateStr,
       subtasks: parsedSubtasks.length > 0 ? parsedSubtasks : undefined,
+      dayOfWeek: calculatedDay,
     };
 
     if (editingMission) {
@@ -203,6 +209,26 @@ export const AddMissionModal: React.FC<AddMissionModalProps> = ({
                 onChange={(val) => setTag(val as MissionTag)}
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-extrabold text-gray-300 mb-1">
+              {language === 'id' ? 'Hari Matkul (Jadwal Mingguan)' : 'Class Day (Weekly Timetable)'}
+            </label>
+            <select
+              value={dayOfWeek}
+              onChange={(e) => setDayOfWeek(Number(e.target.value))}
+              className="w-full bg-white/10 text-white border border-white/15 rounded-2xl clay-inset px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#d1c4e9] [color-scheme:dark]"
+            >
+              <option value={0} className="bg-[#1f1732] text-white">{language === 'id' ? 'Otomatis dari Tanggal' : 'Auto from Date'}</option>
+              <option value={1} className="bg-[#1f1732] text-white">{language === 'id' ? 'Senin' : 'Monday'}</option>
+              <option value={2} className="bg-[#1f1732] text-white">{language === 'id' ? 'Selasa' : 'Tuesday'}</option>
+              <option value={3} className="bg-[#1f1732] text-white">{language === 'id' ? 'Rabu' : 'Wednesday'}</option>
+              <option value={4} className="bg-[#1f1732] text-white">{language === 'id' ? 'Kamis' : 'Thursday'}</option>
+              <option value={5} className="bg-[#1f1732] text-white">{language === 'id' ? 'Jumat' : 'Friday'}</option>
+              <option value={6} className="bg-[#1f1732] text-white">{language === 'id' ? 'Sabtu' : 'Saturday'}</option>
+              <option value={7} className="bg-[#1f1732] text-white">{language === 'id' ? 'Minggu' : 'Sunday'}</option>
+            </select>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">

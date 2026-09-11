@@ -29,9 +29,8 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
       {/* Rail: slide-in overlay on mobile, permanent pinned sidebar on desktop */}
       <div
-        className={`fixed top-0 left-0 z-50 md:z-30 w-80 max-w-[80vw] md:w-72 md:max-w-none bg-[#fcf8fb] dark:bg-[#121214] text-[#1b1b1d] dark:text-[#f3f0f2] border-r border-black/5 dark:border-white/10 h-screen p-6 flex flex-col justify-between overflow-y-auto shadow-2xl md:shadow-[8px_0_24px_rgba(20,10,30,0.06)] dark:md:shadow-[8px_0_24px_rgba(0,0,0,0.3)] transition-transform duration-300 md:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed top-0 left-0 z-50 md:z-30 w-80 max-w-[80vw] md:w-72 md:max-w-none bg-[#fcf8fb] dark:bg-[#121214] text-[#1b1b1d] dark:text-[#f3f0f2] border-r border-black/5 dark:border-white/10 h-screen p-6 flex flex-col justify-between overflow-y-auto shadow-2xl md:shadow-[8px_0_24px_rgba(20,10,30,0.06)] dark:md:shadow-[8px_0_24px_rgba(0,0,0,0.3)] transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div>
           {/* Header */}
@@ -83,17 +82,17 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
 
                 return (
                   <>
-                      <div className="text-left">
-                        <span className="block text-[10px] opacity-75">{t.totalXpLabel}</span>
-                        <span className="block font-extrabold text-sm mt-1">{xp}</span>
+                    <div className="text-left">
+                      <span className="block text-[10px] opacity-75">{t.totalXpLabel}</span>
+                      <span className="block font-extrabold text-sm mt-1">{xp}</span>
                     </div>
                     <div className="text-center">
-                       <span className="block text-[10px] opacity-75">{t.streakLabel}</span>
-                       <span className="block font-extrabold text-sm mt-1">🔥 {profile.streakDays} {t.days}</span>
+                      <span className="block text-[10px] opacity-75">{t.streakLabel}</span>
+                      <span className="block font-extrabold text-sm mt-1">🔥 {profile.streakDays} {t.days}</span>
                     </div>
                     <div className="text-right">
-                       <span className="block text-[10px] opacity-75">{t.gpaLabel}</span>
-                       <span className="block font-extrabold text-sm mt-1">{gpa}</span>
+                      <span className="block text-[10px] opacity-75">{t.gpaLabel}</span>
+                      <span className="block font-extrabold text-sm mt-1">{gpa}</span>
                     </div>
                   </>
                 );
@@ -191,7 +190,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
             className="w-full py-2.5 px-3 rounded-full bg-[#1b1b1d] text-white dark:bg-[#d1c4e9] dark:text-[#1b1b1d] hover:opacity-90 text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">refresh</span>
-            <span>{profile.language === 'id' ? '🔄 Paksa Load Versi Terbaru' : '🔄 Force Load Latest Version'}</span>
+            <span>{profile.language === 'id' ? ' Paksa Load Versi Terbaru' : 'Force Load Latest Version'}</span>
           </button>
 
           <div>

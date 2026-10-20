@@ -82,7 +82,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Next Deadline Card (Butter Yellow) */}
         <div
           onClick={() => onNavigateTab('missions')}
-          className="expressive-card expressive-card-butter p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all"
+          className="expressive-card expressive-card-butter p-4 sm:p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all min-w-0"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center">
@@ -95,7 +95,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div>
             <p className="font-jakarta text-xs font-black opacity-75 mb-1">{t.nextDeadline}</p>
-            <h3 className="font-jakarta font-black text-2xl tracking-tight mb-1">
+            <h3 className="font-jakarta font-black text-lg sm:text-2xl tracking-tight mb-1 leading-tight break-words">
               {deadlineLabel}
             </h3>
             <p className="font-jakarta text-xs font-bold opacity-85 truncate">
@@ -107,7 +107,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Study Streak Card (Lavender/Purple) */}
         <div
           onClick={onUpdateStreak}
-          className="expressive-card expressive-card-lavender p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all"
+          className="expressive-card expressive-card-lavender p-4 sm:p-5 flex flex-col justify-between cursor-pointer group shadow-sm hover:scale-[1.02] transition-all min-w-0"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center">
@@ -122,10 +122,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div>
             <p className="font-jakarta text-xs font-black opacity-75 mb-1">{t.studyStreak}</p>
-            <h3 className="font-jakarta font-black text-2xl tracking-tight mb-1">
+            <h3 className="font-jakarta font-black text-xl sm:text-2xl tracking-tight mb-1">
               {profile.streakDays} {t.days}
             </h3>
-            <p className="font-jakarta text-xs font-bold opacity-85">
+            <p className="font-jakarta text-xs font-bold opacity-85 truncate">
               {t.tapToIncrement}
             </p>
           </div>

@@ -135,28 +135,28 @@ export const MissionsView: React.FC<MissionsViewProps> = ({
                 className={`expressive-card p-4 flex items-center justify-between shadow-sm cursor-pointer ${cardBgClass}`}
                 onClick={() => onToggleMission(mission.id)}
               >
-                <div className="flex items-center gap-3.5 flex-1 pr-3">
+                <div className="flex items-center gap-3 sm:gap-3.5 flex-1 min-w-0 pr-2 sm:pr-3">
                   <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center flex-shrink-0">
                     <span className="material-symbols-outlined text-2xl">
                       {getTagIcon(mission.tag)}
                     </span>
                   </div>
 
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="px-2 py-0.5 rounded-full bg-black/10 font-jakarta font-black text-[10px] uppercase">
                         {mission.priority === 'high' ? t.urgent : mission.priority === 'medium' ? t.normal : t.later}
                       </span>
                       <span className="font-jakarta text-xs font-bold opacity-80">{mission.dueDate}</span>
                     </div>
-                    <h4 className={`font-jakarta font-extrabold text-base leading-snug ${mission.completed ? 'line-through opacity-70' : ''}`}>
+                    <h4 className={`font-jakarta font-extrabold text-sm sm:text-base leading-snug break-words ${mission.completed ? 'line-through opacity-70' : ''}`}>
                       {mission.title}
                     </h4>
-                    <p className="font-jakarta text-xs font-bold opacity-80">{mission.course}</p>
+                    <p className="font-jakarta text-xs font-bold opacity-80 truncate">{mission.course}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                   {/* Edit / Delete */}
                   <button
                     type="button"

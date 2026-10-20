@@ -18,11 +18,12 @@ type SendState = 'idle' | 'sending' | 'success' | 'error';
 interface AuthViewProps {
   language: LanguageType;
   onLoginSuccess: (user?: Partial<UserProfile>) => void;
-  onToggleLanguage: () => void;
+  onToggleLanguage: (targetLang?: LanguageType) => void;
   // True when the user arrived via the emailed reset link — Supabase already
   // verified them, so skip straight to setting a new password (no OTP needed).
   recoverySession?: boolean;
   onRecoveryDone?: () => void;
+  onCancelRecovery?: () => void;
 }
 
 // ─── Component ────────────────────────────────────────────────
@@ -32,6 +33,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
   onToggleLanguage,
   recoverySession,
   onRecoveryDone,
+  onCancelRecovery,
 }) => {
   const isIndonesian = language === 'id';
   const t = getTranslation(language);
@@ -108,25 +110,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }
   };
 
-  const handleDemoLogin = async () => {
-    if (authLoading || !import.meta.env.DEV) return;
-    setAuthError('');
-    setAuthLoading(true);
-    try {
-      // Seeded once via Supabase (see supabase/schema.sql setup notes) so the
-      // one-click demo button signs in with a real account, not a fake bypass.
-      const { error } = await supabase.auth.signInWithPassword({
-        email: 'jacob.miller@ui.ac.id',
-        password: 'password123',
-      });
-      if (error) throw error;
-      onLoginSuccess();
-    } catch (err) {
-      setAuthError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setAuthLoading(false);
-    }
-  };
 
   const handleSendReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,7 +162,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
   // ─── Render ─────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#f7f3f9] dark:bg-[#0f0e13] text-[#1b1b1d] dark:text-[#f3f0f2] flex items-center justify-center p-5 relative overflow-hidden font-jakarta">
+    <div className="min-h-screen bg-[#f7f3f9] dark:bg-[#0f0e13] text-[#1b1b1d] dark:text-[#f3f0f2] flex flex-col justify-center items-center p-4 sm:p-6 py-8 sm:py-12 relative overflow-y-auto font-jakarta">
       {/* Ambient Orbs */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-60 dark:opacity-40">
         <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#d1c4e9] dark:bg-[#6b5096] blur-3xl animate-orb-1 opacity-90" />
@@ -187,7 +170,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       </div>
 
       {/* ── Main Card ── */}
-      <div className="w-full max-w-md expressive-card expressive-card-onyx p-8 shadow-2xl relative z-10 text-white border border-white/10 expressive-shimmer">
+      <div className="w-full max-w-md expressive-card expressive-card-onyx p-6 sm:p-8 shadow-2xl relative z-10 text-white border border-white/10 expressive-shimmer my-auto">
 
         {/* ── Brand + Language ── */}
         <div className="flex justify-between items-center mb-6">
@@ -200,14 +183,32 @@ export const AuthView: React.FC<AuthViewProps> = ({
               <p className="font-jakarta text-[10px] font-bold text-[#d1c4e9] uppercase tracking-wider">Academic Companion</p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onToggleLanguage}
-            className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-[#ece28c] px-3 py-1.5 rounded-full text-xs font-bold border border-white/10 transition-all cursor-pointer"
-          >
-            <span>{isIndonesian ? '🇮🇩 ID' : '🇬🇧 EN'}</span>
-            <span className="material-symbols-outlined text-xs">sync_alt</span>
-          </button>
+          <div className="flex items-center bg-white/10 p-1 rounded-full border border-white/10 text-xs font-jakarta font-extrabold">
+            <button
+              type="button"
+              onClick={() => onToggleLanguage('id')}
+              aria-label="Pilih Bahasa Indonesia"
+              className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                isIndonesian
+                  ? 'bg-[#d1c4e9] text-[#1f1732] shadow-sm font-black'
+                  : 'text-gray-300 hover:text-white'
+              }`}
+            >
+              ID
+            </button>
+            <button
+              type="button"
+              onClick={() => onToggleLanguage('en')}
+              aria-label="Choose English Language"
+              className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                !isIndonesian
+                  ? 'bg-[#d1c4e9] text-[#1f1732] shadow-sm font-black'
+                  : 'text-gray-300 hover:text-white'
+              }`}
+            >
+              EN
+            </button>
+          </div>
         </div>
 
         {/* ─────────────────────────────── RECOVERY LINK MODE ─────────────────────────────── */}
@@ -536,25 +537,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
               </button>
             </form>
 
-            {/* Demo login (dev builds only) */}
-            {import.meta.env.DEV && (
-              <div className="mt-6 pt-5 border-t border-white/10 text-center">
-                <p className="text-xs text-gray-400 font-bold mb-3">
-                  {t.authDemoLoginPrompt}
-                </p>
-                <button
-                  type="button"
-                  onClick={handleDemoLogin}
-                  disabled={authLoading}
-                  className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2 border border-white/15 transition-all cursor-pointer hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  <span className="material-symbols-outlined text-base text-[#ece28c]">key</span>
-                  <span>
-                    {t.authDemoLoginBtn}
-                  </span>
-                </button>
-              </div>
-            )}
           </>
         )}
       </div>

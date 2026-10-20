@@ -159,7 +159,8 @@ export const HeroView: React.FC<HeroViewProps> = ({
             </div>
 
             <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full font-jakarta text-xs font-black border border-white/10 text-[#ece28c]">
-              <span>{isIndonesian ? '🇮🇩 Indonesia' : '🇬🇧 English'}</span>
+              <span className="material-symbols-outlined text-sm">language</span>
+              <span>{isIndonesian ? 'Indonesia (ID)' : 'English (EN)'}</span>
               <span className="material-symbols-outlined text-sm">sync_alt</span>
             </div>
           </button>

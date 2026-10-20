@@ -11,6 +11,7 @@ import {
   TransactionType,
   SavingsGoal,
   NotificationItem,
+  LanguageType,
 } from './types';
 import { initialBadges } from './data/initialData';
 import { supabase } from './lib/supabaseClient';
@@ -99,6 +100,20 @@ function fallbackProfile(session: Session): UserProfile {
   };
 }
 
+const isRecoveryPending = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash || '';
+      const search = window.location.search || '';
+      if (hash.includes('type=recovery') || search.includes('type=recovery')) {
+        return true;
+      }
+      return sessionStorage.getItem('studentlife_password_recovery') === 'true';
+    }
+  } catch {}
+  return false;
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -119,11 +134,15 @@ export default function App() {
   // ── Auth/session ──
   const [session, setSession] = useState<Session | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
-  const [passwordRecovery, setPasswordRecovery] = useState(false);
+  const [passwordRecovery, setPasswordRecovery] = useState<boolean>(isRecoveryPending);
   const [dataLoading, setDataLoading] = useState(false);
   const userId = session?.user.id;
 
   // ── Remote-backed state (populated after login, see load effect below) ──
+  const [guestLanguage, setGuestLanguage] = useState<LanguageType>(() => {
+    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('student_life_lang') : null;
+    return saved === 'en' || saved === 'id' ? saved : 'id';
+  });
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -157,11 +176,19 @@ export default function App() {
       setCheckingSession(false);
     });
     const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
-      // Clicking the emailed reset link auto-establishes a session (Supabase's
-      // detectSessionInUrl) — flag it so we force a new-password screen instead
-      // of dropping the user straight into the dashboard with the old password.
-      if (event === 'PASSWORD_RECOVERY') setPasswordRecovery(true);
-      setSession(newSession);
+      if (event === 'PASSWORD_RECOVERY') {
+        try { sessionStorage.setItem('studentlife_password_recovery', 'true'); } catch {}
+        setPasswordRecovery(true);
+      } else if (event === 'SIGNED_OUT') {
+        try { sessionStorage.removeItem('studentlife_password_recovery'); } catch {}
+        setPasswordRecovery(false);
+      }
+      setSession((prev) => {
+        if (prev?.access_token === newSession?.access_token && prev?.user?.id === newSession?.user?.id) {
+          return prev;
+        }
+        return newSession;
+      });
     });
     return () => listener.subscription.unsubscribe();
   }, []);
@@ -200,7 +227,9 @@ export default function App() {
     }
 
     let cancelled = false;
-    setDataLoading(true);
+    if (!profile) {
+      setDataLoading(true);
+    }
 
     (async () => {
       const uid = session.user.id;
@@ -217,7 +246,12 @@ export default function App() {
         ]);
       if (cancelled) return;
 
-      setProfile(profileResult.status === 'fulfilled' ? profileResult.value : fallbackProfile(session));
+      const loadedProfile = profileResult.status === 'fulfilled' ? profileResult.value : fallbackProfile(session);
+      if (loadedProfile?.language) {
+        setGuestLanguage(loadedProfile.language);
+        try { localStorage.setItem('student_life_lang', loadedProfile.language); } catch {}
+      }
+      setProfile(loadedProfile);
       setMissions(missionsResult.status === 'fulfilled' ? missionsResult.value : []);
       setTransactions(txResult.status === 'fulfilled' ? txResult.value : []);
       setSavingsGoal(
@@ -237,7 +271,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [session]);
+  }, [session?.user.id]);
 
   // Apply dark mode to DOM whenever the profile's preference changes
   useEffect(() => {
@@ -397,10 +431,14 @@ export default function App() {
     if (profile) persistProfile({ notifications: !profile.notifications });
   };
 
-  const handleToggleLanguage = () => {
+  const handleToggleLanguage = (targetLang?: LanguageType) => {
+    const currentLang = profile?.language ?? guestLanguage;
+    const nextLang = targetLang ?? (currentLang === 'id' ? 'en' : 'id');
+    setGuestLanguage(nextLang);
+    try { localStorage.setItem('student_life_lang', nextLang); } catch {}
+
     setProfile((p) => {
       if (!p) return p;
-      const nextLang = p.language === 'id' ? 'en' : 'id';
       if (userId) updateProfile(userId, { language: nextLang }).catch(onSyncError);
       return { ...p, language: nextLang };
     });
@@ -423,7 +461,7 @@ export default function App() {
   if (passwordRecovery) {
     return (
       <AuthView
-        language={profile?.language ?? 'id'}
+        language={profile?.language ?? guestLanguage}
         onLoginSuccess={() => {}}
         onToggleLanguage={handleToggleLanguage}
         recoverySession
@@ -438,7 +476,7 @@ export default function App() {
   if (!session) {
     return (
       <AuthView
-        language={profile?.language ?? 'id'}
+        language={profile?.language ?? guestLanguage}
         onLoginSuccess={() => {}}
         onToggleLanguage={handleToggleLanguage}
       />

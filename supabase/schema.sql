@@ -35,10 +35,13 @@ alter table public.profiles add column if not exists last_streak_bonus_date date
 
 alter table public.profiles enable row level security;
 
+drop policy if exists "profiles: select own" on public.profiles;
 create policy "profiles: select own" on public.profiles
   for select using (auth.uid() = id);
+drop policy if exists "profiles: update own" on public.profiles;
 create policy "profiles: update own" on public.profiles
   for update using (auth.uid() = id);
+drop policy if exists "profiles: insert own" on public.profiles;
 create policy "profiles: insert own" on public.profiles
   for insert with check (auth.uid() = id);
 
@@ -84,6 +87,7 @@ create table if not exists public.missions (
 
 alter table public.missions enable row level security;
 
+drop policy if exists "missions: crud own" on public.missions;
 create policy "missions: crud own" on public.missions
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
@@ -105,6 +109,7 @@ create table if not exists public.transactions (
 
 alter table public.transactions enable row level security;
 
+drop policy if exists "transactions: crud own" on public.transactions;
 create policy "transactions: crud own" on public.transactions
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
@@ -122,6 +127,7 @@ create table if not exists public.savings_goals (
 
 alter table public.savings_goals enable row level security;
 
+drop policy if exists "savings_goals: crud own" on public.savings_goals;
 create policy "savings_goals: crud own" on public.savings_goals
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
@@ -141,6 +147,7 @@ create table if not exists public.notifications (
 
 alter table public.notifications enable row level security;
 
+drop policy if exists "notifications: crud own" on public.notifications;
 create policy "notifications: crud own" on public.notifications
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
@@ -159,5 +166,6 @@ create table if not exists public.user_badges (
 
 alter table public.user_badges enable row level security;
 
+drop policy if exists "user_badges: crud own" on public.user_badges;
 create policy "user_badges: crud own" on public.user_badges
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

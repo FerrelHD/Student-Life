@@ -33,6 +33,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
   const monthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   const locale = langKey === 'id' ? 'id-ID' : 'en-US';
+  const weekDays = langKey === 'id' ? ['M', 'S', 'S', 'R', 'K', 'J', 'S'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const monthLabel = viewDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
   const monthShortLabel = viewDate.toLocaleDateString(locale, { month: 'short' }).toUpperCase();
 
@@ -86,7 +87,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
         </div>
 
         <div className="grid grid-cols-7 gap-1 text-center mb-2">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((dayLabel, idx) => (
+          {weekDays.map((dayLabel, idx) => (
             <span key={idx} className="font-jakarta text-xs font-black text-gray-300">
               {dayLabel}
             </span>

@@ -199,7 +199,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
                 key={tx.id}
                 className="expressive-card expressive-card-onyx p-4 flex items-center justify-between shadow-sm text-white"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0 pr-2">
                   <div
                     className={`w-11 h-11 rounded-full flex items-center justify-center ${
                       tx.category === 'TRANSPORT'
@@ -220,19 +220,19 @@ export const VaultView: React.FC<VaultViewProps> = ({
                     </span>
                   </div>
 
-                  <div>
-                    <h4 className="font-jakarta font-black text-sm text-white">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-jakarta font-black text-sm text-white truncate">
                       {tx.title}
                     </h4>
-                    <p className="font-jakarta text-xs text-gray-300 font-bold">
+                    <p className="font-jakarta text-xs text-gray-300 font-bold truncate">
                       {tx.category} • {tx.date}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                   <span
-                    className={`font-jakarta font-black text-sm ${
+                    className={`font-jakarta font-black text-xs sm:text-sm whitespace-nowrap ${
                       isIncome ? 'text-emerald-400' : 'text-[#ffb8b3]'
                     }`}
                   >

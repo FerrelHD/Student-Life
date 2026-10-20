@@ -193,7 +193,7 @@ export const DailyQuizModal: React.FC<DailyQuizModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-      <div role="dialog" aria-modal="true" className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10">
+      <div role="dialog" aria-modal="true" className="expressive-card expressive-card-onyx w-full max-w-md p-6 shadow-2xl relative text-white border border-white/10 max-h-[90vh] overflow-y-auto">
 
         {/* Header */}
         <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-4">
